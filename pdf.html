@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Profile PDF • M Share</title>
+  <meta name="description" content="Generate or download a one‑page, clickable PDF of the profile.">
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .preview{border:1px solid var(--b);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-1);
+      background:#0a0a0a;display:grid;place-items:center;height:min(85vh,860px)}
+    .preview canvas{width:100%;height:auto;display:block}
+  </style>
+</head>
+<body>
+<header class="site-header">
+  <div class="container navbar">
+    <a id="brandLink" class="brand"><span class="logo">M</span> M Share</a>
+    <nav class="main-nav" id="mainNav">
+      <a data-href="index.html">Wellbeing</a>
+      <a data-href="bank.html">Buy me coffee</a>
+      <a data-href="storage.html">Storage</a>
+      <button id="shareOpen" class="btn" type="button"><span class="icon">🔗</span> Share</button>
+    </nav>
+    <button id="navToggle" class="nav-toggle" aria-label="Menu">☰</button>
+  </div>
+</header>
+
+<main class="container">
+  <div class="card">
+    <h1>Styled Profile PDF</h1>
+    <p class="muted">Exports a <b>single‑page A4 PDF</b> of your hero (centered avatar on photo background) with <b>active links</b> (Call, Text, Email, Website, Wellbeing, Maps, Buy‑me‑coffee). Also embeds a QR that opens this PDF page.</p>
+
+    <div class="actions" style="margin:10px 0 14px">
+      <a id="pdfLink" class="btn btn-primary" download="m_share_profile.pdf">⬇ Download the official PDF (assets/m_share_profile.pdf)</a>
+      <button id="genStyled" class="btn">🖨️ Generate Styled PDF</button>
+      <button id="savePreview" class="btn">🖼️ Save Preview PNG</button>
+    </div>
+
+    <div id="previewWrap" class="preview"><canvas id="pdfPreview" width="1224" height="1584"></canvas></div>
+    <div class="actions"><a class="btn" href="index.html">← Back to Wellbeing</a></div>
+  </div>
+
+  <div class="card">
+    <h2>Device Locker</h2>
+    <p class="muted">Keep multiple PDFs locally on this device (offline). Quota: <span id="lockerQuota"></span> used.</p>
+    <div class="actions" style="margin-bottom:10px;flex-wrap:wrap">
+      <label class="btn">➕ Add PDF<input id="addPdf" type="file" accept="application/pdf" style="display:none"/></label>
+      <button id="makePlaceholder" class="btn">📝 Make styled placeholder</button>
+      <button id="exportLocker" class="btn">📤 Export Locker (.json)</button>
+      <label class="btn">📥 Import Locker<input id="importLocker" type="file" accept="application/json" style="display:none"/></label>
+    </div>
+    <div id="lockerList" class="kv-grid"></div>
+  </div>
+</main>
+
+<!-- Share sheet -->
+<div id="shareSheet" class="sheet hidden">
+  <div id="shareBackdrop" style="position:absolute; inset:0;"></div>
+  <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
+    <div class="sheet-head"><h2 id="shareTitle" class="sheet-title">Share</h2><button id="shareClose" class="sheet-close" aria-label="Close">×</button></div>
+    <textarea id="shareText" class="share-text" readonly></textarea>
+    <div class="share-actions">
+      <button class="btn" id="copyShare">📋 Copy</button>
+      <button class="btn" id="shareNative">🔗 Share…</button>
+      <button class="btn" id="savePng">🖼️ Save PNG</button>
+      <button class="btn" id="sharePng">📤 Share PNG</button>
+      <button class="btn" id="downloadPdf">⬇ Profile PDF</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+(async function () {
+  const { buildStyledCardCanvas, generateStyledPdf, DeviceLocker, toast, qp } = window.__MSHARE__;
+  // existing server PDF head check
+  const link = document.getElementById('pdfLink');
+  link.href = 'assets/m_share_profile.pdf';
+  fetch(link.href, { method:'HEAD' }).then(r => { if (!r.ok) throw new Error('missing'); }).catch(()=> link.textContent = '⚠️ No uploaded PDF yet');
+
+  // Live preview
+  const canvas = document.getElementById('pdfPreview');
+  const preview = await buildStyledCardCanvas({ canvas, includeQR:true });
+
+  document.getElementById('genStyled').addEventListener('click', async ()=>{
+    try {
+      const blob = await generateStyledPdf({ fromCanvas: preview.canvas, links: preview.links, includeQR:true });
+      const url  = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'm_share_profile.pdf';
+      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    } catch(e){ toast('Could not generate PDF.'); }
+  });
+  document.getElementById('savePreview').addEventListener('click', ()=>{
+    preview.canvas.toBlob(b=>{
+      const url = URL.createObjectURL(b);
+      const a = document.createElement('a'); a.href=url; a.download='m_share_profile_preview.png';
+      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    }, 'image/png', .95);
+  });
+
+  // Locker (same behavior as storage.html)
+  DeviceLocker.mount({
+    listEl: document.getElementById('lockerList'),
+    quotaEl: document.getElementById('lockerQuota'),
+    addInput: document.getElementById('addPdf'),
+    placeholderBtn: document.getElementById('makePlaceholder'),
+    exportBtn: document.getElementById('exportLocker'),
+    importInput: document.getElementById('importLocker'),
+    previewBuilder: async ()=> await buildStyledCardCanvas({ includeQR:true }).then(x=>window.__MSHARE__.generateStyledPdf({fromCanvas:x.canvas, links:x.links, includeQR:true}))
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Buy me coffee • M Share</title>
+  <meta name="description" content="Copy bank details and open your banking app quickly.">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container navbar">
+      <a id="brandLink" class="brand"><span class="logo">M</span> M Share</a>
+      <nav class="main-nav" id="mainNav">
+        <a data-href="index.html">Wellbeing</a>
+        <a data-href="bank.html" aria-current="page">Buy me coffee</a>
+        <a data-href="pdf.html">PDF</a>
+        <a data-href="storage.html">Storage</a>
+        <button id="shareOpen" class="btn" type="button"><span class="icon">🔗</span> Share</button>
+      </nav>
+      <button id="navToggle" class="nav-toggle" aria-label="Menu">☰</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      <h1>Buy me a coffee ☕</h1>
+      <p class="muted">Tap <b>Copy details</b> then choose your bank app. We try the app first and gracefully fallback.</p>
+
+      <div class="kv-grid" style="margin-top:12px">
+        <div class="kv"><div class="muted">Account name</div><div id="accName" style="font-weight:600">—</div></div>
+        <div class="kv"><div class="muted">Reference</div><div id="ref" style="font-weight:600">M SHARE</div></div>
+        <div class="kv"><div class="muted">Account number</div><div id="acc" style="font-weight:600">—</div></div>
+        <div class="kv"><div class="muted">Sort code</div><div id="sort" style="font-weight:600">—</div></div>
+        <div class="kv"><div class="muted">IBAN</div><div id="iban" style="font-weight:600">—</div></div>
+      </div>
+
+      <div class="actions">
+        <button class="btn" id="copyBtn">📋 Copy details</button>
+        <span id="copied" class="muted"></span>
+      </div>
+
+      <div class="muted" style="margin-top:10px">Open your bank app:</div>
+      <div class="apps">
+        <a class="app-btn" data-scheme="monzo://" data-name="Monzo">Monzo</a>
+        <a class="app-btn" data-scheme="starling://" data-name="Starling">Starling</a>
+        <a class="app-btn" data-scheme="revolut://" data-name="Revolut">Revolut</a>
+        <a class="app-btn" data-scheme="barclaysmobilebanking://" data-name="Barclays">Barclays</a>
+        <a class="app-btn" data-scheme="natwest://" data-name="NatWest">NatWest</a>
+        <a class="app-btn" data-scheme="hsbcukmobilebanking://" data-name="HSBC UK">HSBC UK</a>
+        <a class="app-btn" data-scheme="santanderuk://" data-name="Santander">Santander</a>
+        <a class="app-btn" data-scheme="lloydsbank://" data-name="Lloyds">Lloyds</a>
+        <a class="app-btn" data-scheme="halifax://" data-name="Halifax">Halifax</a>
+        <a class="app-btn" data-scheme="tsb://" data-name="TSB">TSB</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Share sheet -->
+  <div id="shareSheet" class="sheet hidden">
+    <div id="shareBackdrop" style="position:absolute; inset:0;"></div>
+    <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
+      <div class="sheet-head"><h2 id="shareTitle" class="sheet-title">Share</h2><button id="shareClose" class="sheet-close" aria-label="Close">×</button></div>
+      <textarea id="shareText" class="share-text" readonly></textarea>
+      <div class="share-actions">
+        <button class="btn" id="copyShare">📋 Copy</button>
+        <button class="btn" id="shareNative">🔗 Share…</button>
+        <button class="btn" id="savePng">🖼️ Save PNG</button>
+        <button class="btn" id="sharePng">📤 Share PNG</button>
+        <button class="btn" id="downloadPdf">⬇ Profile PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    (function(){
+      const { data, bankDetailsString, openAppOrStore } = window.__MSHARE__;
+      accName.textContent = data.name || '—';
+      acc.textContent = data.acc || '—';
+      sort.textContent = data.sort || '—';
+      iban.textContent = data.iban || '—';
+      ref.textContent = data.ref || 'M SHARE';
+      document.querySelectorAll('.apps .app-btn').forEach(b => {
+        b.addEventListener('click', () => {
+          navigator.clipboard.writeText(bankDetailsString()).catch(()=>{});
+          openAppOrStore(b.dataset.scheme, b.dataset.name);
+        });
+      });
+      copyBtn.addEventListener('click', async ()=>{
+        try { await navigator.clipboard.writeText(bankDetailsString());
+          copied.textContent='Copied. Now open your bank app below.'; copied.className='ok';
+        } catch { copied.textContent='Copy failed — long‑press to copy'; copied.className='err'; }
+      });
+    })();
+  </script>
+</body>
+</html>

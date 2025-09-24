@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Coherent Breathing 5‑5 • M Share</title>
+  <meta name="theme-color" content="#0b2a22"/>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .wrap { max-width: 980px; margin: 0 auto; }
+    .ui { background: rgba(255,255,255,.05); border: 1px solid var(--b); border-radius: 16px; box-shadow: var(--shadow-1); padding: 16px; }
+    .session{display:grid;place-items:center;gap:18px;text-align:center}
+    .orb-wrap{position:relative;width:min(84vw,380px);aspect-ratio:1/1}
+    .orb{position:absolute;inset:0;display:grid;place-items:center;border-radius:50%;
+      background: radial-gradient(120px 180px at 30% 30%, rgba(255,255,255,.15), transparent 55%),
+                  radial-gradient(100px 100px at 70% 70%, rgba(255,255,255,.08), transparent 70%),
+                  linear-gradient(180deg, rgba(160,255,218,.25), rgba(90,200,170,.18));
+      box-shadow: inset 0 0 40px rgba(0,0,0,.25), 0 30px 50px rgba(0,0,0,.35);
+      border: 1px solid rgba(255,255,255,.14);
+      transform:scale(.82); transition:transform 280ms cubic-bezier(.22,.8,.24,1)
+    }
+    .orb.inhale{transform:scale(1.08)}
+    .orb.exhale{transform:scale(.78)}
+    .phase{font-weight:800;font-size:clamp(22px,3.2vw,28px)}
+    .count{font-weight:900;font-size:clamp(48px,7.5vw,56px);line-height:1;margin-top:4px;text-shadow:0 6px 22px rgba(0,0,0,.35)}
+    .mini{margin-top:6px;font-size:13px;color:var(--muted)}
+    svg.radial{position:absolute;inset:0;transform:rotate(-90deg)}
+    .ring{fill:none;stroke-width:8;stroke-linecap:round}
+    .ring.base{stroke:rgba(255,255,255,.08)}
+    .ring.progress{stroke:rgba(170,240,209,.9)}
+  </style>
+</head>
+<body>
+<header class="site-header">
+  <div class="container navbar">
+    <a id="brandLink" class="brand" data-href="index.html"><span class="logo">M</span> M Share</a>
+    <nav class="main-nav" id="mainNav">
+      <a data-href="index.html">Profile</a>
+      <a data-href="bank.html">Money</a>
+      <a data-href="wellbeing.html">Wellbeing</a>
+      <a data-href="storage.html">Storage</a>
+      <a data-href="pdf.html">PDF</a>
+      <button id="shareOpen" class="btn" type="button"><span class="icon">🔗</span> Share</button>
+    </nav>
+    <button id="navToggle" class="nav-toggle" aria-label="Menu">☰</button>
+  </div>
+</header>
+
+<main class="container wrap">
+  <div class="card">
+    <h1>Coherent Breathing (5‑5)</h1>
+    <p class="muted">Inhale for 5 seconds, exhale for 5 seconds (about 5–6 breaths per minute). This resonant pace can stabilize heart‑rate variability and calm the nervous system.</p>
+  </div>
+
+  <div class="grid cols-2">
+    <div class="card ui">
+      <h2>Setup</h2>
+      <div class="grid cols-2">
+        <div class="tile">
+          <label>Minutes</label>
+          <select id="minutes">
+            <option value="1">1 minute</option>
+            <option value="3" selected>3 minutes</option>
+            <option value="5">5 minutes</option>
+            <option value="10">10 minutes</option>
+          </select>
+        </div>
+        <div class="tile">
+          <label>Breaths/min</label>
+          <input id="bpm" type="number" min="4.5" max="6.5" step="0.1" value="5.5"/>
+        </div>
+        <div class="tile">
+          <label>Voice coach (TTS)</label>
+          <select id="tts"><option value="off">Off</option><option value="on">On</option></select>
+        </div>
+        <div class="tile">
+          <label>Haptics</label>
+          <select id="vib"><option value="off">Off</option><option value="on" selected>On</option></select>
+        </div>
+        <div class="tile">
+          <label>Ambience</label>
+          <select id="bg"><option value="none">None</option><option value="cosmic" selected>Cosmic Waves</option><option value="rain">Soft Rain</option></select>
+        </div>
+        <div class="tile">
+          <label>Ambience volume</label>
+          <input id="bgv" type="range" min="0" max="1" step="0.01" value="0.2"/>
+        </div>
+        <div class="tile">
+          <label>Reduced motion</label>
+          <select id="rm"><option value="auto" selected>Auto</option><option value="on">Force reduce</option><option value="off">Full motion</option></select>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-success" id="startBtn">Start</button>
+        <button class="btn" id="instBtn">Instructions</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Instructions</h2>
+      <ol>
+        <li>Sit upright or lie flat; relax the jaw and shoulders.</li>
+        <li>Breathe through the nose; let the belly rise and fall.</li>
+        <li>Keep the inhale and exhale even (5 seconds each).</li>
+      </ol>
+      <p class="muted">Adjust the pace (4.5–6.5 BPM) to comfort. Slower for calm, slightly quicker for focus.</p>
+    </div>
+  </div>
+
+  <div id="session" class="card session hidden">
+    <h2>Session</h2>
+    <div class="orb-wrap" aria-live="polite" aria-atomic="true">
+      <svg class="radial" viewBox="0 0 100 100" aria-hidden="true">
+        <circle class="ring base" cx="50" cy="50" r="42"></circle>
+        <circle id="progressRing" class="ring progress" cx="50" cy="50" r="42"
+                stroke-dasharray="264" stroke-dashoffset="264"></circle>
+      </svg>
+      <div id="orb" class="orb inhale">
+        <div>
+          <div id="phase" class="phase">Inhale</div>
+          <div id="count" class="count">5</div>
+          <div class="mini"><span id="leftMin">0</span>m <span id="leftSec">00</span>s left • <span id="rate">5.5</span> BPM</div>
+        </div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="pauseBtn">Pause</button>
+      <button class="btn" id="resetBtn">Reset</button>
+    </div>
+  </div>
+
+  <div id="done" class="card hidden">
+    <h2>Session Complete</h2>
+    <div class="grid cols-3">
+      <div class="tile"><label>Total Minutes</label><div id="doneMin" class="val">0</div></div>
+      <div class="tile"><label>Day Streak</label><div id="doneStreak" class="val">0</div></div>
+      <div class="tile"><label>Total Breaths</label><div id="doneBreaths" class="val">0</div></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-success" id="againBtn">Again</button>
+      <a class="btn" data-href="wellbeing.html">Back to Hub</a>
+    </div>
+  </div>
+
+  <div class="footer">© <span id="year"></span> Pure Care Plus.co.uk Ltd — Educational only, not medical advice.</div>
+</main>
+
+<!-- Share sheet -->
+<div id="shareSheet" class="sheet hidden">
+  <div id="shareBackdrop" style="position:absolute; inset:0;"></div>
+  <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
+    <div class="sheet-head">
+      <h2 id="shareTitle" class="sheet-title">Share profile</h2>
+      <button id="shareClose" class="sheet-close" aria-label="Close">×</button>
+    </div>
+    <textarea id="shareText" class="share-text" readonly></textarea>
+    <div class="share-actions">
+      <button class="btn" id="copyShare">📋 Copy</button>
+      <button class="btn" id="shareNative">🔗 Share…</button>
+      <button class="btn" id="savePng">🖼️ Save PNG</button>
+      <button class="btn" id="sharePng">📤 Share PNG</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+(function(){
+  'use strict';
+  const byId=(id)=>document.getElementById(id);
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Elements
+  const minutes=byId('minutes'), bpm=byId('bpm'), rm=byId('rm'), bg=byId('bg'), bgv=byId('bgv'), tts=byId('tts'), vib=byId('vib');
+  const ring=byId('progressRing'), orb=byId('orb'), phaseEl=byId('phase'), countEl=byId('count'), leftMin=byId('leftMin'), leftSec=byId('leftSec'), rateEl=byId('rate');
+  const CIRC=264; function setProgress(p){ if(ring) ring.style.strokeDashoffset = String(CIRC*(1-Math.max(0,Math.min(1,p)))); }
+
+  // Audio ambience + chime
+  let ac=null; function ensureAC(){ if(!ac){ ac=new (window.AudioContext||window.webkitAudioContext)(); } if(ac.state==='suspended'){ ac.resume(); } }
+  function chime(vol=.28){ if(!ac) return; const g=ac.createGain(); g.gain.setValueAtTime(0,ac.currentTime); g.gain.linearRampToValueAtTime(vol, ac.currentTime+.01); g.gain.exponentialRampToValueAtTime(.0001, ac.currentTime+1.2); const o=ac.createOscillator(); o.type='sine'; o.frequency.value=528; o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime+1.2); }
+  function Background(ac){
+    const master=ac.createGain(); master.gain.value=parseFloat(bgv.value||0.2); master.connect(ac.destination);
+    let nodes=[]; const clear=()=>{ nodes.forEach(n=>{try{n.stop?.();n.disconnect?.();}catch{}}); nodes=[]; };
+    const cosmic=()=>{ const g=ac.createGain(); g.gain.value=.12; g.connect(master); const o1=ac.createOscillator(); o1.type='sine'; o1.frequency.value=110; const l1=ac.createOscillator(), lg1=ac.createGain(); l1.type='sine'; l1.frequency.value=.05; lg1.gain.value=15; l1.connect(lg1); lg1.connect(o1.frequency); o1.connect(g); o1.start(); l1.start(); nodes.push(o1,l1,g); };
+    const rain=()=>{ const buf=ac.createBuffer(1, ac.sampleRate*2, ac.sampleRate), data=buf.getChannelData(0); for(let i=0;i<data.length;i++) data[i]=(Math.random()*2-1)*.55; const src=ac.createBufferSource(); src.buffer=buf; src.loop=true; const lp=ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=1200; const g=ac.createGain(); g.gain.value=.2; src.connect(lp).connect(g).connect(master); src.start(); nodes.push(src,lp,g); };
+    this.setType=(t)=>{ clear(); if(t==='cosmic') cosmic(); else if(t==='rain') rain(); };
+    this.setVol=(v)=> master.gain.setTargetAtTime(parseFloat(v||0.2), ac.currentTime, .1);
+    this.stop=()=>clear();
+  }
+  let bgm=null;
+
+  // TTS / Haptics
+  function speak(text){ if(tts.value!=='on') return; try{ const u=new SpeechSynthesisUtterance(text); u.rate=1; speechSynthesis.cancel(); speechSynthesis.speak(u);}catch{} }
+  function vibrate(ms){ if(vib.value==='on' && navigator.vibrate) try{ navigator.vibrate(ms); }catch{} }
+
+  // Session engine
+  const TECH_ID='coherent';
+  let running=false, paused=false, timer=null, endTime=0, inPhase=true, dur=5, totalSecs=180, breathsCount=0;
+
+  function refreshLeft(){
+    const left = Math.max(0, Math.round((endTime - performance.now())/1000));
+    leftMin.textContent = String(Math.floor(left/60));
+    leftSec.textContent = String(left%60).padStart(2,'0');
+  }
+
+  function doPhase(){
+    if(!running) return;
+    const bpmVal = parseFloat(bpm.value||5.5);
+    dur = Math.max(2, 60/(bpmVal*2)); // in OR out (even)
+    rateEl.textContent = bpmVal.toFixed(1);
+    const label = inPhase ? 'Inhale' : 'Exhale';
+    phaseEl.textContent = label;
+    orb.classList.remove(inPhase ? 'exhale' : 'inhale');
+    orb.classList.add(inPhase ? 'inhale' : 'exhale');
+    speak(label);
+    vibrate(inPhase ? 25 : 15);
+    if (!inPhase) { chime(Math.max(.2, parseFloat(bgv.value||0.2)*1.2)); breathsCount++; }
+
+    const start = performance.now();
+    function raf(now){
+      if(!running){ cancelAnimationFrame(timer); return; }
+      if(paused){ timer=requestAnimationFrame(raf); return; }
+      const elapsed=(now-start)/1000;
+      const remain=Math.max(0, dur - elapsed);
+      setProgress(dur?elapsed/dur:1);
+      countEl.textContent = String(Math.ceil(remain));
+      refreshLeft();
+      if(remain<=0){
+        inPhase = !inPhase;
+        if (performance.now() >= endTime) return finish();
+        return doPhase();
+      }
+      timer=requestAnimationFrame(raf);
+    }
+    timer=requestAnimationFrame(raf);
+  }
+
+  function start(){
+    ensureAC();
+    if (!bgm && bg.value!=='none'){ bgm=new Background(ac); bgm.setType(bg.value); }
+    if (bgm){ bgm.setVol(bgv.value); }
+    totalSecs = (parseInt(minutes.value||'3',10))*60;
+    endTime = performance.now()+totalSecs*1000; breathsCount=0; running=true; paused=false; inPhase=true;
+    byId('session').classList.remove('hidden'); byId('done').classList.add('hidden');
+    doPhase();
+  }
+  function pause(){ if(!running) return; paused=!paused; byId('pauseBtn').textContent = paused?'Resume':'Pause'; if(!paused) doPhase(); }
+  function reset(){ running=false; cancelAnimationFrame(timer); setProgress(0); countEl.textContent='5'; phaseEl.textContent='Inhale'; byId('pauseBtn').textContent='Pause'; if(bgm){ bgm.stop(); bgm=null; } }
+  function finish(){
+    running=false; cancelAnimationFrame(timer); if(bgm){ bgm.stop(); bgm=null; }
+    const Stats = window.__MSHARE__?.Stats;
+    const s = Stats?.addSession?.({ techId: TECH_ID, seconds: totalSecs, breaths: breathsCount }) || null;
+    byId('doneMin').textContent = String(s ? Math.floor(s.totalMinutes||0) : Math.floor(totalSecs/60));
+    byId('doneBreaths').textContent = String(s ? s.totalBreaths||0 : breathsCount);
+    byId('doneStreak').textContent = String(s ? s.dayStreak||0 : 0);
+    byId('done').classList.remove('hidden'); byId('session').classList.add('hidden');
+  }
+
+  byId('startBtn')?.addEventListener('click', start);
+  byId('instBtn')?.addEventListener('click', () => window.__MSHARE__?.toast?.('Inhale 5s • Exhale 5s • Relax jaw & shoulders • Nose breathing if comfortable.'));
+  byId('pauseBtn')?.addEventListener('click', pause);
+  byId('resetBtn')?.addEventListener('click', reset);
+  byId('againBtn')?.addEventListener('click', start);
+})();
+</script>
+</body>
+</html>

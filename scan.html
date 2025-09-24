@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Scan QR • M Share</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    video{width:100%;max-width:620px;border:1px solid var(--b);border-radius:14px;background:#000}
+    .hint{color:var(--muted);margin-top:8px}
+  </style>
+</head>
+<body>
+<header class="site-header">
+  <div class="container navbar">
+    <a id="brandLink" class="brand"><span class="logo">M</span> M Share</a>
+    <nav class="main-nav" id="mainNav">
+      <a data-href="index.html">Wellbeing</a>
+      <a data-href="bank.html">Buy me coffee</a>
+      <a data-href="pdf.html">PDF</a>
+      <button id="shareOpen" class="btn" type="button"><span class="icon">🔗</span> Share</button>
+    </nav>
+    <button id="navToggle" class="nav-toggle" aria-label="Menu">☰</button>
+  </div>
+</header>
+
+<main class="container">
+  <div class="card">
+    <h1>Scan a QR</h1>
+    <p class="muted">Point the camera at any QR code. When a valid URL is detected, you’ll get an option to open it.</p>
+    <video id="camera" playsinline muted></video>
+    <div class="hint">Tip: If scanning isn’t supported by your browser, paste a URL instead.</div>
+    <div class="actions">
+      <input id="manual" class="tile" placeholder="Paste a URL here" style="flex:1;min-width:220px"/>
+      <button id="openManual" class="btn">Open</button>
+    </div>
+  </div>
+</main>
+
+<div id="shareSheet" class="sheet hidden"><div id="shareBackdrop" style="position:absolute; inset:0;"></div><div class="sheet-card"><div class="sheet-head"><h2 class="sheet-title">Share</h2><button id="shareClose" class="sheet-close">×</button></div><textarea id="shareText" class="share-text" readonly></textarea></div></div>
+
+<script src="app.js"></script>
+<script>
+(async function(){
+  const video = document.getElementById('camera');
+  const manual = document.getElementById('manual');
+  document.getElementById('openManual').addEventListener('click', ()=>{ const u=manual.value.trim(); if(u) location.href=u; });
+
+  if ('BarcodeDetector' in window) {
+    const detector = new BarcodeDetector({ formats: ['qr_code'] });
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }).catch(()=>null);
+    if (!stream) return;
+    video.srcObject = stream; await video.play();
+
+    let running = true;
+    async function tick(){
+      if (!running) return;
+      try {
+        const codes = await detector.detect(video);
+        if (codes && codes.length) {
+          running=false;
+          const url = codes[0].rawValue;
+          const ok = confirm('Open this link?\n\n' + url);
+          if (ok) location.href = url;
+        }
+      } catch {}
+      requestAnimationFrame(tick);
+    }
+    tick();
+    document.addEventListener('visibilitychange', ()=>{ if(document.hidden) running=false; });
+  } else {
+    window.__MSHARE__.toast('QR scanning not supported by this browser. Paste the link instead.');
+  }
+})();
+</script>
+</body>
+</html>
