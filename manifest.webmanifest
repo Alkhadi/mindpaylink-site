@@ -1,4 +1,4 @@
-{
+manifest = {
   "name": "M Share",
   "short_name": "M Share",
   "start_url": "index.html",

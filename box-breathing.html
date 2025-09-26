@@ -1,538 +1,275 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
-<title>Box Breathing • M Share | Pure Care Plus</title>
-<meta name="theme-color" content="#0b2a22"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg-1:#061a15; --bg-2:#0e2f26; --ink:#f8faf9; --ink-dim:#eaf3f0; --ink-muted:#a8c3bc;
-    --panel:rgba(255,255,255,.06); --panel-b:rgba(255,255,255,.08);
-    --brand:#b6f8df; --primary:#aaf0d1; --primary-2:#6ed0b3;
-    --radius:16px; --shadow:0 10px 30px rgba(0,0,0,.35); --focus:#8fe3ca; --t:240ms cubic-bezier(.22,.8,.24,1);
-  }
-  *,*::before,*::after{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0; font-family:"Nunito",system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Arial;
-    color:var(--ink);
-    background: radial-gradient(1100px 600px at 75% -10%, #154338 0%, transparent 60%),
-                linear-gradient(to bottom, var(--bg-1), var(--bg-2));
-    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-  }
-  a{color:inherit;text-decoration:none}
-  .container{max-width:980px;margin:0 auto;padding:clamp(16px,2.2vw,24px)}
-  /* NAV */
-  header.topbar{display:flex;gap:12px;align-items:center}
-  .brand{font-weight:900;letter-spacing:.4px;font-size:18px;padding:6px 10px;border-radius:10px;
-    background:linear-gradient(135deg, rgba(170,240,209,.15), rgba(110,208,179,.10));
-    border:1px solid rgba(255,255,255,.08)}
-  .nav{margin-left:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  .nav a,.nav summary{color:var(--ink-dim);font-weight:800;padding:8px 12px;border-radius:12px;cursor:pointer;border:1px solid transparent;transition:all var(--t)}
-  .nav a:hover,.nav summary:hover{color:var(--ink);border-color:rgba(255,255,255,.16)}
-  .nav a.active{color:#073027;background:linear-gradient(to bottom right,#d0fff2,#9ef3cf);border-color:transparent}
-  details.menu{position:relative}
-  .menu-panel{position:absolute;right:0;top:calc(100% + 8px);background:var(--panel);
-    border:1px solid rgba(255,255,255,.12);border-radius:12px;box-shadow:var(--shadow);
-    padding:8px;min-width:220px;opacity:0;transform:translateY(-6px);pointer-events:none;transition:all var(--t)}
-  details[open] .menu-panel{opacity:1;transform:translateY(0);pointer-events:auto}
-  .menu-panel a{display:block;padding:10px;border-radius:10px}
-  .menu-panel a:hover{background:rgba(255,255,255,.08)}
-  /* Profile strip */
-  .hdr{display:flex;align-items:center;gap:12px;margin-top:14px;padding-top:10px;border-top:1px solid rgba(255,255,255,.06)}
-  .avatar{width:44px;height:44px;border-radius:50%;overflow:hidden;background:#234}
-  .avatar img{width:100%;height:100%;object-fit:cover;display:block}
-  .meta small{color:var(--ink-muted);display:block}
-  /* App shell */
-  .card{background:var(--panel);border:1px solid var(--panel-b);border-radius:var(--radius);box-shadow:var(--shadow)}
-  .pad{padding:clamp(16px,2.5vw,28px)}
-  .stage-nav{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
-  .stage-nav button{background:transparent;border:1px solid rgba(255,255,255,.14);color:var(--ink-dim);
-    padding:8px 12px;border-radius:12px;cursor:pointer;transition:all var(--t);font-weight:800}
-  .stage-nav button[aria-current="page"], .stage-nav button:hover{border-color:var(--focus);color:var(--ink)}
-  .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
-  label{font-size:13px;color:var(--ink-muted)}
-  input[type="number"], select{background:rgba(255,255,255,.08);color:var(--ink);border:1px solid rgba(255,255,255,.14);
-    padding:10px 12px;border-radius:12px;width:100%;outline:none;transition:border var(--t)}
-  input:focus,select:focus{border-color:var(--focus)}
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 16px;border-radius:12px;
-    background:linear-gradient(to bottom right,#d0fff2,#9ef3cf);color:#073027;font-weight:900;border:1px solid transparent;cursor:pointer}
-  .btn.secondary{background:transparent;color:var(--ink-dim);border-color:rgba(255,255,255,.16)}
-  .session{display:grid;place-items:center;gap:20px;text-align:center}
-  .orb-wrap{position:relative;width:min(84vw,380px);aspect-ratio:1/1}
-  .orb{position:absolute;inset:0;display:grid;place-items:center;border-radius:50%;
-    background: radial-gradient(120px 180px at 30% 30%, rgba(255,255,255,.15), transparent 55%),
-                radial-gradient(100px 100px at 70% 70%, rgba(255,255,255,.08), transparent 70%),
-                linear-gradient(180deg, rgba(160,255,218,.25), rgba(90,200,170,.18));
-    box-shadow: inset 0 0 40px rgba(0,0,0,.25), 0 30px 50px rgba(0,0,0,.35);
-    border: 1px solid rgba(255,255,255,.14);
-    transform:scale(.82); transition:transform var(--t)
-  }
-  .orb.inhale{transform:scale(1.08)}
-  .orb.hold{transform:scale(1.08)}
-  .orb.exhale{transform:scale(.78)}
-  .phase{font-weight:800;font-size:clamp(22px,3.2vw,28px)}
-  .count{font-weight:900;font-size:clamp(48px,7.5vw,56px);line-height:1;margin-top:4px;text-shadow:0 6px 22px rgba(0,0,0,.35)}
-  .mini{margin-top:6px;font-size:13px;color:var(--ink-muted)}
-  svg.radial{position:absolute;inset:0;transform:rotate(-90deg)}
-  .ring{fill:none;stroke-width:8;stroke-linecap:round}
-  .ring.base{stroke:rgba(255,255,255,.08)}
-  .ring.progress{stroke:url(#grad)}
-  details.prefs{background:var(--panel);border:1px solid var(--panel-b);border-radius:12px}
-  details.prefs > summary{list-style:none;cursor:pointer;user-select:none;padding:14px 16px;color:var(--ink-dim);font-weight:800}
-  details.prefs[open] > summary{color:var(--ink)}
-  details.prefs .prefs-body{padding:0 16px 16px}
-  .kpi{display:flex;gap:10px;background:rgba(255,255,255,.06);padding:12px;border-radius:12px;align-items:center;justify-content:space-between}
-  .kpi h4{margin:0;font-size:12px;color:var(--ink-muted);font-weight:800}
-  .kpi .v{font-weight:900;font-size:22px}
-  .rings{position:relative;width:min(84vw,300px);aspect-ratio:1/1;margin-inline:auto}
-  .rings svg{position:absolute;inset:0}
-  .rings .ring-anim{stroke-dasharray:780;stroke-dashoffset:780;animation:draw 1400ms ease forwards}
-  .rings .ring-2{animation-delay:.1s}.rings .ring-3{animation-delay:.2s}.rings .ring-4{animation-delay:.3s}.rings .ring-5{animation-delay:.4s}
-  @keyframes draw{to{stroke-dashoffset:0}}
-  footer{opacity:.8;color:var(--ink-muted);text-align:center;padding:22px 8px}
-  .rm .orb{transform:none !important; transition:none !important}
-  .note{color:var(--ink-muted);font-size:12px}
-  .ach{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:10px 0}
-  .badge{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);padding:6px 8px;border-radius:999px;font-size:12px;font-weight:800}
-</style>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <title>Box Breathing • M Share</title>
+  <meta name="theme-color" content="#0b2a22"/>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Local additions that sit on top of style.css */
+    .wrap{max-width:980px;margin:0 auto}
+    .ui{background:rgba(255,255,255,.05);border:1px solid var(--b);border-radius:16px;box-shadow:var(--shadow-1);padding:16px}
+    .session{display:grid;place-items:center;gap:18px;text-align:center}
+    .orb-wrap{position:relative;width:min(84vw,380px);aspect-ratio:1/1}
+    .orb{position:absolute;inset:0;display:grid;place-items:center;border-radius:50%;
+      background: radial-gradient(120px 180px at 30% 30%, rgba(255,255,255,.15), transparent 55%),
+                  radial-gradient(100px 100px at 70% 70%, rgba(255,255,255,.08), transparent 70%),
+                  linear-gradient(180deg, rgba(160,255,218,.25), rgba(90,200,170,.18));
+      box-shadow: inset 0 0 40px rgba(0,0,0,.25), 0 30px 50px rgba(0,0,0,.35);
+      border:1px solid rgba(255,255,255,.14);
+      transform:scale(.82); transition:transform 280ms cubic-bezier(.22,.8,.24,1)
+    }
+    .orb.inhale{transform:scale(1.08)} .orb.exhale{transform:scale(.78)}
+    .phase{font-weight:800;font-size:clamp(22px,3.2vw,28px)}
+    .count{font-weight:900;font-size:clamp(48px,7.5vw,56px);line-height:1;margin-top:4px;text-shadow:0 6px 22px rgba(0,0,0,.35)}
+    .mini{margin-top:6px;font-size:13px;color:var(--muted)}
+    svg.radial{position:absolute;inset:0;transform:rotate(-90deg)}
+    .ring{fill:none;stroke-width:8;stroke-linecap:round}
+    .ring.base{stroke:rgba(255,255,255,.08)} .ring.progress{stroke:rgba(170,240,209,.9)}
+
+    /* Focus mode: hide chrome while in-session */
+    body.focus-mode header.site-header, body.focus-mode .stage-nav, body.focus-mode .footer {display:none!important}
+    body.focus-mode main .card.setup, body.focus-mode #done {display:none!important}
+  </style>
 </head>
 <body>
-<div class="container">
-  <!-- NAV -->
-  <header class="topbar" aria-label="Site navigation">
-    <a id="brandLink" class="brand" data-href="index.html">M Share • Wellbeing</a>
-    <nav class="nav">
-      <a data-href="wellbeing.html">Wellbeing</a>
-      <details class="menu" open>
-        <summary>Techniques ▾</summary>
-        <div class="menu-panel">
-          <a class="active" data-href="box-breathing.html">Box Breathing</a>
-          <a data-href="4-7-8-breathing.html">4‑7‑8 Breathing</a>
-          <a data-href="coherent-5-5.html">Coherent 5‑5</a>
-        </div>
-      </details>
-      <a data-href="bank.html">Buy Me Coffee</a>
+<header class="site-header">
+  <div class="container navbar">
+    <a id="brandLink" class="brand" data-href="index.html"><span class="logo">M</span> M Share</a>
+    <nav class="main-nav" id="mainNav">
+      <a data-href="index.html">Wellbeing</a>
+      <a data-href="bank.html">Buy me coffee</a>
       <a data-href="pdf.html">PDF</a>
+      <button id="shareOpen" class="btn" type="button"><span class="icon">🔗</span> Share</button>
     </nav>
-  </header>
+    <button id="navToggle" class="nav-toggle" aria-label="Menu">☰</button>
+  </div>
+</header>
 
-  <!-- Profile strip -->
-  <div class="hdr">
-    <div class="avatar" id="ms-avatar"></div>
-    <div class="meta">
-      <strong id="ms-title">M Share • Digital Profile</strong>
-      <small id="ms-name">Welcome</small>
+<main class="container wrap">
+  <!-- SETUP -->
+  <div class="card setup">
+    <h1>Box Breathing — Setup</h1>
+    <p class="muted">Equal sides like a square: <b>inhale</b> → <b>hold</b> → <b>exhale</b> → <b>hold</b>.</p>
+
+    <div class="grid cols-2">
+      <div class="tile"><label>Inhale (s)</label><input id="inS" type="number" min="1" max="20" value="4"/></div>
+      <div class="tile"><label>Hold (s)</label><input id="h1S" type="number" min="0" max="20" value="4"/></div>
+      <div class="tile"><label>Exhale (s)</label><input id="outS" type="number" min="1" max="20" value="4"/></div>
+      <div class="tile"><label>Hold (after exhale) (s)</label><input id="h2S" type="number" min="0" max="20" value="4"/></div>
     </div>
-    <div style="margin-left:auto;color:var(--ink-muted);font-size:12px">
-      Pure Care Plus.co.uk Ltd • <a href="mailto:management@purecareplus.co.uk">management@purecareplus.co.uk</a>
+
+    <h2 style="margin-top:10px">Quick Session</h2>
+    <div class="grid cols-2 ui" style="margin-bottom:8px">
+      <div class="tile">
+        <label>Minutes</label>
+        <select id="minutes">
+          <option value="1">1 minute</option>
+          <option value="3" selected>3 minutes</option>
+          <option value="5">5 minutes</option>
+          <option value="10">10 minutes</option>
+        </select>
+      </div>
+      <div class="tile">
+        <label>Breaths/min</label>
+        <input id="bpm" type="number" min="3" max="8" step="0.1" value="5.5"/>
+      </div>
+      <div class="tile">
+        <label>Voice coach (TTS)</label>
+        <select id="tts"><option value="off" selected>Off</option><option value="on">On</option></select>
+      </div>
+      <div class="tile">
+        <label>Haptics</label>
+        <select id="vib"><option value="off">Off</option><option value="on" selected>On</option></select>
+      </div>
+      <div class="tile">
+        <label>Ambience</label>
+        <select id="bg"><option value="none">None</option><option value="cosmic" selected>Cosmic Waves</option><option value="rain">Soft Rain</option></select>
+      </div>
+      <div class="tile">
+        <label>Ambience volume</label>
+        <input id="bgv" type="range" min="0" max="1" step="0.01" value="0.2"/>
+      </div>
+      <div class="tile">
+        <label>Reduced motion</label>
+        <select id="rm"><option value="auto" selected>Auto</option><option value="on">Force reduce</option><option value="off">Full motion</option></select>
+      </div>
+      <div class="tile">
+        <label>Focus mode</label>
+        <select id="focus"><option value="off">Off</option><option value="on" selected>On</option></select>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-success" id="startBtn">Start</button>
+      <button class="btn" id="instBtn">Instructions</button>
     </div>
   </div>
 
-  <!-- App -->
-  <main class="card pad">
-    <nav class="stage-nav" aria-label="Stages">
-      <button type="button" data-stage="setup" aria-current="page">Setup</button>
-      <button type="button" data-stage="instructions">Instructions</button>
-      <button type="button" data-stage="session">Session</button>
-      <button type="button" data-stage="completed" disabled>Completed</button>
-    </nav>
+  <!-- INSTRUCTIONS -->
+  <div id="inst" class="card hidden">
+    <h2>How to Practice</h2>
+    <ol>
+      <li><b>Posture.</b> Sit upright or lie flat; soften shoulders and jaw.</li>
+      <li><b>Hands.</b> One hand on chest, one on belly to cue diaphragmatic motion.</li>
+      <li><b>Pattern.</b> Inhale → Hold → Exhale → Hold with equal counts (e.g., 4‑4‑4‑4).</li>
+    </ol>
+    <div class="actions">
+      <button class="btn btn-success" id="beginFromInst">Begin Session</button>
+      <a class="btn" href="#" id="backSetup">Back to Setup</a>
+    </div>
+  </div>
 
-    <!-- SETUP -->
-    <section id="stage-setup" class="grid" role="region" aria-labelledby="h-setup">
-      <div style="grid-column:1/-1">
-        <h2 id="h-setup" style="margin:0 0 8px">Box Breathing — Setup</h2>
-        <p class="note" style="margin:.2rem 0 1rem">
-          Equal sides like a square: <b>inhale</b>, <b>hold</b>, <b>exhale</b>, <b>hold</b>. Great for pressure, focus, and resets.
-        </p>
-      </div>
-
-      <div>
-        <label for="inDur">Inhale (seconds)</label>
-        <input id="inDur" type="number" min="1" max="20" value="4"/>
-      </div>
-      <div>
-        <label for="inHold">Hold after inhale (seconds)</label>
-        <input id="inHold" type="number" min="0" max="30" value="4"/>
-      </div>
-      <div>
-        <label for="outDur">Exhale (seconds)</label>
-        <input id="outDur" type="number" min="1" max="30" value="4"/>
-      </div>
-      <div>
-        <label for="outHold">Hold after exhale (seconds)</label>
-        <input id="outHold" type="number" min="0" max="30" value="4"/>
-      </div>
-      <div>
-        <label for="breaths">Breaths this session</label>
-        <select id="breaths">
-          <option value="4">4 breaths (~1m04s)</option>
-          <option value="6" selected>6 breaths (~1m36s)</option>
-          <option value="8">8 breaths (~2m08s)</option>
-          <option value="10">10 breaths (~2m40s)</option>
-        </select>
-      </div>
-
-      <div style="grid-column:1/-1">
-        <div class="chips" aria-label="Quick presets" style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn secondary" data-preset="3" type="button">Gentle 3‑3‑3‑3</button>
-          <button class="btn secondary" data-preset="4" type="button">Standard 4‑4‑4‑4</button>
-          <button class="btn secondary" data-preset="5" type="button">Deeper 5‑5‑5‑5</button>
+  <!-- SESSION -->
+  <div id="session" class="card session hidden">
+    <h2>Session</h2>
+    <div class="orb-wrap" id="tapArea" aria-live="polite" aria-atomic="true" title="Tap to pause/resume">
+      <svg class="radial" viewBox="0 0 100 100" aria-hidden="true">
+        <circle class="ring base" cx="50" cy="50" r="42"></circle>
+        <circle id="progressRing" class="ring progress" cx="50" cy="50" r="42"
+                stroke-dasharray="264" stroke-dashoffset="264"></circle>
+      </svg>
+      <div id="orb" class="orb inhale">
+        <div>
+          <div id="phase" class="phase">Inhale</div>
+          <div id="count" class="count">4</div>
+          <div class="mini"><span id="idx">1</span>/<span id="total">0</span> breaths</div>
         </div>
       </div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="pauseBtn">Pause</button>
+      <button class="btn" id="resetBtn">Reset</button>
+      <a class="btn" id="adjustBtn">Adjust Settings</a>
+    </div>
+  </div>
 
-      <details class="prefs" style="grid-column:1/-1;margin-top:6px">
-        <summary>Preferences</summary>
-        <div class="prefs-body">
-          <div class="grid">
-            <div>
-              <label for="bgMusic">Background ambience</label>
-              <select id="bgMusic">
-                <option value="none">None</option>
-                <option value="cosmic" selected>Cosmic Waves (synth)</option>
-                <option value="rain">Soft Rain (synth)</option>
-              </select>
-            </div>
-            <div>
-              <label for="bgVolume">Background volume</label>
-              <input id="bgVolume" type="range" min="0" max="1" step="0.01" value="0.25"/>
-            </div>
-            <div>
-              <label for="cueVolume">Cue volume (chime)</label>
-              <input id="cueVolume" type="range" min="0" max="1" step="0.01" value="0.35"/>
-            </div>
-            <div>
-              <label for="tts">Voice cues (TTS)</label>
-              <select id="tts">
-                <option value="off">Off</option>
-                <option value="on">On (English)</option>
-              </select>
-            </div>
-            <div>
-              <label for="haptics">Haptic vibration</label>
-              <select id="haptics">
-                <option value="off">Off</option>
-                <option value="on">On (supported devices)</option>
-              </select>
-            </div>
-            <div>
-              <label for="wakeLock">Keep screen awake</label>
-              <select id="wakeLock">
-                <option value="off">Off</option>
-                <option value="on">On</option>
-              </select>
-            </div>
-            <div>
-              <label for="reducedMotion">Reduced motion</label>
-              <select id="reducedMotion">
-                <option value="auto" selected>Auto (respect OS setting)</option>
-                <option value="on">Force reduce</option>
-                <option value="off">Full motion</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </details>
+  <!-- DONE -->
+  <div id="done" class="card hidden">
+    <h2>Session Complete</h2>
+    <div class="grid cols-3">
+      <div class="tile"><label>Total Minutes</label><div id="doneMin" class="val">0</div></div>
+      <div class="tile"><label>Day Streak</label><div id="doneStreak" class="val">0</div></div>
+      <div class="tile"><label>Total Breaths</label><div id="doneBreaths" class="val">0</div></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-success" id="againBtn">Again</button>
+      <a class="btn" data-href="index.html">Back to Hub</a>
+    </div>
+  </div>
 
-      <div style="grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn" id="btn-to-session" type="button">Start</button>
-        <button class="btn secondary" id="btn-to-instructions" type="button">View Instructions</button>
-      </div>
-    </section>
+  <div class="footer">© <span id="year"></span> Pure Care Plus.co.uk Ltd — Educational only, not medical advice.</div>
+</main>
 
-    <!-- INSTRUCTIONS -->
-    <section id="stage-instructions" class="grid" hidden role="region" aria-labelledby="h-instr">
-      <div style="grid-column:1/-1">
-        <h2 id="h-instr" style="margin:0 0 10px">How to Practice</h2>
-        <div class="card pad" style="background:rgba(255,255,255,.04)">
-          <ol style="margin:0 0 10px 18px;padding:0">
-            <li><b>Posture.</b> Sit upright or lie flat; soften shoulders and jaw.</li>
-            <li><b>Hands.</b> One on chest, one on belly to cue diaphragmatic motion.</li>
-            <li><b>Pattern.</b> Inhale → Hold → Exhale → Hold; keep sides equal.</li>
-          </ol>
-          <p class="note" style="margin:0">Comfort first. If dizzy, stop and reduce counts.</p>
-        </div>
-      </div>
-
-      <div style="grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn secondary" data-stage-jump="setup" type="button">Back to Setup</button>
-        <button class="btn" data-stage-jump="session" type="button">Begin Session</button>
-      </div>
-    </section>
-
-    <!-- SESSION -->
-    <section id="stage-session" class="session" hidden role="region" aria-labelledby="h-session">
-      <h2 id="h-session" style="margin:6px 0 0">Session</h2>
-      <div class="orb-wrap" id="tapArea" aria-live="polite" aria-atomic="true" title="Tap to pause/resume">
-        <svg class="radial" viewBox="0 0 100 100" aria-hidden="true">
-          <defs><linearGradient id="grad" x1="0" x2="1" y1="0" y2="1">
-            <stop offset="0%" stop-color="var(--primary)"/><stop offset="100%" stop-color="var(--primary-2)"/></linearGradient></defs>
-          <circle class="ring base" cx="50" cy="50" r="42"></circle>
-          <circle id="progressRing" class="ring progress" cx="50" cy="50" r="42"
-                  stroke-dasharray="264" stroke-dashoffset="264"></circle>
-        </svg>
-        <div id="orb" class="orb inhale">
-          <div>
-            <div id="phase" class="phase">Inhale</div>
-            <div id="count" class="count">4</div>
-            <div class="mini"><span id="breathIdx">1</span>/<span id="breathTotal">6</span> breaths</div>
-          </div>
-        </div>
-      </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn" id="btn-toggle" type="button">Pause</button>
-        <button class="btn secondary" id="btn-reset" type="button">Reset</button>
-        <a class="btn secondary" data-stage-jump="setup" role="button">Adjust Settings</a>
-      </div>
-      <div class="kpi" style="width:100%;max-width:520px">
-        <h4>Estimated duration</h4>
-        <div class="v"><span id="etaMin">0</span>m <span id="etaSec">00</span>s</div>
-      </div>
-      <div class="note">Tip: Spacebar toggles pause. Tap the circle to pause/resume.</div>
-    </section>
-
-    <!-- COMPLETED -->
-    <section id="stage-completed" hidden role="region" aria-labelledby="h-complete">
-      <h2 id="h-complete" style="text-align:center;margin:0 0 12px">Session Complete</h2>
-      <div class="rings" aria-hidden="true">
-        <svg viewBox="0 0 300 300">
-          <circle class="ring-anim" cx="150" cy="150" r="120" stroke="rgba(174,255,214,.35)" stroke-width="1.5" fill="none"/>
-          <circle class="ring-anim ring-2" cx="150" cy="150" r="125" stroke="rgba(158,241,205,.5)" stroke-width="1.5" fill="none"/>
-          <circle class="ring-anim ring-3" cx="150" cy="150" r="130" stroke="rgba(130,225,190,.45)" stroke-width="1.5" fill="none"/>
-          <ellipse class="ring-anim ring-4" cx="150" cy="150" rx="115" ry="130" stroke="rgba(100,210,175,.3)" stroke-width="1.5" fill="none"/>
-          <ellipse class="ring-anim ring-5" cx="150" cy="150" rx="130" ry="115" stroke="rgba(90,180,160,.2)" stroke-width="1.5" fill="none"/>
-        </svg>
-        <div class="orb" style="position:absolute;inset:0;width:180px;height:180px;margin:auto;transform:none;background:linear-gradient(180deg, rgba(160,255,218,.2), rgba(90,200,170,.14))">
-          <div style="text-align:center">
-            <div class="count" id="c-breaths">0</div>
-            <div class="phase" style="margin-top:2px">Breaths</div>
-          </div>
-        </div>
-      </div>
-      <p style="text-align:center;color:var(--ink-dim);margin:14px 0 8px">Steady breath, steady mind. Nice work.</p>
-      <div id="ach" class="ach" aria-label="Achievements"></div>
-      <div class="grid" style="margin-top:8px">
-        <div class="card pad" style="text-align:center">
-          <div style="color:var(--ink-muted);font-weight:800">Total Minutes</div>
-          <div style="font-weight:900;font-size:22px" id="st-minutes">0</div>
-        </div>
-        <div class="card pad" style="text-align:center">
-          <div style="color:var(--ink-muted);font-weight:800">Day Streak</div>
-          <div style="font-weight:900;font-size:22px" id="st-streak">1</div>
-        </div>
-        <div class="card pad" style="text-align:center">
-          <div style="color:var(--ink-muted);font-weight:800">Total Breaths</div>
-          <div style="font-weight:900;font-size:22px" id="st-breaths">0</div>
-        </div>
-      </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;justify-content:center">
-        <a class="btn" data-stage-jump="session" role="button">Continue</a>
-        <a class="btn secondary" data-stage-jump="setup" role="button">New Setup</a>
-        <a class="btn secondary" data-href="wellbeing.html" id="back-hub">Back to Wellbeing</a>
-      </div>
-      <p class="note" style="text-align:center;margin-top:8px">Educational only — not medical advice.</p>
-    </section>
-  </main>
-
-  <footer>
-    © <span id="year"></span> Pure Care Plus.co.uk Ltd — Educational only, not medical advice.
-  </footer>
-</div>
-
-<!-- Shared app utilities (Stats, share, etc.) -->
 <script src="app.js"></script>
 <script>
 (function(){
   'use strict';
-
-  const byId = (id)=>document.getElementById(id);
-  const TECH_ID="box";
-
-  // Header profile (from app.js data)
-  document.getElementById('year').textContent = new Date().getFullYear();
-  const D = (window.__MSHARE__ && window.__MSHARE__.data) || {};
-  if (byId('ms-name'))  byId('ms-name').textContent  = D.name || 'M Share';
-  if (byId('ms-title')) byId('ms-title').textContent = D.title || 'M Share • Digital Profile';
-  if (byId('ms-avatar') && D.avatar){
-    const img=new Image(); img.alt=D.name||'avatar'; img.src=D.avatar; byId('ms-avatar').appendChild(img);
-  }
+  const $ = (id)=>document.getElementById(id);
+  $('year').textContent = new Date().getFullYear();
 
   // Elements
-  const stages={ setup:byId('stage-setup'), instructions:byId('stage-instructions'), session:byId('stage-session'), completed:byId('stage-completed') };
-  const stageBtns=[...document.querySelectorAll('.stage-nav button')];
+  const inS=$('inS'), h1S=$('h1S'), outS=$('outS'), h2S=$('h2S');
+  const minutes=$('minutes'), bpm=$('bpm'), tts=$('tts'), vib=$('vib'), bg=$('bg'), bgv=$('bgv'), rm=$('rm'), focus=$('focus');
+  const session=$('session'), inst=$('inst');
 
-  const ringEl=byId('progressRing'); const CIRC=2*Math.PI*42;
-  const phaseEl=byId('phase'), countEl=byId('count'), orbEl=byId('orb');
-  const idxEl=byId('breathIdx'), totalEl=byId('breathTotal');
+  const ring=$('progressRing'), orb=$('orb'), phaseEl=$('phase'), countEl=$('count'), idxEl=$('idx'), totalEl=$('total');
+  const CIRC=264; const setProgress=p=>{ if(ring) ring.style.strokeDashoffset=String(CIRC*(1-Math.max(0,Math.min(1,p)))); };
 
-  // Prefs
-  const PREF_KEY='mshare_wellbeing_prefs_v1';
-  const defaultPrefs={ bgMusic:'cosmic', bgVolume:0.25, cueVolume:0.35, reducedMotion:'auto', tts:'off', vib:'off', wakeLock:'off' };
-  let prefs=(function(){ try{ const raw=localStorage.getItem(PREF_KEY); return raw? {...defaultPrefs, ...JSON.parse(raw)} : {...defaultPrefs}; }catch(e){ return {...defaultPrefs}; }})();
-  function savePrefs(){ try{ localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); }catch(e){} }
-  ;['bgMusic','bgVolume','cueVolume','reducedMotion','tts','haptics','wakeLock'].forEach(id=>{
-    const el=byId(id); if(!el) return;
-    if(el.type==='range') el.value=prefs[id]; else el.value=(''+(id==='haptics'?prefs.vib:prefs[id]));
-    el.addEventListener('input', ()=>{
-      if(id==='haptics') prefs.vib=el.value; else prefs[id]=(el.type==='range')?parseFloat(el.value):el.value;
-      savePrefs(); if(id==='bgMusic'&&bg) bg.setType(prefs.bgMusic); if(id==='bgVolume'&&bg) bg.setVolume(prefs.bgVolume);
-      if(id==='reducedMotion') document.body.classList.toggle('rm', rmEnabled());
-    });
-  });
-
-  // Setup fields & ETA
-  const inDur=byId('inDur'), inHold=byId('inHold'), outDur=byId('outDur'), outHold=byId('outHold'), breaths=byId('breaths');
-  function updateETA(){
-    const one=(+inDur.value||4)+(+inHold.value||4)+(+outDur.value||4)+(+outHold.value||4);
-    const total=one*(+breaths.value||6);
-    byId('etaMin').textContent=Math.floor(total/60);
-    byId('etaSec').textContent=String(Math.round(total%60)).padStart(2,'0');
+  // Audio ambience + chime
+  let ac=null; function ensureAC(){ if(!ac){ ac=new (window.AudioContext||window.webkitAudioContext)(); } if(ac.state==='suspended'){ ac.resume(); } }
+  function chime(vol=.28){ if(!ac) return; const g=ac.createGain(); g.gain.setValueAtTime(0,ac.currentTime); g.gain.linearRampToValueAtTime(vol, ac.currentTime+.01); g.gain.exponentialRampToValueAtTime(.0001, ac.currentTime+1.2); const o=ac.createOscillator(); o.type='sine'; o.frequency.value=528; o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime+1.2); }
+  function Background(ac){
+    const master=ac.createGain(); master.gain.value=parseFloat(bgv.value||0.2); master.connect(ac.destination);
+    let nodes=[]; const clear=()=>{ nodes.forEach(n=>{try{n.stop?.();n.disconnect?.();}catch{}}); nodes=[]; };
+    const cosmic=()=>{ const g=ac.createGain(); g.gain.value=.12; g.connect(master); const o1=ac.createOscillator(); o1.type='sine'; o1.frequency.value=110; const l1=ac.createOscillator(), lg1=ac.createGain(); l1.type='sine'; l1.frequency.value=.05; lg1.gain.value=15; l1.connect(lg1); lg1.connect(o1.frequency); o1.connect(g); o1.start(); l1.start(); nodes.push(o1,l1,g); };
+    const rain=()=>{ const buf=ac.createBuffer(1, ac.sampleRate*2, ac.sampleRate), data=buf.getChannelData(0); for(let i=0;i<data.length;i++) data[i]=(Math.random()*2-1)*.55; const src=ac.createBufferSource(); src.buffer=buf; src.loop=true; const lp=ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=1200; const g=ac.createGain(); g.gain.value=.2; src.connect(lp).connect(g).connect(master); src.start(); nodes.push(src,lp,g); };
+    this.setType=(t)=>{ clear(); if(t==='cosmic') cosmic(); else if(t==='rain') rain(); };
+    this.setVol=(v)=> master.gain.setTargetAtTime(parseFloat(v||0.2), ac.currentTime, .1);
+    this.stop=()=>clear();
   }
-  [inDur,inHold,outDur,outHold,breaths].forEach(el=> el && el.addEventListener('input', updateETA)); updateETA();
+  let bgm=null;
 
-  // Quick presets
-  document.querySelectorAll('[data-preset]').forEach(c=>c.addEventListener('click',()=>{
-    const n=+c.dataset.preset||4;
-    inDur.value=n; inHold.value=n; outDur.value=n; outHold.value=n; updateETA();
-  }));
+  // TTS / Haptics
+  function speak(text){ if(tts.value!=='on') return; try{ const u=new SpeechSynthesisUtterance(text); u.rate=1; speechSynthesis.cancel(); speechSynthesis.speak(u);}catch{} }
+  function vibrate(ms){ if(vib.value==='on' && navigator.vibrate) try{ navigator.vibrate(ms); }catch{} }
 
-  // Stage handling
-  function setStage(k){
-    Object.entries(stages).forEach(([key,el])=> el.hidden=(key!==k));
-    stageBtns.forEach(b=>{ b.setAttribute('aria-current', b.dataset.stage===k?'page':'false'); if(b.dataset.stage==='completed') b.disabled=(k!=='completed'); });
-    document.body.classList.toggle('rm', rmEnabled());
-    window.scrollTo({top:0,behavior:'smooth'});
-  }
-  stageBtns.forEach(b=> b.addEventListener('click', ()=>{ if(!b.disabled){ setStage(b.dataset.stage); if(b.dataset.stage==='session') startFromSetup(); }}));
-  document.querySelectorAll('[data-stage-jump]').forEach(el=> el.addEventListener('click', ()=>{
-    const t=el.getAttribute('data-stage-jump'); setStage(t); if(t==='session') startFromSetup();
-  }));
-  byId('btn-to-instructions')?.addEventListener('click', ()=> setStage('instructions'));
-  byId('btn-to-session')?.addEventListener('click', ()=>{ setStage('session'); startFromSetup(); });
-
-  // Motion / ring
-  function setProgress(perc){ if(ringEl) ringEl.style.strokeDashoffset=String(CIRC*(1-Math.min(1,Math.max(0,perc)))); }
-  function labelPhase(p){ const label={in:'Inhale',inHold:'Hold',out:'Exhale',outHold:'Hold'}[p]; phaseEl.textContent=label;
-    orbEl.classList.remove('inhale','hold','exhale'); orbEl.classList.add(p==='in'?'inhale':(p==='out'?'exhale':'hold')); }
-
-  // Reduced motion
+  // RM + Focus
   function rmEnabled(){
-    if(prefs.reducedMotion==='on') return true;
-    if(prefs.reducedMotion==='off') return false;
+    if(rm.value==='on') return true; if(rm.value==='off') return false;
     return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
-
-  // Audio / ambience
-  let ac=null; function ensureAC(){ if(!ac){ ac=new (window.AudioContext||window.webkitAudioContext)(); } if(ac.state==='suspended'){ ac.resume(); } }
-  function playChime(vol=.3){ if(!ac) return; const g=ac.createGain(); g.gain.setValueAtTime(0,ac.currentTime);
-    g.gain.linearRampToValueAtTime(vol, ac.currentTime+.01); g.gain.exponentialRampToValueAtTime(.0001, ac.currentTime+1.2);
-    const o=ac.createOscillator(); o.type='sine'; o.frequency.value=528; o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime+1.2); }
-  function Background(ac){
-    const self=this; const master=ac.createGain(); master.gain.value=prefs.bgVolume||0.25; master.connect(ac.destination);
-    let nodes=[];
-    function clear(){ nodes.forEach(n=>{try{n.stop?.();n.disconnect?.();}catch(e){}}); nodes=[]; }
-    function cosmic(){ const g=ac.createGain(); g.gain.value=.12; g.connect(master);
-      const o=ac.createOscillator(); o.type='sine'; o.frequency.value=140;
-      const l=ac.createOscillator(), lg=ac.createGain(); l.type='sine'; l.frequency.value=.06; lg.gain.value=12; l.connect(lg); lg.connect(o.frequency);
-      o.connect(g); o.start(); l.start(); nodes.push(o,l,g);
-    }
-    function rain(){ const buf=ac.createBuffer(1, ac.sampleRate*2, ac.sampleRate), data=buf.getChannelData(0);
-      for(let i=0;i<data.length;i++) data[i]=(Math.random()*2-1)*.55;
-      const src=ac.createBufferSource(); src.buffer=buf; src.loop=true;
-      const lp=ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=1100;
-      const g=ac.createGain(); g.gain.value=.22; src.connect(lp).connect(g).connect(master); src.start(); nodes.push(src,lp,g);
-    }
-    this.setType=function(t){ clear(); if(t==='cosmic') cosmic(); else if(t==='rain') rain(); };
-    this.setVolume=function(v){ master.gain.setTargetAtTime(v, ac.currentTime, .1); };
-    this.stop=function(){ clear(); };
-    this.setType(prefs.bgMusic);
+  function applyFocus(on){ document.body.classList.toggle('focus-mode', !!on); }
+  function focusFromUIorQP(){
+    const q=new URLSearchParams(location.search); const qp=q.get('focus')==='1'; return qp || focus.value==='on';
   }
-  let bg=null;
 
-  // TTS + Haptics + WakeLock
-  const canTTS = 'speechSynthesis' in window;
-  function speak(t){ if(prefs.tts!=='on' || !canTTS) return; try{ const u=new SpeechSynthesisUtterance(t); u.lang='en-GB'; u.rate=0.95; u.pitch=1; u.volume=0.9; speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){} }
-  function buzz(kind){ if(prefs.vib!=='on' || !navigator.vibrate) return;
-    const map={in:[24], inHold:[10,40], out:[70], outHold:[12,30,12]}; navigator.vibrate(map[kind]||[18]); }
-  let wake=null; async function reqWake(){ if(prefs.wakeLock!=='on') return; try{ if('wakeLock' in navigator){ wake=await navigator.wakeLock.request('screen'); wake.addEventListener?.('release',()=>{});} }catch(e){} }
-  function relWake(){ try{ wake?.release?.(); }catch(e){} finally{ wake=null; } }
-  document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible' && prefs.wakeLock==='on' && stages.session && !stages.session.hidden && running && !paused) reqWake(); });
-
-  // Engine
-  let running=false, paused=false, timer=null, breathIdx=1, breathTotal=6;
-  let segDur={in:4,inHold:4,out:4,outHold:4};
-
-  function segment(duration, key, done){
-    let start=performance.now(); labelPhase(key); setProgress(0); playChime(prefs.cueVolume); speak(phaseEl.textContent); buzz(key);
-    function raf(now){
+  // Session engine (Box: in-hold-out-hold)
+  const TECH_ID='box';
+  let running=false, paused=false, timer=null, breathIdx=1, breathTotal=0;
+  function step(label, dur, next){
+    if(!running) return;
+    phaseEl.textContent = (label==='in'?'Inhale':label==='h1'?'Hold':label==='out'?'Exhale':'Hold');
+    orb.classList.remove('inhale','exhale'); orb.classList.add(label==='out'?'exhale':'inhale');
+    speak(phaseEl.textContent); vibrate(label==='out'?18:24); chime(Math.max(.2, parseFloat(bgv.value||0.2)* (label==='out'?1.1:0.9)));
+    let start=performance.now();
+    (function raf(now){
       if(!running){ cancelAnimationFrame(timer); return; }
       if(paused){ timer=requestAnimationFrame(raf); return; }
-      const el=(now-start)/1000, remain=Math.max(0,duration-el), perc=duration?el/duration:1;
-      countEl.textContent = String(Math.ceil(remain));
-      setProgress(perc);
-      if(remain<=0){ done(); return; }
+      const elapsed=(now-start)/1000, remain=Math.max(0,dur-elapsed);
+      countEl.textContent=String(Math.ceil(remain));
+      setProgress(dur?elapsed/dur:1);
+      if(remain<=0){ return next(); }
       timer=requestAnimationFrame(raf);
-    }
-    timer=requestAnimationFrame(raf);
+    })(performance.now());
   }
-  function cycle(){
-    if(!running) return;
-    segment(segDur.in,'in', ()=>{
-      segment(segDur.inHold,'inHold', ()=>{
-        segment(segDur.out,'out', ()=>{
-          segment(segDur.outHold,'outHold', ()=>{
-            breathIdx++;
-            if(breathIdx<=breathTotal){ idxEl.textContent=String(breathIdx); cycle(); }
-            else finish();
-          });
-        });
-      });
-    });
+  function runOne(){
+    step('in', +inS.value||4, ()=> step('h1', +h1S.value||0, ()=> step('out', +outS.value||4, ()=> step('h2', +h2S.value||0, ()=>{
+      breathIdx++; if(breathIdx<=breathTotal){ idxEl.textContent=String(breathIdx); runOne(); } else finish();
+    }))));
   }
-  function startFromSetup(){
+  function start(){
     ensureAC();
-    segDur={ in:+inDur.value||4, inHold:+inHold.value||4, out:+outDur.value||4, outHold:+outHold.value||4 };
-    breathTotal=+breaths.value||6; breathIdx=1; paused=false; running=true;
-    totalEl.textContent=String(breathTotal); idxEl.textContent='1'; labelPhase('in'); countEl.textContent=String(segDur.in); setProgress(0);
-    if(!bg && prefs.bgMusic!=='none'){ bg=new Background(ac); }
-    if(bg){ bg.setType(prefs.bgMusic); bg.setVolume(prefs.bgVolume); }
-    document.body.classList.toggle('rm', rmEnabled());
-    reqWake(); cancelAnimationFrame(timer); cycle();
+    if (!bgm && bg.value!=='none'){ bgm=new Background(ac); bgm.setType(bg.value); }
+    if (bgm){ bgm.setVol(bgv.value); }
+    // breaths from minutes × bpm
+    breathTotal = Math.max(1, Math.round((parseInt(minutes.value||'3',10)) * (parseFloat(bpm.value||'5.5'))));
+    totalEl.textContent = String(breathTotal); breathIdx=1; idxEl.textContent='1';
+    running=true; paused=false; setProgress(0); applyFocus(focusFromUIorQP()); document.body.classList.toggle('rm', rmEnabled());
+    $('session').classList.remove('hidden'); $('inst').classList.add('hidden');
+    runOne();
   }
-  function pauseResume(){ if(!running) return; paused=!paused; byId('btn-toggle').textContent=paused?'Resume':'Pause'; if(paused) relWake(); else reqWake(); }
-  function resetSession(){ running=false; paused=false; cancelAnimationFrame(timer); labelPhase('in'); countEl.textContent=String(+inDur.value||4); idxEl.textContent='1'; totalEl.textContent=String(breaths.value||6); setProgress(0); if(bg){ bg.stop(); bg=null; } relWake(); }
-  byId('btn-toggle')?.addEventListener('click', pauseResume);
-  byId('btn-reset')?.addEventListener('click', resetSession);
-  document.addEventListener('keydown', e=>{ if(stages.session.hidden) return; if(e.code==='Space'){ e.preventDefault(); pauseResume(); } });
-  byId('tapArea')?.addEventListener('click', pauseResume);
-
-  // Stats + Achievements
+  function pause(){ if(!running) return; paused=!paused; $('pauseBtn').textContent = paused?'Resume':'Pause'; applyFocus(!paused); if(!paused) runOne(); }
+  function reset(){ running=false; paused=false; cancelAnimationFrame(timer); setProgress(0); countEl.textContent='4'; phaseEl.textContent='Inhale'; $('pauseBtn').textContent='Pause'; applyFocus(false); if(bgm){ bgm.stop(); bgm=null; } $('session').classList.add('hidden'); document.querySelector('.setup').classList.remove('hidden'); }
   function finish(){
-    running=false; paused=false; cancelAnimationFrame(timer); if(bg){ bg.stop(); bg=null; } relWake();
-    const per=segDur.in+segDur.inHold+segDur.out+segDur.outHold; const secs=per*breathTotal;
-    let s=null;
-    try{
-      s = window.__MSHARE__?.Stats?.addSession({ techId: TECH_ID, seconds: secs, breaths: breathTotal });
-    }catch(e){}
-    byId('c-breaths').textContent=String(breathTotal);
-    if(s){ byId('st-minutes').textContent=String(Math.floor(s.totalMinutes||0)); byId('st-streak').textContent=String(s.dayStreak||0); byId('st-breaths').textContent=String(s.totalBreaths||0);
-      const ach= (s.ach||{}); const wrap=byId('ach'); wrap.innerHTML='';
-      if(ach.m10) wrap.insertAdjacentHTML('beforeend','<span class="badge">10+ min</span>');
-      if(ach.m50) wrap.insertAdjacentHTML('beforeend','<span class="badge">50+ min</span>');
-      if(ach.s5)  wrap.insertAdjacentHTML('beforeend','<span class="badge">5+ sessions</span>');
-      if(ach.b200)wrap.insertAdjacentHTML('beforeend','<span class="badge">200+ breaths</span>');
-    }
-    setStage('completed');
+    running=false; cancelAnimationFrame(timer); applyFocus(false); if(bgm){ bgm.stop(); bgm=null; }
+    const Stats = window.__MSHARE__?.Stats;
+    const totalSecs = ((+inS.value||4)+(+h1S.value||0)+(+outS.value||4)+(+h2S.value||0))*breathTotal;
+    const s = Stats?.addSession?.({ techId: TECH_ID, seconds: totalSecs, breaths: breathTotal }) || null;
+    $('doneMin').textContent = String(s ? Math.floor(s.totalMinutes||0) : Math.floor(totalSecs/60));
+    $('doneBreaths').textContent = String(s ? s.totalBreaths||0 : breathTotal);
+    $('doneStreak').textContent = String(s ? s.dayStreak||0 : 0);
+    $('done').classList.remove('hidden'); $('session').classList.add('hidden'); document.querySelector('.setup').classList.add('hidden');
   }
 
-  // init default stats panel values
-  (function(){ try{ const S=window.__MSHARE__?.Stats?.summary(); if(S){ byId('st-minutes').textContent=String(Math.floor(S.minutes||0)); byId('st-streak').textContent=String(S.streak||0); byId('st-breaths').textContent=String(S.breaths||0); } }catch(e){} })();
+  // Wire UI
+  $('startBtn').addEventListener('click', start);
+  $('instBtn').addEventListener('click', ()=>{ document.querySelector('.setup').classList.add('hidden'); inst.classList.remove('hidden'); });
+  $('beginFromInst').addEventListener('click', start);
+  $('backSetup').addEventListener('click', (e)=>{ e.preventDefault(); inst.classList.add('hidden'); document.querySelector('.setup').classList.remove('hidden'); });
+  $('pauseBtn').addEventListener('click', pause);
+  $('resetBtn').addEventListener('click', reset);
+  $('againBtn').addEventListener('click', ()=>{ document.getElementById('done').classList.add('hidden'); start(); });
+  $('adjustBtn').addEventListener('click', ()=>{ reset(); });
 
-  // Default stage
-  setStage('setup');
+  $('tapArea').addEventListener('click', ()=>{ pause(); });
+
+  // QP focus override
+  (function(){
+    const q = new URLSearchParams(location.search);
+    if(q.get('focus')==='1') focus.value='on';
+    if(q.get('tts')==='on') tts.value='on';
+  })();
 })();
 </script>
 </body>
