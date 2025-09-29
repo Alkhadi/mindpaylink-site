@@ -35,13 +35,11 @@
     name: 'Alkhadi Koroma',
     title: 'Professional Title · Flutter Developer',
     phone: '07736806367',
-    email: 'ngummariato@gmail.com',
-    site: 'https://google.com',
-    addr: 'Flat 72, Priory Court,\n1 Cheltenham Road,\nLondon SE15 3BG,\nUnited Kingdom',
+    email: 'info@mindpaylink.com',
     avatar: 'assets/alkhadi.png',
     bg: 'assets/amz.jpg',
-    wellbeing: 'https://wellbeing.example.com',
-    acc: '93087283', sort: '09-01-35', iban: 'GB81ABBY09013593087283', ref: 'M SHARE',
+    wellbeing: 'mindpaylink.com',
+    acc: '01235467', sort: '012345', iban: 'GB0000000000', ref: 'M SHARE',
     x:'', ig:'', yt:'', ln:''
   };
   const LOCAL_KEY='mshare_default_profile_v2';
@@ -90,7 +88,7 @@
       `Phone: ${data.phone}`, `Email: ${data.email}`,
       `Site: ${data.site}`, `Wellbeing: ${data.wellbeing}`,
       `Address: ${data.addr.replace(/\n/g, ', ')}`,
-      `Buy me coffee: ${location.origin+location.pathname.replace(/[^/]*$/,'')+'bank.html'+qp}`
+      `Buy me coffee: ${location.origin+location.pathname.replace(/[^/]*$/,'')+'coffee.html'+qp}`
     ];
     return lines.join('\n');
   }
@@ -121,7 +119,7 @@
   }
   function openAppOrStore(scheme, name){
     const url = scheme;
-    const timer = setTimeout(()=>{ window.open('https://www.google.com/search?q='+encodeURIComponent(name+' bank app'), '_blank'); }, 1200);
+    const timer = setTimeout(()=>{ window.open('mindpaylink.com ?q='+encodeURIComponent(name+' bank app'), '_blank'); }, 1200);
     location.href = url; setTimeout(()=>clearTimeout(timer), 2000);
   }
 
@@ -199,8 +197,7 @@
       { label:'✉️ Email',    url:`mailto:${data.email||''}` },
       { label:'🌐 Website',  url:data.site||'' },
       { label:'🧘 Wellbeing',url:data.wellbeing||'' },
-      { label:'🗺️ Directions', url:`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((data.addr||'').replace(/\n/g,' '))}` },
-      { label:'💷 Buy me coffee', url: location.origin + location.pathname.replace(/[^/]*$/,'') + 'bank.html' + qp }
+      { label:'🏦 Bank details', url:'#bank' },
     ];
     const links=[];
     const bx=160, bw=W-320, by= cy+AV/2+220, bh=74, gap=16;

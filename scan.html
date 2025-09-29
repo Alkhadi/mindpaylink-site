@@ -1,7 +1,8 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <title>Scan QR • M Share</title>
   <link rel="stylesheet" href="style.css" />
   <style>
@@ -15,8 +16,8 @@
     <a id="brandLink" class="brand"><span class="logo">M</span> M Share</a>
     <nav class="main-nav" id="mainNav">
       <a data-href="index.html">Wellbeing</a>
-      <a data-href="bank.html">Buy me coffee</a>
-      <a data-href="pdf.html">PDF</a>
+      <a data-href="bank.html">Support Us</a>
+      <a data-href="pdf.html">About</a>
       <button id="shareOpen" class="btn" type="button"><span class="icon">🔗</span> Share</button>
     </nav>
     <button id="navToggle" class="nav-toggle" aria-label="Menu">☰</button>
@@ -27,48 +28,111 @@
   <div class="card">
     <h1>Scan a QR</h1>
     <p class="muted">Point the camera at any QR code. When a valid URL is detected, you’ll get an option to open it.</p>
-    <video id="camera" playsinline muted></video>
-    <div class="hint">Tip: If scanning isn’t supported by your browser, paste a URL instead.</div>
+    <video id="camera" playsinline autoplay muted></video>
+    <div id="status" class="hint" aria-live="polite">Tip: If scanning isn’t supported by your browser, paste a URL instead.</div>
     <div class="actions">
-      <input id="manual" class="tile" placeholder="Paste a URL here" style="flex:1;min-width:220px"/>
+      <input id="manual" class="tile" placeholder="Paste a URL here" style="flex:1;min-width:220px" />
       <button id="openManual" class="btn">Open</button>
     </div>
   </div>
 </main>
 
-<div id="shareSheet" class="sheet hidden"><div id="shareBackdrop" style="position:absolute; inset:0;"></div><div class="sheet-card"><div class="sheet-head"><h2 class="sheet-title">Share</h2><button id="shareClose" class="sheet-close">×</button></div><textarea id="shareText" class="share-text" readonly></textarea></div></div>
+<!-- Share sheet -->
+<div id="shareSheet" class="sheet hidden">
+  <div id="shareBackdrop" style="position:absolute; inset:0;"></div>
+  <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
+    <div class="sheet-head">
+      <h2 id="shareTitle" class="sheet-title">Share</h2>
+      <button id="shareClose" class="sheet-close" aria-label="Close">×</button>
+    </div>
+    <textarea id="shareText" class="share-text" readonly></textarea>
+  </div>
+</div>
 
 <script src="app.js"></script>
 <script>
 (async function(){
-  const video = document.getElementById('camera');
-  const manual = document.getElementById('manual');
-  document.getElementById('openManual').addEventListener('click', ()=>{ const u=manual.value.trim(); if(u) location.href=u; });
+  const MS = window.__MSHARE__ || {};
+  const $ = (s, el=document)=> el.querySelector(s);
 
-  if ('BarcodeDetector' in window) {
-    const detector = new BarcodeDetector({ formats: ['qr_code'] });
-    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }).catch(()=>null);
-    if (!stream) return;
-    video.srcObject = stream; await video.play();
+  const video  = $('#camera');
+  const manual = $('#manual');
+  const openBtn= $('#openManual');
+  const status = $('#status');
+  let stream = null;
+  let scanning = false;
+  let rafId = 0;
 
-    let running = true;
-    async function tick(){
-      if (!running) return;
-      try {
-        const codes = await detector.detect(video);
-        if (codes && codes.length) {
-          running=false;
-          const url = codes[0].rawValue;
-          const ok = confirm('Open this link?\n\n' + url);
-          if (ok) location.href = url;
-        }
-      } catch {}
-      requestAnimationFrame(tick);
+  function setStatus(msg){ if (status) status.textContent = msg; }
+  function safeUrlToOpen(input){
+    // Accept http(s) & common URI schemes; allow relative paths (resolve to current origin)
+    try{
+      const u = new URL(input, location.origin);
+      const ok = ['http:','https:','mailto:','tel:','sms:'].includes(u.protocol);
+      return ok ? u.href : null;
+    }catch{ return null; }
+  }
+  function tryOpen(input){
+    const href = safeUrlToOpen(input);
+    if (!href){ MS.toast?.('That does not look like a valid/safe URL.'); return; }
+    const ok = confirm('Open this link?\n\n' + href);
+    if (ok) location.href = href;
+  }
+
+  openBtn.addEventListener('click', ()=>{ const u=manual.value.trim(); if(u) tryOpen(u); });
+  manual.addEventListener('keydown', (e)=>{ if (e.key === 'Enter') openBtn.click(); });
+
+  function cleanup(){
+    if (rafId){ cancelAnimationFrame(rafId); rafId = 0; }
+    if (stream){ try{ stream.getTracks().forEach(t=>t.stop()); }catch{} stream = null; }
+    scanning = false;
+  }
+
+  // Camera availability hint for non-HTTPS contexts
+  if (location.protocol !== 'https:' && location.hostname !== 'localhost'){
+    setStatus('Tip: Use HTTPS (or localhost) to enable camera access in the browser. You can still paste a URL below.');
+  }
+
+  if ('BarcodeDetector' in window && navigator.mediaDevices?.getUserMedia){
+    try{
+      const detector = new BarcodeDetector({ formats: ['qr_code'] });
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: false
+      });
+      if (!stream) { setStatus('Could not access the camera. Paste a URL instead.'); return; }
+
+      video.srcObject = stream;
+      await video.play().catch(()=>{});
+      scanning = true;
+      setStatus('Scanning… Align the QR within the view.');
+
+      async function scanLoop(){
+        if (!scanning) return;
+        try{
+          const codes = await detector.detect(video);
+          const hit = codes?.find(c => c?.rawValue);
+          if (hit){
+            scanning = false;
+            cleanup();
+            tryOpen(hit.rawValue);
+            return;
+          }
+        }catch{/* ignore per-frame errors */}
+        rafId = requestAnimationFrame(scanLoop);
+      }
+      scanLoop();
+
+      document.addEventListener('visibilitychange', ()=>{ if (document.hidden) { cleanup(); } });
+      window.addEventListener('beforeunload', cleanup);
+    }catch(err){
+      setStatus('Camera permission denied or unavailable. Paste a URL instead.');
+      MS.toast?.('Cannot access camera. You can paste a link below.');
+      cleanup();
     }
-    tick();
-    document.addEventListener('visibilitychange', ()=>{ if(document.hidden) running=false; });
   } else {
-    window.__MSHARE__.toast('QR scanning not supported by this browser. Paste the link instead.');
+    setStatus('QR scanning is not supported by this browser. Paste a URL below.');
+    MS.toast?.('QR scanning not supported by this browser.');
   }
 })();
 </script>

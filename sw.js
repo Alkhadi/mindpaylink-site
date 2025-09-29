@@ -1,11 +1,10 @@
-<script>
 (async function(){
   // Register service worker, omitted here for brevity …
   self.addEventListener('install', (e) => {
     self.skipWaiting();
     e.waitUntil(caches.open('mshare-v1').then(c => c.addAll([
       './', './index.html', './style.css', './app.js',
-      './bank.html', './wellbeing.html', './pdf.html',
+      './coffee.html', './wellbeing.html', './pdf.html',
       './manifest.webmanifest'
     ]).catch(()=>{})));
   });
@@ -27,7 +26,6 @@
     phone: get('ph'),
     email: get('em'),
     site: get('s'),
-    addr: get('a'),
     avatar: get('av', 'https://picsum.photos/400?random=7'),
     acc: get('ac'), sort: get('sc'), iban: get('ib'), ref: get('r','M SHARE'),
     x: get('x'), ig: get('ig'), yt: get('yt'), ln: get('ln')
@@ -69,7 +67,6 @@
   const qp = parts.length ? '?' + parts.join('&') : '';
 
   toPdf.href       = 'pdf.html' + qp;
-  toBank.href      = 'bank.html' + qp;
+  toBank.href      = 'coffee.html' + qp;
   toWellbeing.href = 'wellbeing.html' + qp;
 })();
-</script>

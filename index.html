@@ -1,25 +1,31 @@
-
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Wellbeing • M Share</title>
   <meta name="description" content="Measured Breathing. Measurable Relief. Free, evidence‑based techniques with sharing, QR, PDF, and Buy‑me‑coffee." />
   <link rel="stylesheet" href="style.css" />
-  <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#0f172a"/>
+  <!-- Icons / PWA -->
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#0f172a" />
 </head>
 <body>
   <header class="site-header">
     <div class="container navbar">
-      <a id="brandLink" class="brand"><span class="logo">M</span> M Share</a>
+      <a id="brandLink" class="brand" data-href="index.html"><span class="logo">M</span> M Share</a>
       <nav class="main-nav" id="mainNav">
-        <a data-href="index.html" aria-current="page">Wellbeing</a>
-        <a data-href="bank.html">Buy me coffee</a>
-        <a data-href="pdf.html">PDF</a>
-        <a data-href="scan.html">Scan</a>
-        <a data-href="storage.html">Storage</a>
-        <button id="shareOpen" class="btn" type="button" title="Share this site"><span class="icon">🔗</span> Share</button>
+        <a href="index.html" data-href="index.html" aria-current="page">Wellbeing</a>
+        <a href="pdf.html" data-href="pdf.html">About</a>
+        <a href="dyslexia-reading-training.html" data-href="dyslexia-reading-training.html">Dyslexia</a>
+        <a href="autism.html" data-href="autism.html">Autism</a>
+        <a href="depression.html" data-href="depression.html">Depression</a>
+        <a href="mood.html" data-href="mood.html">Mood</a>
+        <a href="contact.html" data-href="contact.html">Contact</a>
+        <a href="coffee.html" data-href="coffee.html">Support Us</a>
       </nav>
       <button id="navToggle" class="nav-toggle" aria-label="Menu">☰</button>
     </div>
@@ -39,7 +45,6 @@
         <button id="sosBtn" class="btn btn-danger">🆘 60‑second SOS</button>
       </div>
       <div class="actions" style="margin-top:10px">
-        <a id="coffeeCTA" class="btn">💷 Buy me coffee</a>
         <button id="downloadPdf" class="btn">⬇ Profile PDF</button>
         <a class="btn" href="pdf.html">🖨️ PDF Page</a>
         <a class="btn" href="scan.html">📷 Scan QR</a>
@@ -88,7 +93,7 @@
       </div>
     </div>
 
-    <div class="footer">© <span id="year"></span> Pure Care Plus.co.uk Ltd — Educational only, not medical advice.</div>
+    <div class="footer">© <span id="year"></span> info@mindpaylink.com — Educational only, not medical advice.</div>
   </main>
 
   <!-- Share sheet -->
@@ -116,32 +121,51 @@
   <script src="app.js"></script>
   <script>
     (function () {
-      const { qp, Stats, openShareSheet, genVCardAndDownload, drawWeeklyChart } = window.__MSHARE__;
-      document.getElementById('year').textContent = new Date().getFullYear();
-      document.getElementById('coffeeCTA').href = 'bank.html' + (qp || '');
-      document.getElementById('saveVcf').addEventListener('click', () => genVCardAndDownload());
-      document.getElementById('downloadPdf').addEventListener('click', () => window.__MSHARE__.quickDownloadPdf());
+      const { qp, Stats, drawWeeklyChart } = window.__MSHARE__ || {};
+      // Year
+      const y = document.getElementById('year'); if (y) y.textContent = new Date().getFullYear();
+      // Coffee CTA (ensure it exists)
+      const coffeeCTA = document.getElementById('coffeeCTA');
+      if (coffeeCTA) coffeeCTA.href = 'coffee.html' + (qp || '');
 
-      // SOS → fast route to Box preset
-      document.getElementById('sosBtn').addEventListener('click', () => {
-        const r = window.__MSHARE__.CoachPresets.panic(); const q = new URLSearchParams(r.q); location.href = r.page + '?' + q.toString();
-      });
+      // VCF + PDF actions (only if IDs are present on this page)
+      const vcfBtn = document.getElementById('saveVcf');
+      if (vcfBtn && window.__MSHARE__?.genVCardAndDownload) {
+        vcfBtn.addEventListener('click', () => window.__MSHARE__.genVCardAndDownload());
+      }
+      const dlBtn = document.getElementById('downloadPdf');
+      if (dlBtn && window.__MSHARE__?.quickDownloadPdf) {
+        dlBtn.addEventListener('click', () => window.__MSHARE__.quickDownloadPdf());
+      }
 
-      // Update dashboard metrics
-      const s = Stats.summary();
-      const set = (id, key) => document.getElementById(id).textContent = s[key];
-      set('mTotal','minutes'); set('mStreak','streak'); set('mSessions','sessions'); set('mBreaths','breaths');
+      // SOS quick route
+      const sos = document.getElementById('sosBtn');
+      if (sos && window.__MSHARE__?.CoachPresets) {
+        sos.addEventListener('click', () => {
+          const r = window.__MSHARE__.CoachPresets.panic();
+          const q = new URLSearchParams(r.q);
+          location.href = r.page + '?' + q.toString();
+        });
+      }
 
-      // Achievements chips
-      const ach = s.ach || {}; const wrap = document.getElementById('achWrap'); const chips=[];
-      if (ach.m10) chips.push('<span class="badge ok">10+ min</span>');
-      if (ach.m50) chips.push('<span class="badge ok">50+ min</span>');
-      if (ach.s5) chips.push('<span class="badge ok">5+ sessions</span>');
-      if (ach.b200) chips.push('<span class="badge ok">200+ breaths</span>');
-      if (chips.length) wrap.innerHTML = '<div>Achievements: '+chips.join(' ')+'</div>';
+      // Dashboard metrics
+      if (Stats) {
+        const s = Stats.summary();
+        const set = (id, key) => { const el = document.getElementById(id); if (el) el.textContent = s[key]; };
+        set('mTotal', 'minutes'); set('mStreak', 'streak'); set('mSessions', 'sessions'); set('mBreaths', 'breaths');
 
-      // Progress + Today line
-      drawWeeklyChart('weeklyChart', 'todayLine');
+        // Achievements chips
+        const ach = s.ach || {};
+        const wrap = document.getElementById('achWrap'); const chips = [];
+        if (ach.m10) chips.push('<span class="badge ok">10+ min</span>');
+        if (ach.m50) chips.push('<span class="badge ok">50+ min</span>');
+        if (ach.s5) chips.push('<span class="badge ok">5+ sessions</span>');
+        if (ach.b200) chips.push('<span class="badge ok">200+ breaths</span>');
+        if (wrap && chips.length) wrap.innerHTML = '<div>Achievements: ' + chips.join(' ') + '</div>';
+
+        // Progress + Today line
+        if (typeof drawWeeklyChart === 'function') drawWeeklyChart('weeklyChart', 'todayLine');
+      }
     })();
   </script>
 </body>
