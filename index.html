@@ -6,10 +6,10 @@
   <title>Wellbeing • M Share</title>
   <meta name="description" content="Measured Breathing. Measurable Relief. Free, evidence‑based techniques with sharing, QR, PDF, and Buy‑me‑coffee." />
   <link rel="stylesheet" href="style.css" />
-  <!-- Icons / PWA -->
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
-  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png" />
+  <!-- Icons / PWA (place files from the Logo Kit at root) -->
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
   <link rel="manifest" href="manifest.webmanifest" />
   <meta name="theme-color" content="#0f172a" />
 </head>
@@ -17,17 +17,71 @@
   <header class="site-header">
     <div class="container navbar">
       <a id="brandLink" class="brand" data-href="index.html"><span class="logo">M</span> M Share</a>
-      <nav class="main-nav" id="mainNav">
-        <a href="index.html" data-href="index.html" aria-current="page">Wellbeing</a>
-        <a href="dyslexia-reading-training.html" data-href="dyslexia-reading-training.html">Dyslexia</a>
-        <a href="autism.html" data-href="autism.html">Autism</a>
-        <a href="depression.html" data-href="depression.html">Depression</a>
-        <a href="mood.html" data-href="mood.html">Mood</a>
-        <a href="pdf.html" data-href="pdf.html">About</a>
-        <a href="contact.html" data-href="contact.html">Contact</a>
-        <a href="coffee.html" data-href="coffee.html">Support Us</a>
+
+      <nav class="main-nav" id="mainNav" aria-label="Primary">
+        <a data-href="index.html" aria-current="page">Wellbeing</a>
+
+        <div class="nav-group">
+          <button class="nav-button" type="button" aria-expanded="false" aria-controls="menu-conditions">Conditions</button>
+          <div id="menu-conditions" class="menu" role="menu">
+            <div class="menu-col">
+              <div class="menu-title">Neurodevelopmental</div>
+              <a role="menuitem" data-href="autism.html">Autism</a>
+              <a role="menuitem" data-href="adhd.html">ADHD</a>
+              <a role="menuitem" data-href="dyslexia-reading-training.html">Dyslexia</a>
+            </div>
+            <div class="menu-col">
+              <div class="menu-title">Mental Health</div>
+              <a role="menuitem" data-href="anxiety.html">Anxiety</a>
+              <a role="menuitem" data-href="depression.html">Depression</a>
+              <a role="menuitem" data-href="stress.html">Stress</a>
+              <a role="menuitem" data-href="sleep.html">Sleep</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <button class="nav-button" type="button" aria-expanded="false" aria-controls="menu-breath">Breathing &amp; Focus</button>
+          <div id="menu-breath" class="menu" role="menu">
+            <a role="menuitem" data-href="sos.html">60‑second Reset</a>
+            <a role="menuitem" data-href="coherent-5-5.html">Coherent 5‑5</a>
+            <a role="menuitem" data-href="breath.html">Breath (how‑to)</a>
+            <a role="menuitem" data-href="focus.html">Focus</a>
+            <a role="menuitem" data-href="mindfulness.html">Mindfulness</a>
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <button class="nav-button" type="button" aria-expanded="false" aria-controls="menu-tools">Toolkits</button>
+          <div id="menu-tools" class="menu menu-wide" role="menu">
+            <div class="menu-col">
+              <div class="menu-title">General</div>
+              <a role="menuitem" data-href="sleep-tools.html">Sleep Tools</a>
+              <a role="menuitem" data-href="breath-tools.html">Breath Tools</a>
+              <a role="menuitem" data-href="mood-tools.html">Mood Tools</a>
+            </div>
+            <div class="menu-col">
+              <div class="menu-title">Condition‑specific</div>
+              <a role="menuitem" data-href="adhd-tools.html">ADHD Tools</a>
+              <a role="menuitem" data-href="autism-tools.html">Autism Tools</a>
+              <a role="menuitem" data-href="depression-tools.html">Depression Tools</a>
+              <a role="menuitem" data-href="anxiety-tools.html">Anxiety Tools</a>
+              <a role="menuitem" data-href="stress-tools.html">Stress Tools</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <button class="nav-button" type="button" aria-expanded="false" aria-controls="menu-about">About</button>
+          <div id="menu-about" class="menu" role="menu">
+            <a role="menuitem" data-href="pdf.html">About</a>
+            <a role="menuitem" data-href="coffee.html">Support Us</a>
+            <a role="menuitem" data-href="contact.html">Contact</a>
+          </div>
+        </div>
       </nav>
-      <button id="navToggle" class="nav-toggle" aria-label="Menu">☰</button>
+
+      <button id="navToggle" class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="mainNav">☰</button>
     </div>
   </header>
 
@@ -96,39 +150,14 @@
     <div class="footer">© <span id="year"></span> info@mindpaylink.com — Educational only, not medical advice.</div>
   </main>
 
-  <!-- Share sheet -->
-  <div id="shareSheet" class="sheet hidden" aria-hidden="true">
-    <div id="shareBackdrop" style="position:absolute; inset:0;"></div>
-    <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
-      <div class="sheet-head">
-        <h2 id="shareTitle" class="sheet-title">Share</h2>
-        <button id="shareClose" class="sheet-close" aria-label="Close">×</button>
-      </div>
-      <textarea id="shareText" class="share-text" readonly></textarea>
-      <div class="share-actions">
-        <button class="btn" id="copyShare">📋 Copy text</button>
-        <button class="btn" id="shareNative">🔗 Share…</button>
-        <button class="btn" id="savePng">🖼️ Save PNG card</button>
-        <button class="btn" id="sharePng">📤 Share PNG</button>
-        <button class="btn" id="downloadPdf">⬇ Profile PDF</button>
-        <button class="btn" id="openPdfPage">🖨️ Open PDF page</button>
-        <button class="btn" id="openCoffee">💷 Buy me coffee</button>
-        <button class="btn" id="saveVcf">👤 Save contact (.vcf)</button>
-      </div>
-    </div>
-  </div>
-
   <script src="app.js"></script>
   <script>
     (function () {
       const { qp, Stats, drawWeeklyChart } = window.__MSHARE__ || {};
-      // Year
       const y = document.getElementById('year'); if (y) y.textContent = new Date().getFullYear();
-      // Coffee CTA (ensure it exists)
       const coffeeCTA = document.getElementById('coffeeCTA');
       if (coffeeCTA) coffeeCTA.href = 'coffee.html' + (qp || '');
 
-      // VCF + PDF actions (only if IDs are present on this page)
       const vcfBtn = document.getElementById('saveVcf');
       if (vcfBtn && window.__MSHARE__?.genVCardAndDownload) {
         vcfBtn.addEventListener('click', () => window.__MSHARE__.genVCardAndDownload());
@@ -138,7 +167,6 @@
         dlBtn.addEventListener('click', () => window.__MSHARE__.quickDownloadPdf());
       }
 
-      // SOS quick route
       const sos = document.getElementById('sosBtn');
       if (sos && window.__MSHARE__?.CoachPresets) {
         sos.addEventListener('click', () => {
@@ -148,13 +176,10 @@
         });
       }
 
-      // Dashboard metrics
       if (Stats) {
         const s = Stats.summary();
         const set = (id, key) => { const el = document.getElementById(id); if (el) el.textContent = s[key]; };
         set('mTotal', 'minutes'); set('mStreak', 'streak'); set('mSessions', 'sessions'); set('mBreaths', 'breaths');
-
-        // Achievements chips
         const ach = s.ach || {};
         const wrap = document.getElementById('achWrap'); const chips = [];
         if (ach.m10) chips.push('<span class="badge ok">10+ min</span>');
@@ -162,8 +187,6 @@
         if (ach.s5) chips.push('<span class="badge ok">5+ sessions</span>');
         if (ach.b200) chips.push('<span class="badge ok">200+ breaths</span>');
         if (wrap && chips.length) wrap.innerHTML = '<div>Achievements: ' + chips.join(' ') + '</div>';
-
-        // Progress + Today line
         if (typeof drawWeeklyChart === 'function') drawWeeklyChart('weeklyChart', 'todayLine');
       }
     })();

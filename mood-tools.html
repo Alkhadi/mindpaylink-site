@@ -3,8 +3,8 @@
     <head>
       <meta charset="utf-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <title>Depression — Small Steps that Add Up • M Share</title>
-      <meta name="description" content="Behavioural activation planner, rhythm supports and UK help routes." />
+      <title>Mood Tools • M Share</title>
+      <meta name="description" content="Quick check‑ins, values‑to‑actions, and gratitude prompts." />
       <link rel="stylesheet" href="style.css" />
     </head>
     <body>
@@ -78,41 +78,41 @@
 </header>
       <main class="container">
 
-      <h1>Depression — Small Steps that Add Up</h1>
-      <div class="card">
-  <p>Progress through <strong>behavioural activation</strong> (doing first, mood follows), sleep regulation and connection. <span class="muted">Educational only; not medical advice.</span></p>
-</div>
-
-<div class="grid cols-3">
+      <h1>Mood Tools</h1>
+      <div class="grid cols-3">
   <div class="card">
-    <h3>Today’s 1‑3‑5</h3>
+    <h3>Mood Check‑in</h3>
+    <div class="kv-grid">
+      <div><label>Before (0–10)</label><input id="mBefore" type="number" min="0" max="10" value="4"/></div>
+      <div><label>After (0–10)</label><input id="mAfter" type="number" min="0" max="10" value="6"/></div>
+      <div><label>Note</label><input id="mNote" type="text" placeholder="What helped?"/></div>
+    </div>
+    <div class="actions"><button class="btn" id="mSave">Save</button></div>
+    <div class="muted" id="mList" style="margin-top:8px"></div>
+    <script>
+      (function(){
+        const LS='mshare_mood_log_v1';
+        const b=document.getElementById('mBefore'), a=document.getElementById('mAfter'), n=document.getElementById('mNote'), s=document.getElementById('mSave'), list=document.getElementById('mList');
+        function load(){ try{ return JSON.parse(localStorage.getItem(LS)||'[]'); }catch{return [];} }
+        function save(arr){ try{ localStorage.setItem(LS, JSON.stringify(arr)); }catch{} }
+        function render(){ const arr=load(); list.innerHTML = arr.length? '<ul>'+arr.map(x=>'<li>'+x+'</li>').join('')+'</ul>' : '<span class="muted">No entries yet.</span>'; }
+        s.addEventListener('click',()=>{ const entry = new Date().toLocaleString()+': '+b.value+'→'+a.value+' — '+(n.value||''); const arr=load(); arr.unshift(entry); save(arr); n.value=''; render(); });
+        render();
+      })();
+    </script>
+  </div>
+  <div class="card">
+    <h3>Values → Actions</h3>
     <ul>
-      <li><strong>1 meaningful</strong> thing (values‑based).</li>
-      <li><strong>3 shoulds</strong> I will turn into <em>coulds</em> (choose one tiny step).</li>
-      <li><strong>5 minutes</strong> of fresh air or light movement.</li>
+      <li>Pick 1 value (e.g., health, learning, kindness).</li>
+      <li>Write 1 small action you can do today.</li>
+      <li>Do it before noon; celebrate the win.</li>
     </ul>
   </div>
   <div class="card">
-    <h3>Behavioural activation (BA)</h3>
-    <ul>
-      <li>List <em>Energy‑giving</em> and <em>Meaningful</em> actions. Schedule 2 small items daily.</li>
-      <li>Rate 0–10: mood before/after; notice patterns.</li>
-      <li>Start with <em>action</em>, let motivation catch up.</li>
-    </ul>
+    <h3>Gratitude (micro)</h3>
+    <ul><li>Name 1 good thing today and why it mattered.</li><li>Say it out loud if you can.</li></ul>
   </div>
-  <div class="card">
-    <h3>Sleep & rhythm</h3>
-    <ul>
-      <li>Wake time fixed (±30 min); light within 1 hour.</li>
-      <li>Reduce long naps; gentle wind‑down.</li>
-      <li>Use breathing (4‑7‑8 or out‑longer‑than‑in) at bedtime.</li>
-    </ul>
-  </div>
-</div>
-
-<div class="card">
-  <h3>When to seek more help</h3>
-  <p class="muted">For ongoing or severe symptoms, consider NHS Talking Therapies (CBT/BA) or discuss options with your GP. If you feel unsafe, use the urgent help numbers below.</p>
 </div>
       <div class="card">
         <h3>Evidence & UK resources</h3>
@@ -121,14 +121,14 @@
         </ul>
 
       <div class="actions" style="margin-top:10px">
-        <button class="btn btn-success" id="resPdf_depression" type="button">Download: Depression — Small Steps that Add Up — Resources (PDF)</button>
+        <button class="btn btn-success" id="resPdf_depression" type="button">Download: Mood Tools — Resources (PDF)</button>
       </div>
       <script>
         (function(){
           const btn = document.getElementById('resPdf_depression');
           if(!btn) return;
           btn.addEventListener('click', function(){
-            MSCoach.downloadLinksPdf('Depression — Small Steps that Add Up — Resources', window.__RES__ && window.__RES__['depression'] ? window.__RES__['depression'] : []);
+            MSCoach.downloadLinksPdf('Mood Tools — Resources', window.__RES__ && window.__RES__['depression'] ? window.__RES__['depression'] : []);
           });
         })();
       </script>

@@ -3,8 +3,8 @@
     <head>
       <meta charset="utf-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <title>Depression — Small Steps that Add Up • M Share</title>
-      <meta name="description" content="Behavioural activation planner, rhythm supports and UK help routes." />
+      <title>Breath (how‑to) • M Share</title>
+      <meta name="description" content="Learn box breathing, coherent 5‑5 and 4‑7‑8 with a simple voice‑guided coach." />
       <link rel="stylesheet" href="style.css" />
     </head>
     <body>
@@ -78,57 +78,39 @@
 </header>
       <main class="container">
 
-      <h1>Depression — Small Steps that Add Up</h1>
+      <h1>Breath (how‑to)</h1>
       <div class="card">
-  <p>Progress through <strong>behavioural activation</strong> (doing first, mood follows), sleep regulation and connection. <span class="muted">Educational only; not medical advice.</span></p>
+  <p>Three patterns to learn: <strong>Box 4‑4‑4‑4</strong>, <strong>Coherent 5‑5</strong> (≈5–6 breaths/min), and <strong>4‑7‑8</strong> for settling. Keep it comfortable; stop if dizzy.</p>
 </div>
 
 <div class="grid cols-3">
-  <div class="card">
-    <h3>Today’s 1‑3‑5</h3>
-    <ul>
-      <li><strong>1 meaningful</strong> thing (values‑based).</li>
-      <li><strong>3 shoulds</strong> I will turn into <em>coulds</em> (choose one tiny step).</li>
-      <li><strong>5 minutes</strong> of fresh air or light movement.</li>
-    </ul>
-  </div>
-  <div class="card">
-    <h3>Behavioural activation (BA)</h3>
-    <ul>
-      <li>List <em>Energy‑giving</em> and <em>Meaningful</em> actions. Schedule 2 small items daily.</li>
-      <li>Rate 0–10: mood before/after; notice patterns.</li>
-      <li>Start with <em>action</em>, let motivation catch up.</li>
-    </ul>
-  </div>
-  <div class="card">
-    <h3>Sleep & rhythm</h3>
-    <ul>
-      <li>Wake time fixed (±30 min); light within 1 hour.</li>
-      <li>Reduce long naps; gentle wind‑down.</li>
-      <li>Use breathing (4‑7‑8 or out‑longer‑than‑in) at bedtime.</li>
-    </ul>
-  </div>
+  <div class="card"><div id="bBox"></div></div>
+  <div class="card"><div id="bCoherent"></div></div>
+  <div class="card"><div id="b478"></div></div>
 </div>
 
-<div class="card">
-  <h3>When to seek more help</h3>
-  <p class="muted">For ongoing or severe symptoms, consider NHS Talking Therapies (CBT/BA) or discuss options with your GP. If you feel unsafe, use the urgent help numbers below.</p>
-</div>
+<script>
+  document.addEventListener('DOMContentLoaded',()=>{
+    MSCoach.mountBreath('#bBox', {pattern:[4,4,4,4], minutes:2, title:'Box 4‑4‑4‑4'});
+    MSCoach.mountBreath('#bCoherent', {pattern:[5,0,5,0], minutes:3, title:'Coherent 5‑5 (HRV)'});
+    MSCoach.mountBreath('#b478', {pattern:[4,7,8,0], minutes:2, title:'4‑7‑8 (settle)'});
+  });
+</script>
       <div class="card">
         <h3>Evidence & UK resources</h3>
         <ul>
-          <li><a href="https://www.nice.org.uk/guidance/ng222" target="_blank" rel="noopener">NICE — Depression in adults (NG222)</a></li><li><a href="https://www.nhs.uk/mental-health/conditions/depression-in-adults/treatment/" target="_blank" rel="noopener">NHS — Treatment for depression (incl. BA)</a></li><li><a href="https://www.nhsinform.scot/illnesses-and-conditions/mental-health/mental-health-self-help-guides/depression-self-help-guide/" target="_blank" rel="noopener">NHS Inform — Depression self‑help guide</a></li><li><a href="https://www.gmmh.nhs.uk/behavioural-activation/" target="_blank" rel="noopener">GMMH — Behavioural Activation resources</a></li><li><a href="https://www.nhs.uk/every-mind-matters/mental-wellbeing-tips/self-help-cbt-techniques/" target="_blank" rel="noopener">Every Mind Matters — Self‑help CBT techniques</a></li>
+          <li><a href="https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/breathing-exercises-for-stress/" target="_blank" rel="noopener">NHS — Breathing exercises for stress</a></li><li><a href="https://www.cuh.nhs.uk/patient-information/breathing-techniques-to-ease-breathlessness/" target="_blank" rel="noopener">CUH — Breathing techniques (rectangle, pursed lips)</a></li><li><a href="https://www.nhsinform.scot/healthy-living/mental-wellbeing/stress/breathing-and-relaxation-exercises/" target="_blank" rel="noopener">NHS Inform — Breathing & relaxation (videos)</a></li>
         </ul>
 
       <div class="actions" style="margin-top:10px">
-        <button class="btn btn-success" id="resPdf_depression" type="button">Download: Depression — Small Steps that Add Up — Resources (PDF)</button>
+        <button class="btn btn-success" id="resPdf_breath" type="button">Download: Breath (how‑to) — Resources (PDF)</button>
       </div>
       <script>
         (function(){
-          const btn = document.getElementById('resPdf_depression');
+          const btn = document.getElementById('resPdf_breath');
           if(!btn) return;
           btn.addEventListener('click', function(){
-            MSCoach.downloadLinksPdf('Depression — Small Steps that Add Up — Resources', window.__RES__ && window.__RES__['depression'] ? window.__RES__['depression'] : []);
+            MSCoach.downloadLinksPdf('Breath (how‑to) — Resources', window.__RES__ && window.__RES__['breath'] ? window.__RES__['breath'] : []);
           });
         })();
       </script>

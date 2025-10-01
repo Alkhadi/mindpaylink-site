@@ -39,7 +39,6 @@
 </header>
 
 <main class="container wrap">
-  <!-- Setup kept minimal but present; page starts focused and can be resumed anytime -->
   <div class="card setup">
     <h1>SOS — 60‑second Reset</h1>
     <div class="grid cols-2">
@@ -82,7 +81,7 @@
   const CIRC=264; const setProgress=p=>{ if(ring) ring.style.strokeDashoffset=String(CIRC*(1-Math.max(0,Math.min(1,p)))); };
 
   let ac=null; function ensureAC(){ if(!ac){ ac=new (window.AudioContext||window.webkitAudioContext)(); } if(ac.state==='suspended'){ ac.resume(); } }
-  function chime(vol=.28){ if(!ac) return; const g=ac.createGain(); g.gain.setValueAtTime(0,ac.currentTime); g.gain.linearRampToValueAtTime(vol, ac.currentTime+.01); g.gain.exponentialRampToValueAtTime(.0001, ac.currentTime+1.2); const o=ac.createOscillator(); o.type='sine'; o.frequency.value=528; o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime+1.2); }
+  function chime(vol=.26){ if(!ac) return; const g=ac.createGain(); g.gain.setValueAtTime(0,ac.currentTime); g.gain.linearRampToValueAtTime(vol, ac.currentTime+.01); g.gain.exponentialRampToValueAtTime(.0001, ac.currentTime+1.2); const o=ac.createOscillator(); o.type='sine'; o.frequency.value=528; o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime+1.2); }
   function Background(ac){
     const master=ac.createGain(); master.gain.value=parseFloat(bgv.value||0.22); master.connect(ac.destination);
     let nodes=[]; const clear=()=>{ nodes.forEach(n=>{try{n.stop?.();n.disconnect?.();}catch{}}); nodes=[]; };
@@ -99,9 +98,9 @@
   function rmEnabled(){ if(rm.value==='on') return true; if(rm.value==='off') return false; return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
   function applyFocus(on){ document.body.classList.toggle('focus-mode', !!on); }
 
-  const TOTAL=60; let running=false, paused=false, end=0, timer=null, inPhase=true, dur=4, bgmInst=null;
+  const TOTAL=60; let running=false, paused=false, end=0, timer=null;
   function phase(label, secs, next){
-    phaseEl.textContent=label; orb.classList.remove(label==='Exhale'?'inhale':'exhale'); orb.classList.add(label==='Exhale'?'exhale':'inhale'); speak(label); vibrate(label==='Exhale'?18:24); chime(.26);
+    phaseEl.textContent=label; orb.classList.toggle('exhale', label==='Exhale'); orb.classList.toggle('inhale', label!=='Exhale'); speak(label); vibrate(label==='Exhale'?18:24); chime(.26);
     const start=performance.now();
     (function raf(now){
       if(!running){ cancelAnimationFrame(timer); return; }
@@ -114,18 +113,25 @@
   }
   function start(){
     ensureAC(); if(!bgm && bg.value!=='none'){ bgm=new Background(ac); bgm.setType(bg.value); } if(bgm){ bgm.setVol(bgv.value); }
-    running=true; paused=false; inPhase=true; end=performance.now()+TOTAL*1000; document.body.classList.toggle('rm', rmEnabled()); applyFocus(true);
+    running=true; paused=false; end=performance.now()+TOTAL*1000; document.body.classList.toggle('rm', rmEnabled()); applyFocus(true);
     document.querySelector('.setup').classList.add('hidden');
-    phase('Inhale', 4, ()=> phase('Exhale', 4, ()=> start())); // loop until TOTAL hit
+    phase('Inhale', 4, ()=> phase('Exhale', 4, ()=> start())); // loops until end
   }
   function pause(){ if(!running) return; paused=!paused; $('pauseBtn').textContent=paused?'Resume':'Pause'; applyFocus(!paused); if(!paused) start(); }
   function reset(){ running=false; cancelAnimationFrame(timer); setProgress(0); countEl.textContent='4'; phaseEl.textContent='Inhale'; $('pauseBtn').textContent='Pause'; applyFocus(false); if(bgm){ bgm.stop(); bgm=null; } document.querySelector('.setup').classList.remove('hidden'); }
-  function finish(){ running=false; cancelAnimationFrame(timer); applyFocus(false); if(bgm){ bgm.stop(); bgm=null; } document.querySelector('.setup').classList.remove('hidden'); }
+  function finish(){ running=false; cancelAnimationFrame(timer); applyFocus(false); if(bgm){ bgm.stop(); bgm=null; } document.querySelector('.setup').classList.remove('hidden'); try{ window.__MSHARE__?.Stats?.addSession?.({techId:'sos',seconds:60,breaths:0}); }catch{} }
 
   $('startBtn').addEventListener('click', start);
   $('pauseBtn').addEventListener('click', pause);
   $('resetBtn').addEventListener('click', reset);
   $('tapArea').addEventListener('click', pause);
+
+  // keep router-friendly links
+  document.querySelectorAll('[data-href]').forEach(a=>{
+    a.setAttribute('href', a.getAttribute('data-href') + (location.search||''));
+  });
+  const brand = document.getElementById('brandLink');
+  if (brand) brand.setAttribute('href','index.html' + (location.search||''));
 })();
 </script>
 </body>

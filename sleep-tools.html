@@ -3,8 +3,8 @@
     <head>
       <meta charset="utf-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <title>Depression — Small Steps that Add Up • M Share</title>
-      <meta name="description" content="Behavioural activation planner, rhythm supports and UK help routes." />
+      <title>Sleep Tools • M Share</title>
+      <meta name="description" content="CBT‑i‑style checklists, a simple sleep window helper and a wind‑down coach." />
       <link rel="stylesheet" href="style.css" />
     </head>
     <body>
@@ -78,57 +78,48 @@
 </header>
       <main class="container">
 
-      <h1>Depression — Small Steps that Add Up</h1>
-      <div class="card">
-  <p>Progress through <strong>behavioural activation</strong> (doing first, mood follows), sleep regulation and connection. <span class="muted">Educational only; not medical advice.</span></p>
-</div>
-
-<div class="grid cols-3">
+      <h1>Sleep Tools</h1>
+      <div class="grid cols-3">
   <div class="card">
-    <h3>Today’s 1‑3‑5</h3>
+    <h3>Stimulus Control Checklist</h3>
     <ul>
-      <li><strong>1 meaningful</strong> thing (values‑based).</li>
-      <li><strong>3 shoulds</strong> I will turn into <em>coulds</em> (choose one tiny step).</li>
-      <li><strong>5 minutes</strong> of fresh air or light movement.</li>
+      <li>Out of bed if not asleep within ~20 min.</li>
+      <li>Bed only for sleep & sex; do wind‑down elsewhere.</li>
+      <li>Wake time fixed daily; light early.</li>
     </ul>
   </div>
   <div class="card">
-    <h3>Behavioural activation (BA)</h3>
-    <ul>
-      <li>List <em>Energy‑giving</em> and <em>Meaningful</em> actions. Schedule 2 small items daily.</li>
-      <li>Rate 0–10: mood before/after; notice patterns.</li>
-      <li>Start with <em>action</em>, let motivation catch up.</li>
-    </ul>
+    <h3>Sleep Window Helper</h3>
+    <p class="muted">Enter your <em>average actual sleep</em> over the last week (hours) and set your time‑in‑bed to match (≥6h).</p>
+    <div class="kv-grid">
+      <div><label>Average sleep (h)</label><input id="avgSleep" type="number" min="4" max="9" step="0.25" value="6.5" /></div>
+      <div><label>Time‑in‑bed target</label><output id="tibOut">6.5 h</output></div>
+    </div>
+    <script>
+      (function(){ const i=document.getElementById('avgSleep'), o=document.getElementById('tibOut'); function calc(){ const v=Math.max(6, Math.min(9, parseFloat(i.value||'6.5'))); o.textContent = v.toFixed(2)+' h'; } i.addEventListener('input',calc); calc(); })();
+    </script>
   </div>
   <div class="card">
-    <h3>Sleep & rhythm</h3>
-    <ul>
-      <li>Wake time fixed (±30 min); light within 1 hour.</li>
-      <li>Reduce long naps; gentle wind‑down.</li>
-      <li>Use breathing (4‑7‑8 or out‑longer‑than‑in) at bedtime.</li>
-    </ul>
+    <h3>Wind‑down Breathing</h3>
+    <div id="breathSleepTools"></div>
+    <script>document.addEventListener('DOMContentLoaded',()=>MSCoach.mountBreath('#breathSleepTools',{pattern:[4,0,6,0],minutes:3,title:'In 4 • Out 6'}));</script>
   </div>
-</div>
-
-<div class="card">
-  <h3>When to seek more help</h3>
-  <p class="muted">For ongoing or severe symptoms, consider NHS Talking Therapies (CBT/BA) or discuss options with your GP. If you feel unsafe, use the urgent help numbers below.</p>
 </div>
       <div class="card">
         <h3>Evidence & UK resources</h3>
         <ul>
-          <li><a href="https://www.nice.org.uk/guidance/ng222" target="_blank" rel="noopener">NICE — Depression in adults (NG222)</a></li><li><a href="https://www.nhs.uk/mental-health/conditions/depression-in-adults/treatment/" target="_blank" rel="noopener">NHS — Treatment for depression (incl. BA)</a></li><li><a href="https://www.nhsinform.scot/illnesses-and-conditions/mental-health/mental-health-self-help-guides/depression-self-help-guide/" target="_blank" rel="noopener">NHS Inform — Depression self‑help guide</a></li><li><a href="https://www.gmmh.nhs.uk/behavioural-activation/" target="_blank" rel="noopener">GMMH — Behavioural Activation resources</a></li><li><a href="https://www.nhs.uk/every-mind-matters/mental-wellbeing-tips/self-help-cbt-techniques/" target="_blank" rel="noopener">Every Mind Matters — Self‑help CBT techniques</a></li>
+          <li><a href="https://www.nhsinform.scot/illnesses-and-conditions/mental-health/mental-health-self-help-guides/sleep-problems-and-insomnia-self-help-guide/" target="_blank" rel="noopener">NHS Inform — Sleep problems & insomnia guide</a></li><li><a href="https://www.nice.org.uk/guidance/mtg70" target="_blank" rel="noopener">NICE — Sleepio recommended for insomnia (MTG70)</a></li><li><a href="https://www.nhs.uk/mental-health/talking-therapies-medicine-treatments/talking-therapies-and-counselling/cognitive-behavioural-therapy-cbt/" target="_blank" rel="noopener">NHS — CBT (overview)</a></li><li><a href="https://remedy.bnssg.icb.nhs.uk/adults/sleep-medicine/insomnia/" target="_blank" rel="noopener">BNSSG ICB — Insomnia: CBT‑i overview</a></li>
         </ul>
 
       <div class="actions" style="margin-top:10px">
-        <button class="btn btn-success" id="resPdf_depression" type="button">Download: Depression — Small Steps that Add Up — Resources (PDF)</button>
+        <button class="btn btn-success" id="resPdf_sleep" type="button">Download: Sleep Tools — Resources (PDF)</button>
       </div>
       <script>
         (function(){
-          const btn = document.getElementById('resPdf_depression');
+          const btn = document.getElementById('resPdf_sleep');
           if(!btn) return;
           btn.addEventListener('click', function(){
-            MSCoach.downloadLinksPdf('Depression — Small Steps that Add Up — Resources', window.__RES__ && window.__RES__['depression'] ? window.__RES__['depression'] : []);
+            MSCoach.downloadLinksPdf('Sleep Tools — Resources', window.__RES__ && window.__RES__['sleep'] ? window.__RES__['sleep'] : []);
           });
         })();
       </script>

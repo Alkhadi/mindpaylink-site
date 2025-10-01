@@ -3,8 +3,8 @@
     <head>
       <meta charset="utf-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <title>Depression — Small Steps that Add Up • M Share</title>
-      <meta name="description" content="Behavioural activation planner, rhythm supports and UK help routes." />
+      <title>ADHD — Focus & Workflows • M Share</title>
+      <meta name="description" content="Practical ADHD routines and UK‑specific workplace adjustments with a built‑in Focus Sprint and voice‑guided techniques." />
       <link rel="stylesheet" href="style.css" />
     </head>
     <body>
@@ -78,57 +78,76 @@
 </header>
       <main class="container">
 
-      <h1>Depression — Small Steps that Add Up</h1>
+      <h1>ADHD — Focus & Workflows</h1>
       <div class="card">
-  <p>Progress through <strong>behavioural activation</strong> (doing first, mood follows), sleep regulation and connection. <span class="muted">Educational only; not medical advice.</span></p>
+  <p>Practical, low‑pressure routines for attention, time‑blinds, task initiation and impulse control. Based on UK guidance and workplace best practice. <span class="muted">Educational only; not medical advice.</span></p>
 </div>
 
 <div class="grid cols-3">
   <div class="card">
-    <h3>Today’s 1‑3‑5</h3>
+    <h3>Quick win: 10‑minute Focus Sprint</h3>
+    <p class="muted">Set one tiny output. Remove friction, start before you feel ready. Use a short timer and stop while it still feels easy.</p>
+    <div id="pomoAdhd"></div>
+    <script>document.addEventListener('DOMContentLoaded',()=>MSCoach.mountPomo('#pomoAdhd',{work:10*60,break:2*60}));</script>
+  </div>
+  <div class="card">
+    <h3>Externalise time</h3>
     <ul>
-      <li><strong>1 meaningful</strong> thing (values‑based).</li>
-      <li><strong>3 shoulds</strong> I will turn into <em>coulds</em> (choose one tiny step).</li>
-      <li><strong>5 minutes</strong> of fresh air or light movement.</li>
+      <li>Use visible timers and large clocks (not just phone).</li>
+      <li>Work in <strong>time boxes</strong>, not until-finished.</li>
+      <li>Put meetings and <em>prep blocks</em> in the calendar.</li>
     </ul>
   </div>
   <div class="card">
-    <h3>Behavioural activation (BA)</h3>
+    <h3>Reduce friction</h3>
     <ul>
-      <li>List <em>Energy‑giving</em> and <em>Meaningful</em> actions. Schedule 2 small items daily.</li>
-      <li>Rate 0–10: mood before/after; notice patterns.</li>
-      <li>Start with <em>action</em>, let motivation catch up.</li>
-    </ul>
-  </div>
-  <div class="card">
-    <h3>Sleep & rhythm</h3>
-    <ul>
-      <li>Wake time fixed (±30 min); light within 1 hour.</li>
-      <li>Reduce long naps; gentle wind‑down.</li>
-      <li>Use breathing (4‑7‑8 or out‑longer‑than‑in) at bedtime.</li>
+      <li><strong>Body‑double:</strong> co‑work silently on video with a friend.</li>
+      <li><strong>One‑touch rule:</strong> open the email? Reply or snooze with a time.</li>
+      <li><strong>Environment:</strong> noise‑cancelling headphones; turn off non‑critical notifications.</li>
     </ul>
   </div>
 </div>
 
 <div class="card">
-  <h3>When to seek more help</h3>
-  <p class="muted">For ongoing or severe symptoms, consider NHS Talking Therapies (CBT/BA) or discuss options with your GP. If you feel unsafe, use the urgent help numbers below.</p>
+  <h3>Meeting & task scaffolds</h3>
+  <ul>
+    <li><strong>One‑slide brief:</strong> purpose, definition of done, next step.</li>
+    <li><strong>Agenda first:</strong> write and share 3 bullets, max 20 minutes.</li>
+    <li><strong>IF→THEN plans:</strong> “If I open Slack, then I check only #team for 2 minutes.”</li>
+  </ul>
+</div>
+
+<div class="grid cols-2">
+  <div class="card">
+    <h3>Workplace adjustments (UK)</h3>
+    <p class="muted">Under the Equality Act, employers should consider <em>reasonable adjustments</em>—no diagnosis required to seek support.</p>
+    <ul>
+      <li>Quiet workspace / headphones, fewer interruptions; fixed desk instead of hot‑desk.</li>
+      <li>Flexible hours, protected focus time, extra breaks; written follow‑ups.</li>
+      <li>Assistive tech: text‑to‑speech, meeting transcribers, reminders.</li>
+    </ul>
+    <p class="muted">See Acas guidance linked below.</p>
+  </div>
+  <div class="card">
+    <h3>About medication (NICE NG87)</h3>
+    <p class="muted">For adults, first‑line medicines are usually <strong>lisdexamfetamine</strong> or <strong>methylphenidate</strong> when medication is appropriate. Non‑stimulants can be options in some cases. Talk to your prescriber; medicines aren’t for everyone.</p>
+  </div>
 </div>
       <div class="card">
         <h3>Evidence & UK resources</h3>
         <ul>
-          <li><a href="https://www.nice.org.uk/guidance/ng222" target="_blank" rel="noopener">NICE — Depression in adults (NG222)</a></li><li><a href="https://www.nhs.uk/mental-health/conditions/depression-in-adults/treatment/" target="_blank" rel="noopener">NHS — Treatment for depression (incl. BA)</a></li><li><a href="https://www.nhsinform.scot/illnesses-and-conditions/mental-health/mental-health-self-help-guides/depression-self-help-guide/" target="_blank" rel="noopener">NHS Inform — Depression self‑help guide</a></li><li><a href="https://www.gmmh.nhs.uk/behavioural-activation/" target="_blank" rel="noopener">GMMH — Behavioural Activation resources</a></li><li><a href="https://www.nhs.uk/every-mind-matters/mental-wellbeing-tips/self-help-cbt-techniques/" target="_blank" rel="noopener">Every Mind Matters — Self‑help CBT techniques</a></li>
+          <li><a href="https://www.nice.org.uk/guidance/ng87" target="_blank" rel="noopener">NICE — ADHD: diagnosis and management (NG87)</a></li><li><a href="https://www.nice.org.uk/guidance/ng87/chapter/recommendations" target="_blank" rel="noopener">NICE — NG87 recommendations (adults: meds choice)</a></li><li><a href="https://www.acas.org.uk/reasonable-adjustments/adjustments-for-neurodiversity" target="_blank" rel="noopener">Acas — Adjustments for neurodiversity at work</a></li><li><a href="https://www.gov.uk/reasonable-adjustments-for-disabled-workers" target="_blank" rel="noopener">GOV.UK — Reasonable adjustments for disabled workers</a></li><li><a href="https://www.rcpsych.ac.uk/docs/default-source/improving-care/better-mh-policy/college-reports/cr235-adhd-in-adults---good-practice-guidance.pdf" target="_blank" rel="noopener">RCPsych — ADHD in adults: good practice guidance</a></li>
         </ul>
 
       <div class="actions" style="margin-top:10px">
-        <button class="btn btn-success" id="resPdf_depression" type="button">Download: Depression — Small Steps that Add Up — Resources (PDF)</button>
+        <button class="btn btn-success" id="resPdf_adhd" type="button">Download: ADHD — Focus & Workflows — Resources (PDF)</button>
       </div>
       <script>
         (function(){
-          const btn = document.getElementById('resPdf_depression');
+          const btn = document.getElementById('resPdf_adhd');
           if(!btn) return;
           btn.addEventListener('click', function(){
-            MSCoach.downloadLinksPdf('Depression — Small Steps that Add Up — Resources', window.__RES__ && window.__RES__['depression'] ? window.__RES__['depression'] : []);
+            MSCoach.downloadLinksPdf('ADHD — Focus & Workflows — Resources', window.__RES__ && window.__RES__['adhd'] ? window.__RES__['adhd'] : []);
           });
         })();
       </script>

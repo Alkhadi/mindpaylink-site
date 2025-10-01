@@ -3,8 +3,8 @@
     <head>
       <meta charset="utf-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <title>Depression — Small Steps that Add Up • M Share</title>
-      <meta name="description" content="Behavioural activation planner, rhythm supports and UK help routes." />
+      <title>Mindfulness — Small, Repeated Moments • M Share</title>
+      <meta name="description" content="Three‑minute breathing space, body scan, and daily mindful moments." />
       <link rel="stylesheet" href="style.css" />
     </head>
     <body>
@@ -78,57 +78,46 @@
 </header>
       <main class="container">
 
-      <h1>Depression — Small Steps that Add Up</h1>
+      <h1>Mindfulness — Small, Repeated Moments</h1>
       <div class="card">
-  <p>Progress through <strong>behavioural activation</strong> (doing first, mood follows), sleep regulation and connection. <span class="muted">Educational only; not medical advice.</span></p>
+  <p>Mindfulness helps us notice and unhook from loops of worry and low mood. NICE recognises mindfulness and MBCT within evidence‑based care for depression.</p>
 </div>
 
 <div class="grid cols-3">
   <div class="card">
-    <h3>Today’s 1‑3‑5</h3>
-    <ul>
-      <li><strong>1 meaningful</strong> thing (values‑based).</li>
-      <li><strong>3 shoulds</strong> I will turn into <em>coulds</em> (choose one tiny step).</li>
-      <li><strong>5 minutes</strong> of fresh air or light movement.</li>
-    </ul>
+    <h3>3‑minute breathing space</h3>
+    <ol>
+      <li>Aware: what’s here? thoughts, feelings, sensations.</li>
+      <li>Gather: attention on the breath, gentle count 1‑10.</li>
+      <li>Expand: include the body; soften shoulders/jaw.</li>
+    </ol>
+    <div id="miniBreath"></div>
+    <script>document.addEventListener('DOMContentLoaded',()=>MSCoach.mountBreath('#miniBreath',{pattern:[4,0,6,0],minutes:3,title:'Guided breathing'}));</script>
   </div>
   <div class="card">
-    <h3>Behavioural activation (BA)</h3>
-    <ul>
-      <li>List <em>Energy‑giving</em> and <em>Meaningful</em> actions. Schedule 2 small items daily.</li>
-      <li>Rate 0–10: mood before/after; notice patterns.</li>
-      <li>Start with <em>action</em>, let motivation catch up.</li>
-    </ul>
+    <h3>Body scan (brief)</h3>
+    <p class="muted">Move attention from toes to head. Notice and name <em>pressure, warmth, cool, contact</em>. If the mind wanders, gently return.</p>
   </div>
   <div class="card">
-    <h3>Sleep & rhythm</h3>
-    <ul>
-      <li>Wake time fixed (±30 min); light within 1 hour.</li>
-      <li>Reduce long naps; gentle wind‑down.</li>
-      <li>Use breathing (4‑7‑8 or out‑longer‑than‑in) at bedtime.</li>
-    </ul>
+    <h3>Everyday mindful moments</h3>
+    <ul><li>One mindful sip/bite.</li><li>Doorway pause: one slow breath.</li><li>“Note three things” on a short walk.</li></ul>
   </div>
-</div>
-
-<div class="card">
-  <h3>When to seek more help</h3>
-  <p class="muted">For ongoing or severe symptoms, consider NHS Talking Therapies (CBT/BA) or discuss options with your GP. If you feel unsafe, use the urgent help numbers below.</p>
 </div>
       <div class="card">
         <h3>Evidence & UK resources</h3>
         <ul>
-          <li><a href="https://www.nice.org.uk/guidance/ng222" target="_blank" rel="noopener">NICE — Depression in adults (NG222)</a></li><li><a href="https://www.nhs.uk/mental-health/conditions/depression-in-adults/treatment/" target="_blank" rel="noopener">NHS — Treatment for depression (incl. BA)</a></li><li><a href="https://www.nhsinform.scot/illnesses-and-conditions/mental-health/mental-health-self-help-guides/depression-self-help-guide/" target="_blank" rel="noopener">NHS Inform — Depression self‑help guide</a></li><li><a href="https://www.gmmh.nhs.uk/behavioural-activation/" target="_blank" rel="noopener">GMMH — Behavioural Activation resources</a></li><li><a href="https://www.nhs.uk/every-mind-matters/mental-wellbeing-tips/self-help-cbt-techniques/" target="_blank" rel="noopener">Every Mind Matters — Self‑help CBT techniques</a></li>
+          <li><a href="https://www.nhs.uk/mental-health/self-help/tips-and-support/mindfulness/" target="_blank" rel="noopener">NHS — Mindfulness overview</a></li><li><a href="https://www.nice.org.uk/guidance/ng222" target="_blank" rel="noopener">NICE — Depression NG222 (mindfulness/MBCT)</a></li><li><a href="https://sussexmindfulnesscentre.nhs.uk/wp-content/uploads/2023/09/Referrer-info-sheet.pdf" target="_blank" rel="noopener">Sussex Mindfulness Centre — NICE first‑line note (PDF)</a></li>
         </ul>
 
       <div class="actions" style="margin-top:10px">
-        <button class="btn btn-success" id="resPdf_depression" type="button">Download: Depression — Small Steps that Add Up — Resources (PDF)</button>
+        <button class="btn btn-success" id="resPdf_mindfulness" type="button">Download: Mindfulness — Small, Repeated Moments — Resources (PDF)</button>
       </div>
       <script>
         (function(){
-          const btn = document.getElementById('resPdf_depression');
+          const btn = document.getElementById('resPdf_mindfulness');
           if(!btn) return;
           btn.addEventListener('click', function(){
-            MSCoach.downloadLinksPdf('Depression — Small Steps that Add Up — Resources', window.__RES__ && window.__RES__['depression'] ? window.__RES__['depression'] : []);
+            MSCoach.downloadLinksPdf('Mindfulness — Small, Repeated Moments — Resources', window.__RES__ && window.__RES__['mindfulness'] ? window.__RES__['mindfulness'] : []);
           });
         })();
       </script>

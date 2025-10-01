@@ -3,8 +3,8 @@
     <head>
       <meta charset="utf-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <title>Depression — Small Steps that Add Up • M Share</title>
-      <meta name="description" content="Behavioural activation planner, rhythm supports and UK help routes." />
+      <title>Stress — Reset & Prioritise • M Share</title>
+      <meta name="description" content="Box breathing, simple prioritisation, and practical boundaries for calmer output." />
       <link rel="stylesheet" href="style.css" />
     </head>
     <body>
@@ -78,57 +78,50 @@
 </header>
       <main class="container">
 
-      <h1>Depression — Small Steps that Add Up</h1>
+      <h1>Stress — Reset & Prioritise</h1>
       <div class="card">
-  <p>Progress through <strong>behavioural activation</strong> (doing first, mood follows), sleep regulation and connection. <span class="muted">Educational only; not medical advice.</span></p>
+  <p>Channel stress into clarity with breath control, prioritisation and boundaries. <span class="muted">Educational only; not medical advice.</span></p>
 </div>
 
 <div class="grid cols-3">
   <div class="card">
-    <h3>Today’s 1‑3‑5</h3>
+    <h3>Box breathing 4‑4‑4‑4</h3>
+    <div id="breathStress"></div>
+    <script>document.addEventListener('DOMContentLoaded',()=>MSCoach.mountBreath('#breathStress',{pattern:[4,4,4,4],minutes:2,title:'Box 4‑4‑4‑4'}));</script>
+  </div>
+  <div class="card">
+    <h3>Eisenhower triage</h3>
     <ul>
-      <li><strong>1 meaningful</strong> thing (values‑based).</li>
-      <li><strong>3 shoulds</strong> I will turn into <em>coulds</em> (choose one tiny step).</li>
-      <li><strong>5 minutes</strong> of fresh air or light movement.</li>
+      <li><strong>Do:</strong> urgent & important (today).</li>
+      <li><strong>Schedule:</strong> important, not urgent.</li>
+      <li><strong>Delegate:</strong> urgent, not important.</li>
+      <li><strong>Drop:</strong> neither.</li>
     </ul>
   </div>
   <div class="card">
-    <h3>Behavioural activation (BA)</h3>
+    <h3>Boundaries</h3>
     <ul>
-      <li>List <em>Energy‑giving</em> and <em>Meaningful</em> actions. Schedule 2 small items daily.</li>
-      <li>Rate 0–10: mood before/after; notice patterns.</li>
-      <li>Start with <em>action</em>, let motivation catch up.</li>
+      <li>Default 25–50 min focus blocks with short breaks.</li>
+      <li>Turn off badges/pop‑ups except critical channels.</li>
+      <li>Write “no” scripts: <em>“Not this week; I can help next Tuesday.”</em></li>
     </ul>
   </div>
-  <div class="card">
-    <h3>Sleep & rhythm</h3>
-    <ul>
-      <li>Wake time fixed (±30 min); light within 1 hour.</li>
-      <li>Reduce long naps; gentle wind‑down.</li>
-      <li>Use breathing (4‑7‑8 or out‑longer‑than‑in) at bedtime.</li>
-    </ul>
-  </div>
-</div>
-
-<div class="card">
-  <h3>When to seek more help</h3>
-  <p class="muted">For ongoing or severe symptoms, consider NHS Talking Therapies (CBT/BA) or discuss options with your GP. If you feel unsafe, use the urgent help numbers below.</p>
 </div>
       <div class="card">
         <h3>Evidence & UK resources</h3>
         <ul>
-          <li><a href="https://www.nice.org.uk/guidance/ng222" target="_blank" rel="noopener">NICE — Depression in adults (NG222)</a></li><li><a href="https://www.nhs.uk/mental-health/conditions/depression-in-adults/treatment/" target="_blank" rel="noopener">NHS — Treatment for depression (incl. BA)</a></li><li><a href="https://www.nhsinform.scot/illnesses-and-conditions/mental-health/mental-health-self-help-guides/depression-self-help-guide/" target="_blank" rel="noopener">NHS Inform — Depression self‑help guide</a></li><li><a href="https://www.gmmh.nhs.uk/behavioural-activation/" target="_blank" rel="noopener">GMMH — Behavioural Activation resources</a></li><li><a href="https://www.nhs.uk/every-mind-matters/mental-wellbeing-tips/self-help-cbt-techniques/" target="_blank" rel="noopener">Every Mind Matters — Self‑help CBT techniques</a></li>
+          <li><a href="https://www.nhsinform.scot/healthy-living/mental-wellbeing/stress/breathing-and-relaxation-exercises/" target="_blank" rel="noopener">NHS Inform — Breathing & relaxation</a></li><li><a href="https://www.england.nhs.uk/publication/the-improving-access-to-psychological-therapies-manual/" target="_blank" rel="noopener">NHS Talking Therapies Manual (stepped care)</a></li><li><a href="https://www.nhs.uk/mental-health/talking-therapies-medicine-treatments/talking-therapies-and-counselling/nhs-talking-therapies/" target="_blank" rel="noopener">NHS — Talking therapies (self‑referral)</a></li><li><a href="https://www.mind.org.uk/information-support/guides-to-support-and-services/seeking-help-for-a-mental-health-problem/mental-health-helplines/" target="_blank" rel="noopener">Mind — Mental health helplines</a></li><li><a href="https://www.acas.org.uk/reasonable-adjustments/adjustments-for-neurodiversity" target="_blank" rel="noopener">Acas — Reasonable adjustments (neurodiversity)</a></li>
         </ul>
 
       <div class="actions" style="margin-top:10px">
-        <button class="btn btn-success" id="resPdf_depression" type="button">Download: Depression — Small Steps that Add Up — Resources (PDF)</button>
+        <button class="btn btn-success" id="resPdf_stress" type="button">Download: Stress — Reset & Prioritise — Resources (PDF)</button>
       </div>
       <script>
         (function(){
-          const btn = document.getElementById('resPdf_depression');
+          const btn = document.getElementById('resPdf_stress');
           if(!btn) return;
           btn.addEventListener('click', function(){
-            MSCoach.downloadLinksPdf('Depression — Small Steps that Add Up — Resources', window.__RES__ && window.__RES__['depression'] ? window.__RES__['depression'] : []);
+            MSCoach.downloadLinksPdf('Stress — Reset & Prioritise — Resources', window.__RES__ && window.__RES__['stress'] ? window.__RES__['stress'] : []);
           });
         })();
       </script>

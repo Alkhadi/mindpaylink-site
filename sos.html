@@ -7,7 +7,6 @@
   <meta name="description" content="A quick 60‑second breathing reset with voice/haptics. Inhale–Hold–Exhale–Hold, calm the nervous system fast.">
   <link rel="stylesheet" href="style.css" />
   <style>
-    /* Technique visuals (match your other technique pages) */
     .wrap { max-width: 980px; margin: 0 auto; }
     .ui { background: rgba(255,255,255,.05); border: 1px solid var(--b); border-radius: 16px; box-shadow: var(--shadow-1); padding: 16px; }
     .session{display:grid;place-items:center;gap:18px;text-align:center}
@@ -36,11 +35,11 @@
 <body>
 <header class="site-header">
   <div class="container navbar">
-    <a id="brandLink" class="brand"><span class="logo">M</span> M Share</a>
+    <a id="brandLink" class="brand" data-href="index.html"><span class="logo">M</span> M Share</a>
     <nav class="main-nav" id="mainNav">
       <a data-href="index.html">Wellbeing</a>
       <a data-href="coffee.html">Money</a>
-      <a data-href="About.html">About</a>
+      <a data-href="pdf.html">About</a>
       <a data-href="scan.html">Scan</a>
       <a data-href="storage.html">Storage</a>
       <button id="shareOpen" class="btn" type="button"><span class="icon">🔗</span> Share</button>
@@ -139,7 +138,7 @@
     </div>
     <div class="actions">
       <button class="btn btn-success" id="againBtn">Again</button>
-      <a class="btn" href="index.html">Back to Hub</a>
+      <a class="btn" data-href="index.html">Back to Hub</a>
     </div>
   </div>
 
@@ -263,10 +262,9 @@
 
   function finish(){
     running=false; cancelAnimationFrame(timer); if(bgm){ bgm.stop(); bgm=null; }
-    // record stats (minutes rounded to nearest)
-    const MS = window.__MSHARE__||{};
     try{
       const secs = (parseInt(minutes.value||'1',10))*60;
+      const MS = window.__MSHARE__||{};
       const add = MS.Stats?.addSession;
       if (add) {
         const s = add({ techId:'sos', seconds:secs, breaths:breaths });
@@ -286,11 +284,12 @@
   byId('tapArea').addEventListener('click', pause);
   document.addEventListener('keydown', e=>{ if(e.code==='Space'){ e.preventDefault(); pause(); }});
 
-  // If landing page sent us with a preselected pattern via CoachPresets, use it
-  (function applyPresetFromQS(){
-    const q = new URLSearchParams(location.search);
-    const p = q.get('pattern'); if (p) pattern.value=p;
-  })();
+  // Keep router-friendly links (cooperate with app.js)
+  document.querySelectorAll('[data-href]').forEach(a=>{
+    a.setAttribute('href', a.getAttribute('data-href') + (location.search||''));
+  });
+  const brand = document.getElementById('brandLink');
+  if (brand) brand.setAttribute('href','index.html' + (location.search||''));
 </script>
 </body>
 </html>

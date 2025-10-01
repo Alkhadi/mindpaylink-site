@@ -24,21 +24,75 @@
   </head>
   <body>
     <!-- ===== REUSABLE HEADER (use this header across all pages) ===== -->
-    <header class="site-header">
-      <div class="container navbar">
-        <a class="brand" href="index.html"><span class="logo">M</span> M Share</a>
-        <nav class="main-nav">
-          <a href="index.html">Wellbeing</a>
-          <a href="pdf.html">About</a>
-          <a href="dyslexia-reading-training.html">Dyslexia</a>
-          <a href="autism.html">Autism</a>
-          <a href="depression.html">Depression</a>
-          <a href="mood.html">Mood</a>
-          <a href="coffee.html">Support Us</a>
-          <a href="contact.html">Contact</a>
-        </nav>
+<header class="site-header">
+  <div class="container navbar">
+    <a id="brandLink" class="brand" data-href="index.html"><span class="logo">M</span> M Share</a>
+    <nav class="main-nav" id="mainNav" aria-label="Primary">
+      <a data-href="index.html">Wellbeing</a>
+
+      <div class="nav-group">
+        <button class="nav-button" type="button" aria-expanded="false" aria-controls="menu-conditions">Conditions</button>
+        <div id="menu-conditions" class="menu" role="menu">
+          <div class="menu-col">
+            <div class="menu-title" role="presentation">Neurodevelopmental</div>
+            <a role="menuitem" data-href="autism.html">Autism</a>
+            <a role="menuitem" data-href="adhd.html">ADHD</a>
+            <a role="menuitem" data-href="dyslexia-reading-training.html">Dyslexia</a>
+          </div>
+          <div class="menu-col">
+            <div class="menu-title" role="presentation">Mental Health</div>
+            <a role="menuitem" data-href="anxiety.html">Anxiety</a>
+            <a role="menuitem" data-href="depression.html">Depression</a>
+            <a role="menuitem" data-href="stress.html">Stress</a>
+            <a role="menuitem" data-href="sleep.html">Sleep</a>
+          </div>
+        </div>
       </div>
-    </header>
+
+      <div class="nav-group">
+        <button class="nav-button" type="button" aria-expanded="false" aria-controls="menu-breath">Breathing &amp; Focus</button>
+        <div id="menu-breath" class="menu" role="menu">
+          <a role="menuitem" data-href="sos.html">60‑second Reset</a>
+          <a role="menuitem" data-href="coherent-5-5.html">Coherent 5‑5</a>
+          <a role="menuitem" data-href="breath.html">Breath (how‑to)</a>
+          <a role="menuitem" data-href="focus.html">Focus</a>
+          <a role="menuitem" data-href="mindfulness.html">Mindfulness</a>
+        </div>
+      </div>
+
+      <div class="nav-group">
+        <button class="nav-button" type="button" aria-expanded="false" aria-controls="menu-tools">Toolkits</button>
+        <div id="menu-tools" class="menu menu-wide" role="menu">
+          <div class="menu-col">
+            <div class="menu-title" role="presentation">General</div>
+            <a role="menuitem" data-href="sleep-tools.html">Sleep Tools</a>
+            <a role="menuitem" data-href="breath-tools.html">Breath Tools</a>
+            <a role="menuitem" data-href="mood-tools.html">Mood Tools</a>
+          </div>
+          <div class="menu-col">
+            <div class="menu-title" role="presentation">Condition‑specific</div>
+            <a role="menuitem" data-href="adhd-tools.html">ADHD Tools</a>
+            <a role="menuitem" data-href="autism-tools.html">Autism Tools</a>
+            <a role="menuitem" data-href="depression-tools.html">Depression Tools</a>
+            <a role="menuitem" data-href="anxiety-tools.html">Anxiety Tools</a>
+            <a role="menuitem" data-href="stress-tools.html">Stress Tools</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-group">
+        <button class="nav-button" type="button" aria-expanded="false" aria-controls="menu-about">About</button>
+        <div id="menu-about" class="menu" role="menu">
+          <a role="menuitem" data-href="pdf.html">About</a>
+          <a role="menuitem" data-href="coffee.html">Support Us</a>
+          <a role="menuitem" data-href="contact.html">Contact</a>
+        </div>
+      </div>
+    </nav>
+    <button id="navToggle" class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="mainNav">☰</button>
+  </div>
+</header>
+
 
     <main class="container" id="dlxPage">
       <h1>Dyslexia: Reading Training</h1>
@@ -51,7 +105,7 @@
       <h2>Before practice (1–2 minutes)</h2>
       <ul>
         <li>Do one calming breath: <strong>4‑7‑8</strong> (inhale 4s, hold 7s, exhale 8s) or <strong>Coherent 5‑5</strong> (inhale 5s, exhale 5s).</li>
-        <li style="list-style:none;margin:.5rem 0 0">
+        <li class="no-list-margin">
           <div class="actions">
             <a class="btn btn-success" href="4-7-8-breathing.html">Start 4‑7‑8 Breathing</a>
             <a class="btn btn-success" href="coherent-5-5.html">Start Coherent 5‑5</a>
@@ -83,7 +137,7 @@
         <div id="vcPhon" class="card" aria-labelledby="vcPhonH">
           <h4 id="vcPhonH">Voice Coach — Segment &amp; Blend</h4>
           <p class="muted">Type a word and let the coach model slow sounds then the whole word.</p>
-          <div class="grid cols-3" style="gap:10px">
+          <div class="grid cols-3 gap-10">
             <div class="tile"><label for="vcWord">Word</label><input id="vcWord" type="text" value="cat" /></div>
             <div class="tile"><label for="vcPace">Pace</label>
               <select id="vcPace"><option value="slow">Slow</option><option value="med" selected>Medium</option><option value="fast">Fast</option></select>
@@ -96,7 +150,7 @@
               </div>
             </div>
           </div>
-          <div id="vcOut" class="muted" style="margin-top:6px"></div>
+          <div id="vcOut" class="muted"></div>
         </div>
       </div>
 
@@ -107,7 +161,7 @@
 
         <p><strong>Rotate sets over the week.</strong> Keep each mini‑set short (3–6 items).</p>
 
-        <div class="grid" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px">
+        <div class="grid grid-3-cols">
           <div class="tile">
             <h4>Short vowels</h4>
             <ul>
@@ -181,7 +235,7 @@
         <div id="svStudio" class="card" aria-labelledby="svStudioH">
           <h4 id="svStudioH">Sound Training Studio (Audio • Visual • Mirror)</h4>
           <p class="muted">Select a topic, click a sound to hear examples, and—if helpful—open the mirror to watch mouth shape.</p>
-          <div class="grid cols-3" style="gap:10px">
+          <div class="grid cols-3 grid-gap-10">
             <div class="tile"><label for="svSelect">Topic</label>
               <select id="svSelect">
                 <option value="short" selected>Short vowels</option>
@@ -215,7 +269,7 @@
               </div>
             </div>
           </div>
-          <div id="svTiles" class="grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin-top:8px"></div>
+          <div id="svTiles" class="grid"></div>
           <div id="svOut" class="muted" style="margin-top:8px"></div>
           <div id="svMirrorWrap" class="card" style="margin-top:10px;display:none" aria-label="Mirror camera preview">
             <video id="svMirror" autoplay playsinline muted style="width:100%;border-radius:12px;background:#000"></video>
@@ -331,7 +385,7 @@
           <h4 id="pacerH">Fluency Pacer</h4>
           <p class="muted">Reveals words at a set pace. Aim for smooth, low‑effort reading.</p>
 
-          <textarea id="pText" rows="4" style="width:100%">Today I will read in a calm, steady voice. I let each breath guide my pace. I notice patterns in words and turn them into easy steps. Small wins add up.</textarea>
+          <textarea id="pText" rows="4" title="Reading practice text" placeholder="Enter text to practice reading here">Today I will read in a calm, steady voice. I let each breath guide my pace. I notice patterns in words and turn them into easy steps. Small wins add up.</textarea>
 
           <!-- Content tools -->
           <div class="grid cols-3" style="gap:10px;margin-top:8px">

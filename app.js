@@ -1,13 +1,13 @@
 /* M Share • Pro — 2025 app core
    - Profile model (JSON + URL overrides)
-   - Nav wiring + share sheet
+   - Nav wiring + accessible mega menu
    - Stats (local-date aware)
    - Weekly chart + Today line
    - Bank helpers
    - PNG hero builder (avatar on photo bg)
    - Minimal PDF writer (valid A4, hyperlinks)
    - Device Locker (base64, quota, export/import)
-   - QR modal (simple, CDN-free via chart API fallback)
+   - QR modal (CDN QR fallback)
 */
 (() => {
   'use strict';
@@ -15,14 +15,52 @@
   const $$ = (s, el=document) => el.querySelectorAll(s);
 
   // -----------------------
-  // Router-friendly nav
+  // Router-friendly nav + accessible mega‑menu
   // -----------------------
   function wireNav(){
-    const nav = $('#mainNav'); const btn = $('#navToggle');
-    if(btn) btn.addEventListener('click', ()=> nav.classList.toggle('open'));
+    const nav = $('#mainNav'), btn = $('#navToggle');
+    if(btn) btn.addEventListener('click', ()=>{
+      nav?.classList.toggle('open');
+      btn.setAttribute('aria-expanded', nav?.classList.contains('open') ? 'true' : 'false');
+    });
+
+    // router-friendly [data-href]
     const qs = location.search || '';
     $$('[data-href]').forEach(a=> a.setAttribute('href', a.getAttribute('data-href') + qs));
     const brand = $('#brandLink'); if(brand) brand.setAttribute('href', 'index.html' + qs);
+
+    // mega-menu open/close
+    const groups = Array.from(nav?.querySelectorAll('.nav-group')||[]);
+    function closeAll(except){
+      groups.forEach(g=>{
+        if (g!==except) {
+          g.classList.remove('open');
+          const b=g.querySelector('.nav-button'); if (b) b.setAttribute('aria-expanded','false');
+        }
+      });
+    }
+    groups.forEach(g=>{
+      const b = g.querySelector('.nav-button');
+      const m = g.querySelector('.menu');
+      if(!b || !m) return;
+      b.addEventListener('click', ()=>{
+        const willOpen = !g.classList.contains('open');
+        closeAll(willOpen?g:null);
+        g.classList.toggle('open', willOpen);
+        b.setAttribute('aria-expanded', willOpen?'true':'false');
+      });
+      b.addEventListener('keydown', (e)=>{
+        if(e.key==='ArrowDown'){ e.preventDefault(); g.classList.add('open'); b.setAttribute('aria-expanded','true'); (m.querySelector('a,button')||b).focus(); }
+        if(e.key==='Escape'){ e.preventDefault(); g.classList.remove('open'); b.setAttribute('aria-expanded','false'); b.focus(); }
+      });
+      m.addEventListener('keydown', (e)=>{
+        if(e.key==='Escape'){ e.preventDefault(); g.classList.remove('open'); b.setAttribute('aria-expanded','false'); b.focus(); }
+      });
+    });
+    document.addEventListener('click', (e)=>{
+      const inside = e.target.closest?.('.nav-group,.nav-toggle,.main-nav');
+      if (!inside) closeAll(null);
+    });
   }
   wireNav();
 
@@ -40,7 +78,7 @@
     bg: 'assets/amz.jpg',
     wellbeing: 'mindpaylink.com',
     acc: '01235467', sort: '012345', iban: 'GB0000000000', ref: 'M SHARE',
-    x:'', ig:'', yt:'', ln:''
+    x:'', ig:'', yt:'', ln:'', site:'mindpaylink.com', addr:'London, UK'
   };
   const LOCAL_KEY='mshare_default_profile_v2';
   async function loadProfile(){
@@ -68,10 +106,8 @@
   }
 
   let data = fallbackProfile;
-  // init async (but also expose sync defaults immediately)
   loadProfile().then(p => { data = withOverrides(p); });
 
-  // Build cross-page query string
   function buildQP(d){
     const map = { n:d.name, title:d.title, ph:d.phone, em:d.email, s:d.site, a:d.addr, av:d.avatar, bg:d.bg, wb:d.wellbeing, ac:d.acc, sc:d.sort, ib:d.iban, r:d.ref };
     const parts=[]; for(const [k,v] of Object.entries(map)) if(v && String(v).trim()!=='') parts.push(k+'='+encodeURIComponent(v));
@@ -87,7 +123,7 @@
       `${data.name} — ${data.title}`,
       `Phone: ${data.phone}`, `Email: ${data.email}`,
       `Site: ${data.site}`, `Wellbeing: ${data.wellbeing}`,
-      `Address: ${data.addr.replace(/\n/g, ', ')}`,
+      `Address: ${(data.addr||'').replace(/\n/g, ', ')}`,
       `Buy me coffee: ${location.origin+location.pathname.replace(/[^/]*$/,'')+'coffee.html'+qp}`
     ];
     return lines.join('\n');
@@ -119,7 +155,7 @@
   }
   function openAppOrStore(scheme, name){
     const url = scheme;
-    const timer = setTimeout(()=>{ window.open('mindpaylink.com ?q='+encodeURIComponent(name+' bank app'), '_blank'); }, 1200);
+    const timer = setTimeout(()=>{ window.open('https://www.google.com/search?q='+encodeURIComponent(name+' bank app'), '_blank','noopener'); }, 1200);
     location.href = url; setTimeout(()=>clearTimeout(timer), 2000);
   }
 
@@ -164,7 +200,7 @@
       ctx.fillStyle='#94a3b8'; ctx.font='12px system-ui,-apple-system,Segoe UI'; ctx.fillText(d.label,x,H-6);
     });
   }
-  setTimeout(drawWeeklyChart, 60); // after layout
+  setTimeout(drawWeeklyChart, 60);
 
   // -----------------------
   // PNG builder (hero card) + QR
@@ -173,24 +209,19 @@
   async function buildStyledCardCanvas({ canvas, includeQR=false }={}){
     const W=1224, H=1584; const cnv = canvas || Object.assign(document.createElement('canvas'), { width: W, height: H });
     const ctx = cnv.getContext('2d');
-    // background photo
     try{ const bg = await loadImg(data.bg||fallbackProfile.bg); ctx.drawImage(bg,0,0,W,H); }catch{ ctx.fillStyle='#111'; ctx.fillRect(0,0,W,H); }
-    // overlay gradient
     const g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'rgba(0,0,0,.15)'); g.addColorStop(1,'rgba(0,0,0,.55)'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
-    // avatar circle
     const AV=360; const cx=W/2, cy=330;
     ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, AV/2, 0, Math.PI*2); ctx.closePath(); ctx.fillStyle='#111'; ctx.fill();
     try{ const av=await loadImg(data.avatar||fallbackProfile.avatar); ctx.clip(); ctx.drawImage(av, cx-AV/2, cy-AV/2, AV, AV); }catch{}
     ctx.restore();
     ctx.lineWidth=8; ctx.strokeStyle='rgba(255,255,255,.92)'; ctx.beginPath(); ctx.arc(cx, cy, AV/2, 0, Math.PI*2); ctx.stroke();
-    // text
     ctx.fillStyle='#fff'; ctx.textAlign='center';
     ctx.font='bold 58px ui-sans-serif,system-ui,Segoe UI,Roboto'; ctx.fillText(data.name||'', cx, cy+AV/2+72);
     ctx.font='600 34px ui-sans-serif,system-ui,Segoe UI,Roboto'; ctx.fillStyle='rgba(255,255,255,.95)'; ctx.fillText(data.title||'', cx, cy+AV/2+120);
     ctx.font='500 28px ui-sans-serif,system-ui,Segoe UI,Roboto'; ctx.fillStyle='rgba(236,253,245,.94)';
     const addrLines = (data.addr||'').split('\n'); addrLines.forEach((ln,i)=> ctx.fillText(ln, cx, cy+AV/2+170+i*34));
 
-    // link buttons (rects for PDF annotations)
     const btns=[
       { label:'📞 Call',     url:`tel:${data.phone||''}` },
       { label:'💬 Text',     url:`sms:${data.phone||''}` },
@@ -210,23 +241,19 @@
       links.push({ x:bx, y:y, w:bw, h:bh, url:b.url });
     });
 
-    // optional QR (to this PDF page)
     if(includeQR){
       const qrUrl = location.origin + location.pathname.replace(/[^/]*$/,'') + 'pdf.html' + qp;
-      const qrImg = await buildQRImage(qrUrl, 280); // canvas
+      const qrImg = await buildQRImage(qrUrl, 280);
       const qx=W-320, qy=80; ctx.drawImage(qrImg, qx, qy);
       ctx.font='500 22px ui-sans-serif,system-ui,Segoe UI,Roboto'; ctx.fillStyle='rgba(255,255,255,.95)';
       ctx.fillText('Scan: open PDF', qx+140, qy+300);
-      // also make annotation for QR area
       links.push({ x: qx, y: qy, w: qrImg.width, h: qrImg.height, url: qrUrl });
     }
 
     return { canvas: cnv, links };
   }
   function roundRect(ctx,x,y,w,h,r){ const rr=Math.min(r,w/2,h/2); ctx.beginPath(); ctx.moveTo(x+rr,y); ctx.arcTo(x+w,y,x+w,y+h,rr); ctx.arcTo(x+w,y+h,x,y+h,rr); ctx.arcTo(x,y+h,x,y,rr); ctx.arcTo(x,y,x+w,y,rr); ctx.closePath(); }
-  // lightweight QR (uses online chart API fallback if drawing fails)
   async function buildQRImage(text, size){
-    // Simple fallback: use remote QR image (works offline only if cached later)
     const img = new Image(); img.crossOrigin='anonymous'; img.referrerPolicy='no-referrer';
     img.src = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}`;
     await new Promise((res)=>{ img.onload=res; img.onerror=res; });
@@ -239,34 +266,24 @@
   // Minimal, valid PDF writer with JPEG background + link annotations
   // -----------------------
   function base64ToBytes(b64){ const bin=atob(b64.replace(/^data:.*;base64,/,'')); const len=bin.length, bytes=new Uint8Array(len); for(let i=0;i<len;i++) bytes[i]=bin.charCodeAt(i); return bytes; }
-  function parseJpegSize(bytes){ // SOF0..SOF3
-    let i=2; while(i<bytes.length){ if(bytes[i]!==0xFF){ i++; continue; } const marker=bytes[i+1]; const len=(bytes[i+2]<<8)|bytes[i+3]; if(marker>=0xC0 && marker<=0xC3){ return { height:(bytes[i+5]<<8)|bytes[i+6], width:(bytes[i+7]<<8)|bytes[i+8] }; } i+=2+len; } return {width:1224,height:1584}; }
-  async function generateStyledPdf({ fromCanvas, links=[], includeQR=false }){
-    // create JPEG from canvas
+  function parseJpegSize(bytes){ let i=2; while(i<bytes.length){ if(bytes[i]!==0xFF){ i++; continue; } const marker=bytes[i+1]; const len=(bytes[i+2]<<8)|bytes[i+3]; if(marker>=0xC0 && marker<=0xC3){ return { height:(bytes[i+5]<<8)|bytes[i+6], width:(bytes[i+7]<<8)|bytes[i+8] }; } i+=2+len; } return {width:1224,height:1584}; }
+  async function generateStyledPdf({ fromCanvas, links=[] }){
     const dataUrl = fromCanvas.toDataURL('image/jpeg', .92);
     const imgBytes = base64ToBytes(dataUrl);
     const dim = parseJpegSize(imgBytes);
-
-    // A4 portrait 595x842
     const PW=595, PH=842;
-    // Content stream: draw image on full page
     const contentStr = `q\n${PW} 0 0 ${PH} 0 0 cm\n/Im0 Do\nQ\n`;
-    const encoder = [];
-    const idx = []; let off=0;
+    const encoder = []; const idx = []; let off=0;
     function push(s){ const bytes = (typeof s==='string')? new TextEncoder().encode(s) : s; idx.push(off); encoder.push(bytes); off += bytes.length; }
     function obj(n, body){ push(`${n} 0 obj\n`); push(body); push(`\nendobj\n`); }
     const annots = links.filter(l=>l.url).map((l,i)=>{
-      // map canvas coords to PDF: Y invert + scale
       const sx = PW/1224, sy=PH/1584;
       const x1 = l.x*sx, y1 = PH - (l.y+l.h)*sy, x2=(l.x+l.w)*sx, y2=PH - (l.y)*sy;
       return { rect:[x1,y1,x2,y2], url:l.url };
     });
-
-    // Build objects
     push('%PDF-1.4\n');
     obj(1, `<< /Type /Catalog /Pages 2 0 R >>`);
     obj(2, `<< /Type /Pages /Count 1 /Kids [3 0 R] >>`);
-    // Annots array indices will be 6.. (after font + image)
     const annotsNums = annots.map((_,i)=> (6+i)+' 0 R').join(' ');
     obj(3, `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PW} ${PH}] /Resources << /XObject << /Im0 5 0 R >> /ProcSet [/PDF /ImageC] >> /Contents 4 0 R ${annots.length?('/Annots ['+annotsNums+']'):''} >>`);
     obj(4, `<< /Length ${contentStr.length} >>\nstream\n${contentStr}endstream`);
@@ -280,26 +297,23 @@
     push('0000000000 65535 f \n');
     for(let i=0;i<count;i++){ push(String(idx[i]).padStart(10,'0') + ' 00000 n \n'); }
     push(`trailer << /Size ${count+1} /Root 1 0 R >>\nstartxref\n${xrefStart}\n%%EOF`);
-    // merge all chunks
-    const out = new Blob(encoder.map(b=>b.buffer?b:new Uint8Array(b)), {type:'application/pdf'});
-    return out;
+    return new Blob(encoder.map(b=>b.buffer?b:new Uint8Array(b)), {type:'application/pdf'});
   }
 
-  // Quick download (official assets file or generated)
   async function quickDownloadPdf(){
     try{
       const r=await fetch('assets/m_share_profile.pdf').catch(()=>null);
       if(r && r.ok){ const b=await r.blob(); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='m_share_profile.pdf'; document.body.appendChild(a); a.click(); a.remove(); return; }
     }catch{}
     const preview = await buildStyledCardCanvas({ includeQR:true });
-    const blob = await generateStyledPdf({ fromCanvas: preview.canvas, links: preview.links, includeQR:true });
+    const blob = await generateStyledPdf({ fromCanvas: preview.canvas, links: preview.links });
     const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='m_share_profile.pdf'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
   }
 
   // -----------------------
-  // Device Locker (base64, quota, export/import)
+  // Device Locker
   // -----------------------
-  const LOCK_KEY='mshare_pdf_locker_v2'; const MAX_BYTES=20*1024*1024; // 20MB default quota
+  const LOCK_KEY='mshare_pdf_locker_v2'; const MAX_BYTES=20*1024*1024;
   const DeviceLocker = {
     load(){ try{ return JSON.parse(localStorage.getItem(LOCK_KEY)||'[]')||[]; }catch{ return []; } },
     save(arr){ try{ localStorage.setItem(LOCK_KEY, JSON.stringify(arr)); }catch{} },
@@ -334,7 +348,7 @@
       addInput?.addEventListener('change', async (e)=>{ const file=e.target.files?.[0]; if(!file) return; if(file.type!=='application/pdf'){ toast('Please choose a PDF.'); addInput.value=''; return; }
         const ok=await this.addBlob(file.name, file); if(ok) render(); addInput.value=''; });
       placeholderBtn?.addEventListener('click', async ()=>{
-        try{ const blob = await (typeof previewBuilder==='function'? previewBuilder(): (async()=>{ const x=await buildStyledCardCanvas({includeQR:true}); return generateStyledPdf({fromCanvas:x.canvas, links:x.links, includeQR:true}); })()); await this.addBlob('m_share_profile.pdf', blob); render(); }
+        try{ const blob = await (typeof previewBuilder==='function'? previewBuilder(): (async()=>{ const x=await buildStyledCardCanvas({includeQR:true}); return generateStyledPdf({fromCanvas:x.canvas, links:x.links}); })()); await this.addBlob('m_share_profile.pdf', blob); render(); }
         catch{ toast('Could not generate placeholder PDF.'); }
       });
       exportBtn?.addEventListener('click', ()=> this.export());
@@ -377,79 +391,71 @@
     DeviceLocker
   };
 
-  /* ===== M Share • Extension: SOS wiring + Admin gate (safe to append) ===== */
-(() => {
-  const MS = (window.__MSHARE__ = window.__MSHARE__ || {});
+  /* ===== M Share • Extension: SOS wiring + Admin gate ===== */
+  (() => {
+    const MS = (window.__MSHARE__ = window.__MSHARE__ || {});
 
-  // --- SHA-256 helper (for passcode hashing) ---
-  async function sha256(text) {
-    const enc = new TextEncoder().encode(text);
-    const buf = await crypto.subtle.digest('SHA-256', enc);
-    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
-  }
-
-  // --- Admin gate / storage visibility ---
-  const ADMIN_TOKEN = 'mshare_admin_ok';
-  // Default passcode is:  MShare@2025!  (change it below if you want)
-  const PASS_SHA256 = 'ea17c32cd4c019ef90f07fa822e744c688db972b823b567344c2aca9a44c6a51';
-
-  MS.isAdmin = () => sessionStorage.getItem(ADMIN_TOKEN) === '1';
-
-  MS.revealStorageLink = () => {
-    document.querySelectorAll('a[data-href="storage.html"]').forEach(a => {
-      a.style.display = '';
-    });
-  };
-
-  MS.requireAdmin = async () => {
-    if (MS.isAdmin()) return true;
-    const pass = prompt('Enter admin passcode:');
-    if (!pass) return false;
-    const ok = (await sha256(pass)) === PASS_SHA256;
-    if (ok) {
-      sessionStorage.setItem(ADMIN_TOKEN, '1');
-      MS.revealStorageLink();
-      return true;
+    // --- SHA-256 helper (passcode hashing) ---
+    async function sha256(text) {
+      const enc = new TextEncoder().encode(text);
+      const buf = await crypto.subtle.digest('SHA-256', enc);
+      return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
     }
-    alert('Incorrect passcode');
-    return false;
-  };
 
-  // Hide "Storage" link for non-admin visitors
-  if (!MS.isAdmin()) {
-    document.querySelectorAll('a[data-href="storage.html"]').forEach(a => a.remove());
-  }
+    // --- Admin gate / storage visibility ---
+    const ADMIN_TOKEN = 'mshare_admin_ok';
+    // Default passcode: MShare@2025!  (change hash if you change pass)
+    const PASS_SHA256 = 'ea17c32cd4c019ef90f07fa822e744c688db972b823b567344c2aca9a44c6a51';
 
-  // --- SOS wiring: route the existing landing-page SOS button to sos.html ---
-  // Your landing page already calls CoachPresets.panic(); we point that to sos.html.
-  MS.CoachPresets = MS.CoachPresets || {};
-  MS.CoachPresets.panic = function () {
-    // We still provide breathing counts so SOS can pre-load a quick pattern if desired.
-    const extra = new URLSearchParams({ in: '4', inHold: '4', out: '4', outHold: '4', breaths: '4', tts: 'off', vib: 'off' });
-    const qpCore = (MS.qp || '').replace(/^\?/, '');
-    const qs = qpCore ? qpCore + '&' + extra.toString() : extra.toString();
-    return { page: 'sos.html', q: qs };
-  };
+    MS.isAdmin = () => sessionStorage.getItem(ADMIN_TOKEN) === '1';
 
-  // Fallback: if some older inline script prevents navigation, force sos.html
-  const sosBtn = document.getElementById('sosBtn');
-  if (sosBtn) {
-    sosBtn.addEventListener('click', (ev) => {
-      // Let the page's original click handler run first, then check if we stayed put.
-      setTimeout(() => {
-        // If still on the same page, navigate to sos.html (preserving existing query string)
-        if (/index\.html$|\/$/.test(location.pathname)) {
-          const qs = MS.qp || '';
-          location.href = 'sos.html' + qs;
-        }
-      }, 0);
-    }, { once: true });
-  }
-})();
+    MS.revealStorageLink = () => {
+      document.querySelectorAll('a[data-href="storage.html"]').forEach(a => {
+        a.style.display = '';
+      });
+    };
 
+    MS.requireAdmin = async () => {
+      if (MS.isAdmin()) return true;
+      const pass = prompt('Enter admin passcode:');
+      if (!pass) return false;
+      const ok = (await sha256(pass)) === PASS_SHA256;
+      if (ok) {
+        sessionStorage.setItem(ADMIN_TOKEN, '1');
+        MS.revealStorageLink();
+        return true;
+      }
+      alert('Incorrect passcode');
+      return false;
+    };
+
+    // Hide "Storage" link for non-admin visitors
+    if (!MS.isAdmin()) {
+      document.querySelectorAll('a[data-href="storage.html"]').forEach(a => a.remove());
+    }
+
+    // --- SOS wiring: landing-page SOS button → sos.html ---
+    MS.CoachPresets = MS.CoachPresets || {};
+    MS.CoachPresets.panic = function () {
+      const extra = new URLSearchParams({ pattern: '4,4,4,4', minutes: '1', tts: 'off', vib: 'off' });
+      const qpCore = (MS.qp || '').replace(/^\?/, '');
+      const qs = qpCore ? qpCore + '&' + extra.toString() : extra.toString();
+      return { page: 'sos.html', q: qs };
+    };
+
+    const sosBtn = document.getElementById('sosBtn');
+    if (sosBtn) {
+      sosBtn.addEventListener('click', (ev) => {
+        setTimeout(() => {
+          if (/index\.html$|\/$/.test(location.pathname)) {
+            const qs = (MS.qp || '');
+            location.href = 'sos.html' + qs;
+          }
+        }, 0);
+      }, { once: true });
+    }
+  })();
 
   // Footer year (if present)
   const y = $('#year'); if(y) y.textContent = new Date().getFullYear();
 })();
-
-
