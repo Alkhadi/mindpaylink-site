@@ -15,3 +15,8 @@ build/
 
 tmp/
 >>>>>>> d626c59 (Initial publish: pages, breathing tools, Dyslexia trainer, Mood page, assets)
+/m-share.zip
+/_backup_mindpaylink/
+/_backup_ux/
+.DS_Store
+*.log
