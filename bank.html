@@ -18,6 +18,8 @@
     .chooser .close{ float:right; border:none; background:#0a1020; color:var(--fg); border:1px solid var(--b);
       border-radius:10px; padding:8px 10px; cursor:pointer; }
   </style>
+  <link rel="stylesheet" href="assets/css/ux-fixes.css" />
+
 </head>
 <body>
   <header class="site-header">
@@ -74,6 +76,52 @@
       </div>
     </div>
   </main>
+<footer class="footer-2025" id="footer2025">
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <div class="brandline"><span class="logo">M</span><div><b>M Share</b><div class="muted ellipsis-2">Quiet, practical tools for mental health and wellbeing.</div></div></div>
+        <div class="controls">
+          <div class="ctl">
+            <label for="themeMode">Theme</label>
+            <select id="themeMode">
+              <option value="">Default</option>
+              <option value="bright">Bright</option>
+            </select>
+          </div>
+          <div class="ctl">
+            <label for="themeColor">Background</label>
+            <input id="themeColor" type="color" value="#0f172a" />
+          </div>
+          <div class="ctl">
+            <label for="themeBrightness">Brightness</label>
+            <input id="themeBrightness" type="range" min="0.8" max="1.25" step="0.01" value="1" />
+          </div>
+          <button id="installAppBtn" class="btn" style="display:none">⬇ Install App</button>
+          <a class="btn" href="javascript:void(0)" onclick="window.__MSHARE__?.quickDownloadPdf?.()">⬇ Profile PDF</a>
+        </div>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <p><a data-href="index.html">Wellbeing</a> • <a data-href="breath.html">Breath</a> • <a data-href="focus.html">Focus</a> • <a data-href="mindfulness.html">Mindfulness</a> • <a data-href="pdf.html">About</a></p>
+      </div>
+      <div>
+        <h4>Toolkits</h4>
+        <p><a data-href="mood-tools.html">Mood</a> • <a data-href="breath-tools.html">Breath Tools</a> • <a data-href="sleep-tools.html">Sleep</a> • <a data-href="anxiety-tools.html">Anxiety</a> • <a data-href="stress-tools.html">Stress</a></p>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p><a data-href="contact.html">Contact</a> • <a data-href="coffee.html">Support</a> • <a href="mailto:info@mindpaylink.com">info@mindpaylink.com</a></p>
+      </div>
+    </div>
+    <div class="bottom">
+      <div>© <span id="yearFooter"></span> MindPayLink · Educational information only; not medical advice.</div>
+      <div class="credit">Designed by <b>Alkhadi M Koroma</b></div>
+    </div>
+  </div>
+  <script>document.getElementById('yearFooter').textContent=new Date().getFullYear()</script>
+</footer>
+
 
   <!-- chooser -->
   <div id="chooser" class="chooser" role="dialog" aria-modal="true" aria-labelledby="chooserTitle">
