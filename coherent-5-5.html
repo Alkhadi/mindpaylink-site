@@ -32,6 +32,7 @@
 
   <link rel="stylesheet" href="assets/css/footer-2025.css" />
   <link rel="stylesheet" href="assets/css/header-2025.css" />
+  <link rel="stylesheet" href="assets/css/responsive-fixes.css"/>
 </head>
 <body>
 <a id="top" style="position:absolute;top:0;left:0;width:0;height:0;overflow:hidden"> </a>
@@ -108,7 +109,7 @@
         </div>
       </div>
     </nav>
-    <button id="navToggle" class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="mainNav">☰</button>
+    <button type="button" id="navToggle" class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="mainNav">☰</button>
   </div>
 </header>
 
@@ -122,20 +123,20 @@
 
     <div class="grid cols-2 ui">
       <div class="tile"><label>Minutes</label>
-        <select id="minutes"><option value="1">1 minute</option><option value="3" selected>3 minutes</option><option value="5">5 minutes</option><option value="10">10 minutes</option></select>
+        <select id="minutes" title="Select option"><option value="1">1 minute</option><option value="3" selected>3 minutes</option><option value="5">5 minutes</option><option value="10">10 minutes</option></select>
       </div>
-      <div class="tile"><label>Breaths/min</label><input id="bpm" type="number" min="4.5" max="6.5" step="0.1" value="5.5"/></div>
-      <div class="tile"><label>Voice coach (TTS)</label><select id="tts"><option value="off" selected>Off</option><option value="on">On</option></select></div>
-      <div class="tile"><label>Haptics</label><select id="vib"><option value="off">Off</option><option value="on" selected>On</option></select></div>
-      <div class="tile"><label>Ambience</label><select id="bg"><option value="none">None</option><option value="cosmic" selected>Cosmic Waves</option><option value="rain">Soft Rain</option></select></div>
-      <div class="tile"><label>Ambience volume</label><input id="bgv" type="range" min="0" max="1" step="0.01" value="0.2"/></div>
-      <div class="tile"><label>Reduced motion</label><select id="rm"><option value="auto" selected>Auto</option><option value="on">Force reduce</option><option value="off">Full motion</option></select></div>
-      <div class="tile"><label>Focus mode</label><select id="focus"><option value="off">Off</option><option value="on" selected>On</option></select></div>
+      <div class="tile"><label>Breaths/min</label><input id="bpm" type="number" min="4.5" max="6.5" step="0.1" value="5.5"/ title="Input" placeholder=" "></div>
+      <div class="tile"><label>Voice coach (TTS)</label><select id="tts" title="Select option"><option value="off" selected>Off</option><option value="on">On</option></select></div>
+      <div class="tile"><label>Haptics</label><select id="vib" title="Select option"><option value="off">Off</option><option value="on" selected>On</option></select></div>
+      <div class="tile"><label>Ambience</label><select id="bg" title="Select option"><option value="none">None</option><option value="cosmic" selected>Cosmic Waves</option><option value="rain">Soft Rain</option></select></div>
+      <div class="tile"><label>Ambience volume</label><input id="bgv" type="range" min="0" max="1" step="0.01" value="0.2"/ title="Input" placeholder=" "></div>
+      <div class="tile"><label>Reduced motion</label><select id="rm" title="Select option"><option value="auto" selected>Auto</option><option value="on">Force reduce</option><option value="off">Full motion</option></select></div>
+      <div class="tile"><label>Focus mode</label><select id="focus" title="Select option"><option value="off">Off</option><option value="on" selected>On</option></select></div>
     </div>
 
     <div class="actions">
-      <button class="btn btn-success" id="startBtn">Start</button>
-      <button class="btn" id="instBtn">Instructions</button>
+      <button type="button" class="btn btn-success" id="startBtn">Start</button>
+      <button type="button" class="btn" id="instBtn">Instructions</button>
     </div>
   </div>
 
@@ -147,7 +148,7 @@
       <li>Keep the inhale and exhale even (5 seconds each).</li>
     </ol>
     <div class="actions">
-      <button class="btn btn-success" id="beginBtn">Begin Session</button>
+      <button type="button" class="btn btn-success" id="beginBtn">Begin Session</button>
       <a class="btn" id="backSetup">Back to Setup</a>
     </div>
   </div>
@@ -167,7 +168,7 @@
         </div>
       </div>
     </div>
-    <div class="actions"><button class="btn" id="pauseBtn">Pause</button><button class="btn" id="resetBtn">Reset</button><a class="btn" id="adjustBtn">Adjust Settings</a></div>
+    <div class="actions"><button type="button" class="btn" id="pauseBtn">Pause</button><button type="button" class="btn" id="resetBtn">Reset</button><a class="btn" id="adjustBtn">Adjust Settings</a></div>
   </div>
 
   <div id="done" class="card hidden">
@@ -177,12 +178,12 @@
       <div class="tile"><label>Day Streak</label><div id="doneStreak" class="val">0</div></div>
       <div class="tile"><label>Total Breaths</label><div id="doneBreaths" class="val">0</div></div>
     </div>
-    <div class="actions"><button class="btn btn-success" id="againBtn">Again</button><a class="btn" data-href="index.html">Back to Hub</a></div>
+    <div class="actions"><button type="button" class="btn btn-success" id="againBtn">Again</button><a class="btn" data-href="index.html">Back to Hub</a></div>
   </div>
 
   
 </main>
-<footer class="footer-2025" id="footer2025"> <div class="wrap"> <div class="grid"> <section class="col brand"> <div class="brandline"><span class="logo">M</span><div><b>M Share</b><div class="muted">Quiet, practical tools for mental health and wellbeing.</div></div></div> <div class="theme-controls"> <label>Background<input id="themeColor" type="color" value="#0f172a"></label> <label>Brightness<input id="themeBrightness" type="range" min="0.85" max="1.25" step="0.01" value="1"></label> </div> <div class="actions" style="margin-top:8px"><a class="btn" href="#top" id="backToTop">Back to top ↑</a></div> </section> <section class="col"> <h4>Explore</h4> <p><a data-href="index.html">Wellbeing</a> • <a data-href="breath.html">Breath</a> • <a data-href="focus.html">Focus</a> • <a data-href="mindfulness.html">Mindfulness</a> • <a data-href="about.html">About</a></p> </section> <section class="col"> <h4>Toolkits</h4> <p><a data-href="mood-tools.html">Mood</a> • <a data-href="breath-tools.html">Breath Tools</a> • <a data-href="sleep-tools.html">Sleep</a> • <a data-href="anxiety-tools.html">Anxiety</a> • <a data-href="stress-tools.html">Stress</a></p> </section> <section class="col"> <h4>Contact</h4> <p><a data-href="contact.html">Contact</a> • <a href="mailto:info@mindpaylink.com">info@mindpaylink.com</a></p> </section> </div> <div class="bottom"> <div>© <span id="yearFooter"></span> MindPayLink · Educational information only; not medical advice.</div> <div class="credit">Designed by <b>Alkhadi M Koroma</b></div> </div> </div> <script>document.getElementById('yearFooter')&&(document.getElementById('yearFooter').textContent=(new Date).getFullYear());document.getElementById('backToTop')&&document.getElementById('backToTop').addEventListener('click',function(e){e.preventDefault();try{(document.getElementById('top')||document.body).scrollIntoView({behavior:'smooth',block:'start'})}catch{location.hash='#top'}})</script>
+<footer class="footer-2025" id="footer2025"> <div class="wrap"> <div class="grid"> <section class="col brand"> <div class="brandline"><span class="logo">M</span><div><b>M Share</b><div class="muted">Quiet, practical tools for mental health and wellbeing.</div></div></div> <div class="theme-controls"> <label>Background<input id="themeColor" type="color" value="#0f172a" title="Input" placeholder=" "></label> <label>Brightness<input id="themeBrightness" type="range" min="0.85" max="1.25" step="0.01" value="1" title="Input" placeholder=" "></label> </div> <div class="actions" style="margin-top:8px"><a class="btn" href="#top" id="backToTop">Back to top ↑</a></div> </section> <section class="col"> <h4>Explore</h4> <p><a data-href="index.html">Wellbeing</a> • <a data-href="breath.html">Breath</a> • <a data-href="focus.html">Focus</a> • <a data-href="mindfulness.html">Mindfulness</a> • <a data-href="about.html">About</a></p> </section> <section class="col"> <h4>Toolkits</h4> <p><a data-href="mood-tools.html">Mood</a> • <a data-href="breath-tools.html">Breath Tools</a> • <a data-href="sleep-tools.html">Sleep</a> • <a data-href="anxiety-tools.html">Anxiety</a> • <a data-href="stress-tools.html">Stress</a></p> </section> <section class="col"> <h4>Contact</h4> <p><a data-href="contact.html">Contact</a> • <a href="mailto:info@mindpaylink.com">info@mindpaylink.com</a></p> </section> </div> <div class="bottom"> <div>© <span id="yearFooter"></span> MindPayLink · Educational information only; not medical advice.</div> <div class="credit">Designed by <b>Alkhadi M Koroma</b></div> </div> </div> <script>document.getElementById('yearFooter')&&(document.getElementById('yearFooter').textContent=(new Date).getFullYear());document.getElementById('backToTop')&&document.getElementById('backToTop').addEventListener('click',function(e){e.preventDefault();try{(document.getElementById('top')||document.body).scrollIntoView({behavior:'smooth',block:'start'})}catch{location.hash='#top'}})</script>
 </footer>
 
 
@@ -295,6 +296,7 @@
 
     <script src="assets/js/site-core.js"></script>
   <script src="assets/js/nav-2025.js"></script>
+    <script src="assets/js/a11y-fix.js"></script>
   <script src="assets/js/start-fix.js"></script>
 </body>
 </html>

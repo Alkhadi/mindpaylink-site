@@ -13,6 +13,7 @@
 
     <link rel="stylesheet" href="assets/css/footer-2025.css" />
   <link rel="stylesheet" href="assets/css/header-2025.css" />
+  <link rel="stylesheet" href="assets/css/responsive-fixes.css"/>
 </head>
   <body>
 <a id="top" style="position:absolute;top:0;left:0;width:0;height:0;overflow:hidden"> </a>
@@ -89,7 +90,7 @@
         </div>
       </div>
     </nav>
-    <button id="navToggle" class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="mainNav">☰</button>
+    <button type="button" id="navToggle" class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="mainNav">☰</button>
   </div>
 </header>
 
@@ -142,7 +143,7 @@
         <div class="grid cols-3" style="gap: 10px">
           <div class="tile">
             <label for="psCycles">Cycles</label>
-            <select id="psCycles">
+            <select id="psCycles" title="Select option">
               <option>1</option>
               <option selected>3</option>
               <option>5</option>
@@ -150,7 +151,7 @@
           </div>
           <div class="tile">
             <label for="psVoice">Voice (optional)</label>
-            <select id="psVoice"><option value="off" selected>Off</option></select>
+            <select id="psVoice" title="Select option"><option value="off" selected>Off</option></select>
           </div>
           <div class="tile">
             <label>&nbsp;</label>
@@ -180,7 +181,7 @@
         <div class="grid cols-3" style="gap: 10px">
           <div class="tile">
             <label for="mtTech">Technique</label>
-            <select id="mtTech">
+            <select id="mtTech" title="Select option">
               <option>60‑second SOS</option>
               <option>Coherent 5‑5</option>
               <option>Physiological sigh</option>
@@ -192,11 +193,11 @@
           </div>
           <div class="tile">
             <label for="mtBefore">Mood before (0–10)</label>
-            <input id="mtBefore" type="number" min="0" max="10" value="4" />
+            <input id="mtBefore" type="number" min="0" max="10" value="4" / title="Input" placeholder=" ">
           </div>
           <div class="tile">
             <label for="mtAfter">Mood after (0–10)</label>
-            <input id="mtAfter" type="number" min="0" max="10" value="6" />
+            <input id="mtAfter" type="number" min="0" max="10" value="6" / title="Input" placeholder=" ">
           </div>
         </div>
         <div class="grid" style="gap: 10px; grid-template-columns: 1fr">
@@ -216,9 +217,9 @@
       <!-- Audience tabs -->
       <div class="card" id="audTabs" aria-label="Audience sections">
         <div class="actions" style="flex-wrap: wrap; gap: 6px">
-          <button class="btn btn-success" data-aud="bpadhd">Bipolar + ADHD</button>
-          <button class="btn" data-aud="autistic">Autistic adults</button>
-          <button class="btn" data-aud="peri">Perimenopause</button>
+          <button type="button" class="btn btn-success" data-aud="bpadhd">Bipolar + ADHD</button>
+          <button type="button" class="btn" data-aud="autistic">Autistic adults</button>
+          <button type="button" class="btn" data-aud="peri">Perimenopause</button>
         </div>
         <div id="aud-bpadhd" class="aud-panel" style="margin-top: 10px">
           <h2 style="margin-top: 0">Bipolar disorder with ADHD</h2>
@@ -303,15 +304,15 @@
         <div class="grid cols-3" style="gap: 10px">
           <div class="tile">
             <label for="rhWake">Wake time</label>
-            <input id="rhWake" type="time" value="07:00" />
+            <input id="rhWake" type="time" value="07:00" / title="Input" placeholder=" ">
           </div>
           <div class="tile">
             <label for="rhLunch">Mid‑day meal</label>
-            <input id="rhLunch" type="time" value="12:30" />
+            <input id="rhLunch" type="time" value="12:30" / title="Input" placeholder=" ">
           </div>
           <div class="tile">
             <label for="rhWind">Wind‑down start</label>
-            <input id="rhWind" type="time" value="21:30" />
+            <input id="rhWind" type="time" value="21:30" / title="Input" placeholder=" ">
           </div>
         </div>
         <div class="actions" style="margin-top: 8px">
@@ -334,11 +335,11 @@
         <div class="grid cols-3" style="gap: 10px">
           <div class="tile">
             <label for="ftWork">Focus (min)</label>
-            <input id="ftWork" type="number" min="5" max="45" value="15" />
+            <input id="ftWork" type="number" min="5" max="45" value="15" / title="Input" placeholder=" ">
           </div>
           <div class="tile">
             <label for="ftBreak">Break (min)</label>
-            <input id="ftBreak" type="number" min="2" max="10" value="3" />
+            <input id="ftBreak" type="number" min="2" max="10" value="3" / title="Input" placeholder=" ">
           </div>
           <div class="tile">
             <label>&nbsp;</label>
@@ -364,7 +365,7 @@
         <div class="grid cols-3" style="gap: 10px">
           <div class="tile">
             <label for="snCtx">Context</label>
-            <select id="snCtx">
+            <select id="snCtx" title="Select option">
               <option>Travel</option>
               <option>Work/Study</option>
               <option>Store/Errands</option>
@@ -393,11 +394,11 @@
         <div class="grid cols-3" style="gap: 10px">
           <div class="tile">
             <label for="fdHeat">Heat (0–10)</label>
-            <input id="fdHeat" type="number" min="0" max="10" value="5" />
+            <input id="fdHeat" type="number" min="0" max="10" value="5" / title="Input" placeholder=" ">
           </div>
           <div class="tile">
             <label for="fdMood">Mood (0–10)</label>
-            <input id="fdMood" type="number" min="0" max="10" value="5" />
+            <input id="fdMood" type="number" min="0" max="10" value="5" / title="Input" placeholder=" ">
           </div>
           <div class="tile">
             <label for="fdTrig">Trigger (optional)</label>
@@ -436,7 +437,7 @@
         safety concerns, or sleep/wake reversal, seek local clinical help.
       </p>
     </main>
-<footer class="footer-2025" id="footer2025"> <div class="wrap"> <div class="grid"> <section class="col brand"> <div class="brandline"><span class="logo">M</span><div><b>M Share</b><div class="muted">Quiet, practical tools for mental health and wellbeing.</div></div></div> <div class="theme-controls"> <label>Background<input id="themeColor" type="color" value="#0f172a"></label> <label>Brightness<input id="themeBrightness" type="range" min="0.85" max="1.25" step="0.01" value="1"></label> </div> <div class="actions" style="margin-top:8px"><a class="btn" href="#top" id="backToTop">Back to top ↑</a></div> </section> <section class="col"> <h4>Explore</h4> <p><a data-href="index.html">Wellbeing</a> • <a data-href="breath.html">Breath</a> • <a data-href="focus.html">Focus</a> • <a data-href="mindfulness.html">Mindfulness</a> • <a data-href="about.html">About</a></p> </section> <section class="col"> <h4>Toolkits</h4> <p><a data-href="mood-tools.html">Mood</a> • <a data-href="breath-tools.html">Breath Tools</a> • <a data-href="sleep-tools.html">Sleep</a> • <a data-href="anxiety-tools.html">Anxiety</a> • <a data-href="stress-tools.html">Stress</a></p> </section> <section class="col"> <h4>Contact</h4> <p><a data-href="contact.html">Contact</a> • <a href="mailto:info@mindpaylink.com">info@mindpaylink.com</a></p> </section> </div> <div class="bottom"> <div>© <span id="yearFooter"></span> MindPayLink · Educational information only; not medical advice.</div> <div class="credit">Designed by <b>Alkhadi M Koroma</b></div> </div> </div> <script>document.getElementById('yearFooter')&&(document.getElementById('yearFooter').textContent=(new Date).getFullYear());document.getElementById('backToTop')&&document.getElementById('backToTop').addEventListener('click',function(e){e.preventDefault();try{(document.getElementById('top')||document.body).scrollIntoView({behavior:'smooth',block:'start'})}catch{location.hash='#top'}})</script>
+<footer class="footer-2025" id="footer2025"> <div class="wrap"> <div class="grid"> <section class="col brand"> <div class="brandline"><span class="logo">M</span><div><b>M Share</b><div class="muted">Quiet, practical tools for mental health and wellbeing.</div></div></div> <div class="theme-controls"> <label>Background<input id="themeColor" type="color" value="#0f172a" title="Input" placeholder=" "></label> <label>Brightness<input id="themeBrightness" type="range" min="0.85" max="1.25" step="0.01" value="1" title="Input" placeholder=" "></label> </div> <div class="actions" style="margin-top:8px"><a class="btn" href="#top" id="backToTop">Back to top ↑</a></div> </section> <section class="col"> <h4>Explore</h4> <p><a data-href="index.html">Wellbeing</a> • <a data-href="breath.html">Breath</a> • <a data-href="focus.html">Focus</a> • <a data-href="mindfulness.html">Mindfulness</a> • <a data-href="about.html">About</a></p> </section> <section class="col"> <h4>Toolkits</h4> <p><a data-href="mood-tools.html">Mood</a> • <a data-href="breath-tools.html">Breath Tools</a> • <a data-href="sleep-tools.html">Sleep</a> • <a data-href="anxiety-tools.html">Anxiety</a> • <a data-href="stress-tools.html">Stress</a></p> </section> <section class="col"> <h4>Contact</h4> <p><a data-href="contact.html">Contact</a> • <a href="mailto:info@mindpaylink.com">info@mindpaylink.com</a></p> </section> </div> <div class="bottom"> <div>© <span id="yearFooter"></span> MindPayLink · Educational information only; not medical advice.</div> <div class="credit">Designed by <b>Alkhadi M Koroma</b></div> </div> </div> <script>document.getElementById('yearFooter')&&(document.getElementById('yearFooter').textContent=(new Date).getFullYear());document.getElementById('backToTop')&&document.getElementById('backToTop').addEventListener('click',function(e){e.preventDefault();try{(document.getElementById('top')||document.body).scrollIntoView({behavior:'smooth',block:'start'})}catch{location.hash='#top'}})</script>
 </footer>
 
 
@@ -1055,6 +1056,7 @@
 
       <script src="assets/js/site-core.js"></script>
   <script src="assets/js/nav-2025.js"></script>
+    <script src="assets/js/a11y-fix.js"></script>
   <script src="assets/js/start-fix.js"></script>
 </body>
 </html>

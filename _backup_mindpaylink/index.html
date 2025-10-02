@@ -14,6 +14,7 @@
   <meta name="theme-color" content="#0f172a" />
   <link rel="stylesheet" href="assets/css/ux-fixes.css" />
 
+  <link rel="stylesheet" href="assets/css/responsive-fixes.css"/>
 </head>
 <body>
   <header class="site-header">
@@ -83,7 +84,7 @@
         </div>
       </nav>
 
-      <button id="navToggle" class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="mainNav">☰</button>
+      <button type="button" id="navToggle" class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="mainNav">☰</button>
     </div>
   </header>
 
@@ -98,13 +99,13 @@
         <a class="btn btn-success" href="box-breathing.html">🟩 Box Breathing</a>
         <a class="btn btn-success" href="4-7-8-breathing.html">🟦 4‑7‑8 Breathing</a>
         <a class="btn btn-success" href="coherent-5-5.html">🟪 Coherent 5‑5</a>
-        <button id="sosBtn" class="btn btn-danger">🆘 60‑second SOS</button>
+        <button type="button" id="sosBtn" class="btn btn-danger">🆘 60‑second SOS</button>
       </div>
       <div class="actions" style="margin-top:10px">
-        <button id="downloadPdf" class="btn">⬇ Profile PDF</button>
+        <button type="button" id="downloadPdf" class="btn">⬇ Profile PDF</button>
         <a class="btn" href="pdf.html">🖨️ PDF Page</a>
         <a class="btn" href="scan.html">📷 Scan QR</a>
-        <button id="saveVcf" class="btn">👤 Add Contact (.vcf)</button>
+        <button type="button" id="saveVcf" class="btn">👤 Add Contact (.vcf)</button>
       </div>
     </div>
 
@@ -144,7 +145,7 @@
       <h2>Share this site</h2>
       <p class="muted">Share via link, text, PNG card, or a one‑page PDF with active links.</p>
       <div class="actions">
-        <button id="shareOpen" class="btn">🔗 Quick Share</button>
+        <button type="button" id="shareOpen" class="btn">🔗 Quick Share</button>
         <a id="scanQr" class="btn" href="scan.html">📷 Scan a QR</a>
       </div>
     </div>
@@ -159,20 +160,20 @@
         <div class="controls">
           <div class="ctl">
             <label for="themeMode">Theme</label>
-            <select id="themeMode">
+            <select id="themeMode" title="Select option">
               <option value="">Default</option>
               <option value="bright">Bright</option>
             </select>
           </div>
           <div class="ctl">
             <label for="themeColor">Background</label>
-            <input id="themeColor" type="color" value="#0f172a" />
+            <input id="themeColor" type="color" value="#0f172a" / title="Input" placeholder=" ">
           </div>
           <div class="ctl">
             <label for="themeBrightness">Brightness</label>
-            <input id="themeBrightness" type="range" min="0.8" max="1.25" step="0.01" value="1" />
+            <input id="themeBrightness" type="range" min="0.8" max="1.25" step="0.01" value="1" / title="Input" placeholder=" ">
           </div>
-          <button id="installAppBtn" class="btn" style="display:none">⬇ Install App</button>
+          <button type="button" id="installAppBtn" class="btn" style="display:none">⬇ Install App</button>
           <a class="btn" href="javascript:void(0)" onclick="window.__MSHARE__?.quickDownloadPdf?.()">⬇ Profile PDF</a>
         </div>
       </div>
@@ -243,6 +244,7 @@
 
   <script src="assets/js/paylinks.js"></script>
 
-<script src="assets/js/start-fix.js"></script>
+  <script src="assets/js/a11y-fix.js"></script>
+  <script src="assets/js/start-fix.js"></script>
 </body>
 </html>

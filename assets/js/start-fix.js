@@ -1,37 +1,32 @@
 (function(){
   var $=function(s,el){return (el||document).querySelector(s)}, $$=function(s,el){return Array.from((el||document).querySelectorAll(s))};
-  function norm(t){return String(t||'').replace(/\s+/g,' ').trim().toLowerCase()}
-  function isVoidLink(a){if(a.tagName!=='A')return false;var h=(a.getAttribute('href')||'').trim();return !h||h==='#'||h==='#!'||/^javascript:/i.test(h)}
-  function hasStartWord(s){s=norm(s);return /(^|\b)(start|begin|go|run|play|practice|model)\b/.test(s)&&!/\b(stop|end|pause|finish|halt)\b/.test(s)}
-  function hasStopWord(s){s=norm(s);return /(^|\b)(stop|end|finish|halt|pause)\b/.test(s)}
-  function canonical(btn,kind){
-    var container=btn.closest('#pacer,#searchTool,#schulte,#ran,#svStudio,#pronLab,#vcPhon,#vcLadder,.card,section,main')||document.body;
-    var startSel=['#pStart','#sStart','#schStart','#ranGo','#svPractice','#pronPractice','#vcPlay','#ladderPlay','#morphPlay','#svCam'];
-    var stopSel=['#pStop','#sStop','#schStop','#ranStop','#svStop','#pronStop','#vcStop','#ladderStop','#morphStop','#svCamOff'];
-    var list=kind==='start'?startSel:stopSel;
-    var inScope=list.map(function(sel){return $(sel,container)}).filter(Boolean)[0];
-    if(inScope) return inScope;
-    var global=list.map(function(sel){return $(sel)}).filter(Boolean)[0];
-    return global||null;
+  function isTechniquePage(){
+    var p=(location.pathname.split('/').pop()||'').toLowerCase();
+    return /^(box-breathing|4-7-8-breathing|coherent-5-5|sos|sos-60)\.html$/.test(p);
   }
-  function normalize(){
-    $$('button').forEach(function(b){if(!(b.getAttribute('type')||'').trim()) b.setAttribute('type','button')});
-    $$('a.btn:not([href]),a.btn[href=""]').forEach(function(a){a.setAttribute('href','#')});
+  function normalizeButtons(){
+    $$('button').forEach(function(b){ if(!b.getAttribute('type')) b.setAttribute('type','button'); });
+    $$('a.btn:not([href]),a.btn[href=""]').forEach(function(a){ a.setAttribute('href','#'); });
   }
-  function handle(e){
-    var el=e.target.closest('button, a.btn, a[role="button"]'); if(!el) return;
-    var txt=norm(el.textContent||el.value||'');
-    var kind=el.dataset.act==='start'?'start':el.dataset.act==='stop'?'stop':hasStartWord(txt)?'start':hasStopWord(txt)?'stop':'';
-    if(!kind) return;
-    if(el.tagName==='A' && isVoidLink(el)) e.preventDefault();
-    if(el.tagName==='BUTTON' && !el.getAttribute('type')){ el.setAttribute('type','button'); }
-    var can=canonical(el,kind);
-    if(can && can!==el){
-      e.preventDefault();
-      try{ if(can.disabled) can.disabled=false }catch(_){}
-      can.click();
-    }
+  function delegateStartStop(){
+    if(isTechniquePage()) return;
+    document.addEventListener('click',function(e){
+      var el=e.target.closest('button, a.btn, [role="button"]'); if(!el) return;
+      var txt=(el.innerText||el.textContent||'').trim().toLowerCase();
+      var act=el.dataset.act||(/\bstart\b/.test(txt)?'start':(/\b(stop|end|finish|pause)\b/.test(txt)?'stop':''));
+      if(!act) return;
+      var scope=el.closest('#pacer,#svStudio,#pronLab,#searchTool,#schulte,#ran,.technique,.coach,.card,section,main')||document;
+      var START=['[data-act="start"]','#pStart','#svPractice','#pronPractice','#sStart','#schStart','#ranGo','#vcPlay','#ladderPlay','#morphPlay'];
+      var STOP =['[data-act="stop"]' ,'#pStop' ,'#svStop' ,'#pronStop' ,'#sStop' ,'#schStop' ,'#ranStop' ,'#vcStop' ,'#ladderStop' ,'#morphStop'];
+      var list=act==='start'?START:STOP, target=null;
+      for(var i=0;i<list.length;i++){ var q=list[i], f=scope.querySelector(q)||document.querySelector(q); if(f&&f!==el){ target=f; break; } }
+      if(target){
+        if(el.tagName==='A') e.preventDefault();
+        try{ if(target.disabled) target.disabled=false }catch(_){}
+        target.click();
+      }
+    },true);
   }
-  document.addEventListener('click',handle,true);
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',normalize); else normalize();
+  function run(){ normalizeButtons(); delegateStartStop(); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',run); else run();
 })();
