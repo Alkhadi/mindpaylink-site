@@ -1,406 +1,186 @@
 <!doctype html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-    <title>About • M Share</title>
-    <meta name="description"
-        content="About Mr. Alkhadi M Koroma — profile, contact, story, and quick links. Download a one‑page PDF (with active links + QR) or a VCF contact card. Support with Apple Pay, Google Pay, Card via Stripe." />
-    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
-    <link rel="manifest" href="manifest.webmanifest" />
-    <meta name="theme-color" content="#0f172a" />
-    <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="assets/css/ux-fixes.css" />
-    <style>
-        .about-hero {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            gap: 12px;
-            padding: 18px
-        }
-
-        .about-hero .avatar {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid rgba(148, 163, 184, .35);
-            box-shadow: 0 10px 24px rgba(0, 0, 0, .35)
-        }
-
-        .about-hero h1 {
-            margin: .35rem 0 .1rem
-        }
-
-        .about-hero .sub {
-            color: var(--muted);
-            margin: 0
-        }
-
-        .about-hero .actions {
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 8px
-        }
-
-        .support-bar {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 6px
-        }
-
-        details.about-accordion {
-            border: 1px solid var(--b);
-            border-radius: 12px;
-            padding: 10px
-        }
-
-        details.about-accordion>summary {
-            cursor: pointer;
-            list-style: none
-        }
-
-        details.about-accordion>summary::marker {
-            display: none
-        }
-
-        details.about-accordion>summary:after {
-            content: "▾";
-            margin-left: 6px;
-            font-size: .9em;
-            opacity: .8
-        }
-
-        details.about-accordion[open]>summary:after {
-            content: "▴"
-        }
-
-        .footer-2025 {
-            margin-top: 18px
-        }
-
-        @media (max-width:560px) {
-            .about-hero .actions .btn {
-                width: 100%
-            }
-        }
-    </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>About • M Share</title>
+<meta name="description" content="About Alkhadi Koroma and the M Share project."/>
+<link rel="stylesheet" href="style.css"/>
+<link rel="stylesheet" href="assets/css/ux-fixes.css"/>
+<link rel="stylesheet" href="assets/css/footer-2025.css"/>
+<style>
+.profile-card{text-align:center;padding:18px}
+.profile-photo{width:140px;height:140px;border-radius:50%;object-fit:cover;border:4px solid rgba(255,255,255,.9);box-shadow:0 10px 30px rgba(0,0,0,.25);margin:0 auto 10px}
+.profile-name{font-size:1.6rem;font-weight:800;margin:.2rem 0}
+.profile-title{opacity:.9;margin:.2rem 0 .6rem}
+.profile-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.profile-actions .btn{min-width:140px}
+.about-intro{max-width:78ch;margin:0 auto}
+</style>
+  <link rel="stylesheet" href="assets/css/header-2025.css" />
 </head>
-
 <body>
-    <header class="site-header">
-        <div class="container navbar">
-            <a id="brandLink" class="brand" data-href="index.html"><span class="logo">M</span> M Share</a>
+<header class="site-header">
+  <div class="container navbar">
+    <a id="brandLink" class="brand" data-href="index.html" href="index.html"><span class="logo">M</span><span class="brand-text">M Share</span></a>
+    <nav class="main-nav" id="mainNav" aria-label="Primary">
+      <a data-href="index.html" href="index.html" class="no-soft">Wellbeing</a>
 
-            <nav class="main-nav" id="mainNav" aria-label="Primary">
-                <a data-href="index.html">Wellbeing</a>
-
-                <div class="nav-group">
-                    <button class="nav-button" type="button" aria-expanded="false"
-                        aria-controls="menu-conditions">Conditions</button>
-                    <div id="menu-conditions" class="menu" role="menu">
-                        <div class="menu-col">
-                            <div class="menu-title">Neurodevelopmental</div>
-                            <a role="menuitem" data-href="autism.html">Autism</a>
-                            <a role="menuitem" data-href="adhd.html">ADHD</a>
-                            <a role="menuitem" data-href="dyslexia-reading-training.html">Dyslexia</a>
-                        </div>
-                        <div class="menu-col">
-                            <div class="menu-title">Mental Health</div>
-                            <a role="menuitem" data-href="anxiety.html">Anxiety</a>
-                            <a role="menuitem" data-href="depression.html">Depression</a>
-                            <a role="menuitem" data-href="stress.html">Stress</a>
-                            <a role="menuitem" data-href="sleep.html">Sleep</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="nav-group">
-                    <button class="nav-button" type="button" aria-expanded="false" aria-controls="menu-breath">Breathing
-                        &amp; Focus</button>
-                    <div id="menu-breath" class="menu" role="menu">
-                        <a role="menuitem" data-href="sos.html">60‑second Reset</a>
-                        <a role="menuitem" data-href="coherent-5-5.html">Coherent 5‑5</a>
-                        <a role="menuitem" data-href="breath.html">Breath (how‑to)</a>
-                        <a role="menuitem" data-href="focus.html">Focus</a>
-                        <a role="menuitem" data-href="mindfulness.html">Mindfulness</a>
-                    </div>
-                </div>
-
-                <div class="nav-group">
-                    <button class="nav-button" type="button" aria-expanded="false"
-                        aria-controls="menu-tools">Toolkits</button>
-                    <div id="menu-tools" class="menu menu-wide" role="menu">
-                        <div class="menu-col">
-                            <div class="menu-title">General</div>
-                            <a role="menuitem" data-href="sleep-tools.html">Sleep Tools</a>
-                            <a role="menuitem" data-href="breath-tools.html">Breath Tools</a>
-                            <a role="menuitem" data-href="mood-tools.html">Mood Tools</a>
-                        </div>
-                        <div class="menu-col">
-                            <div class="menu-title">Condition‑specific</div>
-                            <a role="menuitem" data-href="adhd-tools.html">ADHD Tools</a>
-                            <a role="menuitem" data-href="autism-tools.html">Autism Tools</a>
-                            <a role="menuitem" data-href="depression-tools.html">Depression Tools</a>
-                            <a role="menuitem" data-href="anxiety-tools.html">Anxiety Tools</a>
-                            <a role="menuitem" data-href="stress-tools.html">Stress Tools</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="nav-group">
-                    <button class="nav-button" type="button" aria-expanded="false"
-                        aria-controls="menu-about">About</button>
-                    <div id="menu-about" class="menu" role="menu">
-                        <a role="menuitem" data-href="about.html" aria-current="page">About</a>
-                        <a role="menuitem" data-href="https://buy.stripe.com/28E4gy5j6cmD2wu3pk4Rq00" target="_blank"
-                            rel="noopener" <a role="menuitem" data-href="contact.html">Contact</a>
-                    </div>
-                </div>
-            </nav>
-
-            <button id="navToggle" class="nav-toggle" aria-label="Menu" aria-expanded="false"
-                aria-controls="mainNav">☰</button>
+      <div class="nav-group">
+        <button class="nav-button" type="button" aria-expanded="false" aria-controls="menu-conditions" aria-haspopup="true">Conditions</button>
+        <div id="menu-conditions" class="menu" role="menu">
+          <div class="menu-col">
+            <div class="menu-title">Neurodevelopmental</div>
+            <a role="menuitem" data-href="autism.html" href="autism.html" class="no-soft">Autism</a>
+            <a role="menuitem" data-href="adhd.html" href="adhd.html" class="no-soft">ADHD</a>
+            <a role="menuitem" data-href="dyslexia-reading-training.html" href="dyslexia-reading-training.html" class="no-soft">Dyslexia</a>
+          </div>
+          <div class="menu-col">
+            <div class="menu-title">Mental Health</div>
+            <a role="menuitem" data-href="anxiety.html" href="anxiety.html" class="no-soft">Anxiety</a>
+            <a role="menuitem" data-href="depression.html" href="depression.html" class="no-soft">Depression</a>
+            <a role="menuitem" data-href="stress.html" href="stress.html" class="no-soft">Stress</a>
+            <a role="menuitem" data-href="sleep.html" href="sleep.html" class="no-soft">Sleep</a>
+          </div>
         </div>
-    </header>
+      </div>
 
-    <main class="container" id="aboutPage">
-        <!-- Profile (centered) -->
-        <section class="card about-hero" id="profileCard">
-            <img id="pAvatar" class="avatar" src="assets/alkhadi.png" alt="Profile photo of Mr. Alkhadi M Koroma" />
-            <h1 id="pName">Alkhadi Koroma</h1>
-            <p id="pTitle" class="sub">Professional Title · Flutter Developer</p>
-            <div class="actions">
-                <a id="pCall" class="btn" href="tel:07736806367">📞 Call</a>
-                <a id="pMail" class="btn" href="mailto:info@mindpaylink.com">✉️ Email</a>
-                <a id="pSite" class="btn" href="https://www.mindpaylink.com" target="_blank" rel="noopener">🌐
-                    Website</a>
-            </div>
-            <div class="actions" style="margin-top:8px">
-                <button id="btnPdf" class="btn btn-success" type="button">⬇ Download Profile (PDF)</button>
-                <button id="btnVcf" class="btn" type="button">👤 Save Contact (.vcf)</button>
-                <button id="btnPng" class="btn" type="button">🖼️ Export Card (PNG)</button>
-            </div>
-            <div class="support-bar" aria-label="Support options">
-                <a class="btn" id="payApple" href="https://buy.stripe.com/28E4gy5j6cmD2wu3pk4Rq00" target="_blank"
-                    rel="noopener"> Apple&nbsp;Pay</a>
-                <a class="btn" id="payGoogle" href="https://buy.stripe.com/28E4gy5j6cmD2wu3pk4Rq00" target="_blank"
-                    rel="noopener">Google&nbsp;Pay</a>
-                <a class="btn" id="payCard" href="https://buy.stripe.com/28E4gy5j6cmD2wu3pk4Rq00" target="_blank"
-                    rel="noopener">💳 Card</a>
-                <a class="btn" id="payCashApp" href="https://buy.stripe.com/28E4gy5j6cmD2wu3pk4Rq00" target="_blank"
-                    rel="noopener">Cash&nbsp;App</a>
-                <a class="btn" id="payLink" href="https://buy.stripe.com/28E4gy5j6cmD2wu3pk4Rq00" target="_blank"
-                    rel="noopener">Link by Stripe</a>
-            </div>
-        </section>
-
-        <!-- About copy with “Read more” accordion -->
-        <section class="card about-copy">
-            <h2>About</h2>
-            <p class="lead" data-excerpt="3">
-                Hello, I’m Alkhadi Koroma, London‑based and proudly dyslexic. Growing up as one of fifteen children, I
-                wrestled with words but fell in love with problem‑solving. These tools—colour overlays, chunked reading
-                drills, paced breathing, focus timers, and gentle reminders—helped me graduate and become the first in
-                my family to earn a Computer Science degree. I built M Share to pass that lifeline to every
-                neurodivergent learner—and to parents seeking understanding and calm—to help us co‑exist. If this space
-                helps you breathe easier, learn faster, or feel seen, please tap “Buy me coffee.” Your support funds new
-                features, guides, and access.
-            </p>
-
-            <details class="about-accordion">
-                <summary>Read More</summary>
-                <div style="margin-top:8px">
-                    <p>I live in Southwark, London, where double‑decker buses hum like metronomes and the Thames reminds
-                        you to keep moving. For years, my days started early—coding in the quiet, building small tools I
-                        needed myself—then driving private hire across the city, picking up stories from people heading
-                        to interviews, hospitals, schools, and first dates. Dyslexia shaped my routes as surely as any
-                        sat‑nav: I take the road that gives me time to think, the one with cleaner signage, the one that
-                        lets me rehearse a conversation twice before I say a word. M Share began as a folder of these
-                        hacks—little bridges over noisy gaps in attention and memory—because I believed what carried me
-                        could carry others, too.</p>
-                    <p>At school I learned to measure progress in breaths, not pages. Breathing tools became my first
-                        lifeline: four seconds in, six out, repeated until the letters stopped shaking. When revision
-                        turned to fog, I used colour overlays and the screen settled down. Chunked reading taught me to
-                        trust small wins—three lines, then a break; one paragraph, then a note to future me. I wrote
-                        scripts that nudged me kindly: “Stand, breathe, blink, sip water.” The first time those prompts
-                        ran on my phone, I cried—not because the code was clever, but because the compassion was. M
-                        Share is the public version of that private kindness.</p>
-                    <p>University was a landslide and a lighthouse at once. Lectures moved fast; assignment briefs felt
-                        like riddles dropped in a storm. But the tools worked. A dyslexia trainer I prototyped made
-                        words behave: spacing widened, backgrounds shifted to a calmer blue, and exercises gamified the
-                        practice of decoding shape before sound. A focus timer turned ninety minutes into a train of
-                        gentle stops—work, pause, breathe, repeat—until the track ran out exactly at submission. On the
-                        day I graduated—first in a family of fifteen to hold a Computer Science degree—I recognised the
-                        real certificate was a mindset: there are many legitimate ways to learn, and each deserves an
-                        app that meets it halfway.</p>
-                    <p>That belief is why M Share is both toolbox and table. Toolbox, because you will find practical,
-                        low‑friction helpers: breathing sequences that open on a tap; reading modes that shift contrast
-                        and spacing instantly; a mood page that treats emotions like weather—real, passing, and worthy
-                        of a forecast; gentle reminders that respect dignity. Table, because community matters: parents
-                        can sit beside their neurodivergent children and try settings together; teachers can borrow
-                        templates for accessible handouts; students can share what actually works at 2 a.m. before a
-                        deadline. I built the interface to be quiet, roomy, and forgiving—the way I wish every classroom
-                        had felt.</p>
-                    <p>London taught me another lesson: synergy. The city only functions because millions of differences
-                        coordinate. Neurodivergence is not a malfunction; it is a different form of coordination. When
-                        we tune the environment—fonts, colours, timing, feedback—the person doesn’t change; the world
-                        meets them where they are. M Share, in its best moments, is a tuning fork. Switch to the
-                        dyslexia‑friendly overlay, and your eyes exhale. Start the paced‑breathing guide, and your mind
-                        re‑enters the room. Use the chunked‑reading trainer, and paragraphs become stepping stones
-                        instead of waves. I cannot promise miracles, but I can promise craft, iteration, and a listening
-                        ear.</p>
-                    <p>Your support does concrete things. A coffee funds hosting, accessibility audits, and the small
-                        design details that make the difference between “usable” and “I can finally do this.” It pays
-                        for expert consultations so I can translate best practice into friendly defaults. It turns ideas
-                        into features: a parent view with plain‑language guides; printable worksheets that mirror the
-                        on‑screen trainers; an offline mode for low‑connectivity households; gentle analytics that help
-                        you see which settings helped most. I test every addition with one question: would this have
-                        helped teenage me finish that page without shame?</p>
-                    <p>I also need your feedback. Tell me what feels clumsy, what took too many taps, what wording made
-                        you hesitate. Request features shamelessly. If you’re a parent, say which parts helped you
-                        understand your child’s day. If you’re a student, describe the moment something clicked. If
-                        you’re a teacher or therapist, lend the phrases you use when you explain dyslexia to a nervous
-                        family—I will bake them into the product. This is a living project; your notes are blueprints.
-                    </p>
-                    <p>Most nights, after a late shift, I still open the builder and refine a corner: a focus ring
-                        brighter here, a label kinder there. I do it because I remember the library desk where I nearly
-                        gave up, and the bus ride where a stranger said, “Try changing the background—you’ll be
-                        surprised.” They were right. If M Share surprises you into a calmer breath, a completed
-                        paragraph, a kinder day, then it is working. If it earns your trust, please tap Buy me coffee.
-                        You will help me help the next person breathe, read, finish, and feel seen.</p>
-                </div>
-            </details>
-        </section>
-    </main>
-
-    <footer class="footer-2025" id="footer2025">
-        <div class="wrap">
-            <div class="top">
-                <div>
-                    <div class="brandline"><span class="logo">M</span>
-                        <div><b>M Share</b>
-                            <div class="muted ellipsis-2">Quiet, practical tools for mental health and wellbeing.</div>
-                        </div>
-                    </div>
-                    <div class="controls">
-                        <a class="btn" id="footerSupport" href="https://buy.stripe.com/28E4gy5j6cmD2wu3pk4Rq00"
-                            target="_blank" rel="noopener">☕ Support Us</a>
-                        <a class="btn" id="footerApple" href="https://buy.stripe.com/28E4gy5j6cmD2wu3pk4Rq00"
-                            target="_blank" rel="noopener"> Apple&nbsp;Pay</a>
-                        <a class="btn" id="footerGPay" href="https://buy.stripe.com/28E4gy5j6cmD2wu3pk4Rq00"
-                            target="_blank" rel="noopener">Google&nbsp;Pay</a>
-                        <a class="btn" id="footerCard" href="https://buy.stripe.com/28E4gy5j6cmD2wu3pk4Rq00"
-                            target="_blank" rel="noopener">💳 Card</a>
-                        <a class="btn" id="footerCash" href="https://buy.stripe.com/28E4gy5j6cmD2wu3pk4Rq00"
-                            target="_blank" rel="noopener">Cash&nbsp;App</a>
-                        <a class="btn" id="footerLink" href="https://buy.stripe.com/28E4gy5j6cmD2wu3pk4Rq00"
-                            target="_blank" rel="noopener">Link by Stripe</a>
-                    </div>
-                </div>
-                <div>
-                    <h4>Explore</h4>
-                    <p><a data-href="index.html">Wellbeing</a> • <a data-href="breath.html">Breath</a> • <a
-                            data-href="focus.html">Focus</a> • <a data-href="mindfulness.html">Mindfulness</a> • <a
-                            data-href="about.html" aria-current="page">About</a></p>
-                </div>
-                <div>
-                    <h4>Toolkits</h4>
-                    <p><a data-href="mood-tools.html">Mood</a> • <a data-href="breath-tools.html">Breath Tools</a> • <a
-                            data-href="sleep-tools.html">Sleep</a> • <a data-href="anxiety-tools.html">Anxiety</a> • <a
-                            data-href="stress-tools.html">Stress</a></p>
-                </div>
-                <div>
-                    <h4>Contact</h4>
-                    <p><a data-href="contact.html">Contact</a> • <a
-                            data-href="https://buy.stripe.com/28E4gy5j6cmD2wu3pk4Rq00" target="_blank" rel="noopener"
-                            id="coffeeFooter">Support</a> • <a
-                            href="mailto:info@mindpaylink.com">info@mindpaylink.com</a></p>
-                </div>
-            </div>
-            <div class="bottom">
-                <div>© <span id="yearFooter"></span> MindPayLink · Educational information only; not medical advice.
-                </div>
-                <div class="credit">Designed by <b>Alkhadi M Koroma</b></div>
-            </div>
+      <div class="nav-group">
+        <button class="nav-button" type="button" aria-expanded="false" aria-controls="menu-breath" aria-haspopup="true">Breathing &amp; Focus</button>
+        <div id="menu-breath" class="menu menu-wide" role="menu">
+          <div class="menu-col">
+            <div class="menu-title">Guides</div>
+            <a role="menuitem" data-href="breath.html" href="breath.html" class="no-soft">Breath (how‑to)</a>
+            <a role="menuitem" data-href="focus.html" href="focus.html" class="no-soft">Focus</a>
+            <a role="menuitem" data-href="mindfulness.html" href="mindfulness.html" class="no-soft">Mindfulness</a>
+          </div>
+          <div class="menu-col">
+            <div class="menu-title">Techniques</div>
+            <a role="menuitem" data-href="sos.html" href="sos.html" class="no-soft">60‑second Reset</a>
+            <a role="menuitem" data-href="box-breathing.html" href="box-breathing.html" class="no-soft">Box Breathing</a>
+            <a role="menuitem" data-href="4-7-8-breathing.html" href="4-7-8-breathing.html" class="no-soft">4‑7‑8 Breathing</a>
+            <a role="menuitem" data-href="coherent-5-5.html" href="coherent-5-5.html" class="no-soft">Coherent 5‑5</a>
+          </div>
         </div>
-        <script>document.getElementById('yearFooter').textContent = new Date().getFullYear()</script>
-    </footer>
+      </div>
 
-    <script src="app.js"></script>
-    <script>
-            (function () {
-                const MS = window.__MSHARE__ || {};
-                const d = MS.data || {
-                    name: 'Alkhadi Koroma',
-                    title: 'Professional Title · Flutter Developer',
-                    phone: '07736806367',
-                    email: 'info@mindpaylink.com',
-                    site: 'https://www.mindpaylink.com',
-                    addr: 'London, UK',
-                    avatar: 'assets/alkhadi.png'
-                };
+      <div class="nav-group">
+        <button class="nav-button" type="button" aria-expanded="false" aria-controls="menu-tools" aria-haspopup="true">Toolkits</button>
+        <div id="menu-tools" class="menu menu-wide" role="menu">
+          <div class="menu-col">
+            <div class="menu-title">General</div>
+            <a role="menuitem" data-href="sleep-tools.html" href="sleep-tools.html" class="no-soft">Sleep Tools</a>
+            <a role="menuitem" data-href="breath-tools.html" href="breath-tools.html" class="no-soft">Breath Tools</a>
+            <a role="menuitem" data-href="mood-tools.html" href="mood-tools.html" class="no-soft">Mood Tools</a>
+          </div>
+          <div class="menu-col">
+            <div class="menu-title">Condition‑specific</div>
+            <a role="menuitem" data-href="adhd-tools.html" href="adhd-tools.html" class="no-soft">ADHD Tools</a>
+            <a role="menuitem" data-href="autism-tools.html" href="autism-tools.html" class="no-soft">Autism Tools</a>
+            <a role="menuitem" data-href="depression-tools.html" href="depression-tools.html" class="no-soft">Depression Tools</a>
+            <a role="menuitem" data-href="anxiety-tools.html" href="anxiety-tools.html" class="no-soft">Anxiety Tools</a>
+            <a role="menuitem" data-href="stress-tools.html" href="stress-tools.html" class="no-soft">Stress Tools</a>
+          </div>
+        </div>
+      </div>
 
-                function setText(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
-                function setHref(id, val) { const el = document.getElementById(id); if (el && val) el.href = val; }
+      <div class="nav-group">
+        <button class="nav-button" type="button" aria-expanded="false" aria-controls="menu-about" aria-haspopup="true">About</button>
+        <div id="menu-about" class="menu" role="menu">
+          <a role="menuitem" data-href="about.html" href="about.html" class="no-soft">About</a>
+          <a role="menuitem" href="https://buy.stripe.com/28E4gy5j6cmD2wu3pk4Rq00" target="_blank" rel="noopener" class="no-soft">Support Us</a>
+          <a role="menuitem" data-href="contact.html" href="contact.html" class="no-soft">Contact</a>
+        </div>
+      </div>
+    </nav>
+    <button id="navToggle" class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="mainNav">☰</button>
+  </div>
+</header>
 
-                setText('pName', d.name || 'Alkhadi Koroma');
-                setText('pTitle', d.title || 'Professional Title · Flutter Developer');
-                const tel = d.phone ? 'tel:' + String(d.phone).replace(/\s+/g, '') : '#';
-                setHref('pCall', tel);
-                setHref('pMail', d.email ? ('mailto:' + d.email) : '#');
-                setHref('pSite', d.site || 'https://www.mindpaylink.com');
-                const av = document.getElementById('pAvatar'); if (av && d.avatar) av.src = d.avatar;
 
-                const btnPdf = document.getElementById('btnPdf');
-                async function downloadProfilePdf() {
-                    if (MS.quickDownloadPdf) { MS.quickDownloadPdf(); return; }
-                    if (MS.buildStyledCardCanvas && MS.generateStyledPdf) {
-                        const preview = await MS.buildStyledCardCanvas({ includeQR: true });
-                        const blob = await MS.generateStyledPdf({ fromCanvas: preview.canvas, links: preview.links });
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a'); a.href = url; a.download = 'm_share_profile.pdf';
-                        document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 6000);
-                        return;
-                    }
-                    alert('PDF export is not available in this browser.');
-                }
-                btnPdf?.addEventListener('click', downloadProfilePdf);
 
-                const btnVcf = document.getElementById('btnVcf');
-                btnVcf?.addEventListener('click', () => {
-                    if (MS.genVCardAndDownload) { MS.genVCardAndDownload(); return; }
-                    const v = ['BEGIN:VCARD', 'VERSION:3.0', `FN:${d.name || ''}`, `TITLE:${d.title || ''}`, `TEL;TYPE=CELL:${d.phone || ''}`, `EMAIL;TYPE=WORK:${d.email || ''}`, `URL:${d.site || ''}`, `ADR;TYPE=WORK:;;${(d.addr || '').replace(/\n/g, ';')}`, 'END:VCARD'].join('\n');
-                    const blob = new Blob([v], { type: 'text/vcard' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'contact.vcf'; document.body.appendChild(a); a.click(); a.remove();
-                });
 
-                const btnPng = document.getElementById('btnPng');
-                btnPng?.addEventListener('click', async () => {
-                    try {
-                        if (!MS.buildStyledCardCanvas) throw 0;
-                        const out = await MS.buildStyledCardCanvas({ includeQR: true });
-                        const url = out.canvas.toDataURL('image/png');
-                        const a = document.createElement('a'); a.href = url; a.download = 'profile_card.png';
-                        document.body.appendChild(a); a.click(); a.remove();
-                    } catch { alert('PNG export not available.'); }
-                });
+<main class="container">
+  <div class="card about-intro" data-excerpt="5">
+    <h1>About</h1>
+    <p>Hello, I’m Alkhadi Koroma, London‑based and proudly dyslexic. Growing up as one of fifteen children, I wrestled with words but fell in love with problem‑solving. These tools—colour overlays, chunked reading drills, paced breathing, focus timers, and gentle reminders—helped me graduate and become the first in my family to earn a Computer Science degree. I built M Share to pass that lifeline to every neurodivergent learner—and to parents seeking understanding and calm—to help us co‑exist. If this space helps you breathe easier, learn faster, or feel seen, please tap “Support Us.” Your support funds new features, guides, and access.</p>
+    <details>
+      <summary>Read more</summary>
+      <div style="margin-top:8px">
+        <p>I live in Southwark, London, where double‑decker buses hum like metronomes and the Thames reminds you to keep moving. For years, my days started early—coding in the quiet, building small tools I needed myself—then driving private hire across the city, picking up stories from people heading to interviews, hospitals, schools, and first dates. Dyslexia shaped my routes as surely as any sat‑nav: I take the road that gives me time to think, the one with cleaner signage, the one that lets me rehearse a conversation twice before I say a word. M Share began as a folder of these hacks—little bridges over noisy gaps in attention and memory—because I believed what carried me could carry others, too.</p>
+        <p>At school I learned to measure progress in breaths, not pages. Breathing tools became my first lifeline: four seconds in, six out, repeated until the letters stopped shaking. When revision turned to fog, I used colour overlays and the screen settled down. Chunked reading taught me to trust small wins—three lines, then a break; one paragraph, then a note to future me. I wrote scripts that nudged me kindly: “Stand, breathe, blink, sip water.” The first time those prompts ran on my phone, I cried—not because the code was clever, but because the compassion was. M Share is the public version of that private kindness.</p>
+        <p>University was a landslide and a lighthouse at once. Lectures moved fast; assignment briefs felt like riddles dropped in a storm. But the tools worked. A dyslexia trainer I prototyped made words behave: spacing widened, backgrounds shifted to a calmer blue, and exercises gamified the practice of decoding shape before sound. A focus timer turned ninety minutes into a train of gentle stops—work, pause, breathe, repeat—until the track ran out exactly at submission. On the day I graduated—first in a family of fifteen to hold a Computer Science degree—I recognised the real certificate was a mindset: there are many legitimate ways to learn, and each deserves an app that meets it halfway.</p>
+        <p>That belief is why M Share is both toolbox and table. Toolbox, because you will find practical, low‑friction helpers: breathing sequences that open on a tap; reading modes that shift contrast and spacing instantly; a mood page that treats emotions like weather—real, passing, and worthy of a forecast; gentle reminders that respect dignity. Table, because community matters: parents can sit beside their neurodivergent children and try settings together; teachers can borrow templates for accessible handouts; students can share what actually works at 2 a.m. before a deadline. I built the interface to be quiet, roomy, and forgiving—the way I wish every classroom had felt.</p>
+        <p>London taught me another lesson: synergy. The city only functions because millions of differences coordinate. Neurodivergence is not a malfunction; it is a different form of coordination. When we tune the environment—fonts, colours, timing, feedback—the person doesn’t change; the world meets them where they are. M Share, in its best moments, is a tuning fork. Switch to the dyslexia‑friendly overlay, and your eyes exhale. Start the paced‑breathing guide, and your mind re‑enters the room. Use the chunked‑reading trainer, and paragraphs become stepping stones instead of waves. I cannot promise miracles, but I can promise craft, iteration, and a listening ear.</p>
+        <p>Your support does concrete things. A coffee funds hosting, accessibility audits, and the small design details that make the difference between “usable” and “I can finally do this.” It pays for expert consultations so I can translate best practice into friendly defaults. It turns ideas into features: a parent view with plain‑language guides; printable worksheets that mirror the on‑screen trainers; an offline mode for low‑connectivity households; gentle analytics that help you see which settings helped most. I test every addition with one question: would this have helped teenage me finish that page without shame?</p>
+        <p>I also need your feedback. Tell me what feels clumsy, what took too many taps, what wording made you hesitate. Request features shamelessly. If you’re a parent, say which parts helped you understand your child’s day. If you’re a student, describe the moment something clicked. If you’re a teacher or therapist, lend the phrases you use when you explain dyslexia to a nervous family—I will bake them into the product. This is a living project; your notes are blueprints.</p>
+        <p>Most nights, after a late shift, I still open the builder and refine a corner: a focus ring brighter here, a label kinder there. I do it because I remember the library desk where I nearly gave up, and the bus ride where a stranger said, “Try changing the background—you’ll be surprised.” They were right. If M Share surprises you into a calmer breath, a completed paragraph, a kinder day, then it is working. If it earns your trust, please tap Support Us. You will help me help the next person breathe, read, finish, and feel seen.</p>
+      </div>
+    </details>
+  </div>
 
-                document.querySelectorAll('#menu-about a[role="menuitem"]').forEach(a => {
-                    if (a.textContent.trim().toLowerCase() === 'about') { a.setAttribute('data-href', 'about.html'); a.setAttribute('aria-current', 'page'); }
-                });
-            })();
-    </script>
-    <script src="assets/js/ux-fixes.js"></script>
-    <script src="assets/js/paylinks.js"></script>
-    <script src="assets/js/paylinks.js"></script>
+  <div class="card profile-card">
+    <img class="profile-photo" src="assets/alkhadi.png" alt="Profile photo of Alkhadi Koroma"/>
+    <div class="profile-name">Alkhadi Koroma</div>
+    <div class="profile-title">Professional Title · Flutter Developer</div>
+    <div class="profile-actions">
+      <a id="callMe" class="btn" href="tel:07736806367">📞 Call</a>
+      <a id="mailMe" class="btn" href="mailto:info@mindpaylink.com">✉️ Email</a>
+      <a id="toSite" class="btn" href="https://mindpaylink.com" target="_blank" rel="noopener">🌐 Website</a>
+      <button id="downloadProfilePdf" class="btn">⬇ Download Profile PDF</button>
+    </div>
+  </div>
+</main>
 
+<script src="app.js"></script>
+<script src="assets/js/paylinks.js"></script>
+<script src="assets/js/ux-fixes.js"></script>
+
+<footer class="footer-2025" id="footer2025">
+  <div class="wrap">
+    <div class="grid">
+      <section class="col brand">
+        <div class="brandline"><span class="logo">M</span><div><b>M Share</b><div class="muted">Quiet, practical tools for mental health and wellbeing.</div></div></div>
+        <nav class="pay">
+          <a class="btn" href="https://buy.stripe.com/28E4gy5j6cmD2wu3pk4Rq00" target="_blank" rel="noopener">☕ Support Us</a>
+          <a class="btn" href="https://buy.stripe.com/28E4gy5j6cmD2wu3pk4Rq00" target="_blank" rel="noopener"> Apple Pay</a>
+          <a class="btn" href="https://buy.stripe.com/28E4gy5j6cmD2wu3pk4Rq00" target="_blank" rel="noopener">Google Pay</a>
+          <a class="btn" href="https://buy.stripe.com/28E4gy5j6cmD2wu3pk4Rq00" target="_blank" rel="noopener">💳 Card</a>
+          <a class="btn" href="https://buy.stripe.com/28E4gy5j6cmD2wu3pk4Rq00" target="_blank" rel="noopener">Cash App</a>
+          <a class="btn" href="https://buy.stripe.com/28E4gy5j6cmD2wu3pk4Rq00" target="_blank" rel="noopener">Link by Stripe</a>
+        </nav>
+        <div class="theme-controls">
+          <label>Background<input id="themeColor" type="color" value="#0f172a"></label>
+          <label>Brightness<input id="themeBrightness" type="range" min="0.85" max="1.25" step="0.01" value="1"></label>
+        </div>
+        <div class="actions" style="margin-top:8px">
+          <button id="backToTop" class="btn" type="button">⬆ Back to top</button>
+        </div>
+      </section>
+    </div>
+    <div class="bottom">
+      <div>© <span id="yearFooter"></span> MindPayLink · Educational information only; not medical advice.</div>
+      <div class="credit">Designed by <b>Alkhadi M Koroma</b></div>
+    </div>
+  </div>
+  <script>document.getElementById('yearFooter').textContent=new Date().getFullYear()</script>
+</footer>
+
+
+
+
+
+<script>
+(function(){
+  var M = window.__MSHARE__ || {};
+  var d = M.data || {name:'Alkhadi Koroma',title:'Professional Title · Flutter Developer',phone:'07736806367',email:'info@mindpaylink.com',site:'https://mindpaylink.com'};
+  var c=document.getElementById('callMe'); if(c && d.phone) c.href = 'tel:'+d.phone;
+  var m=document.getElementById('mailMe'); if(m && d.email) m.href = 'mailto:'+d.email;
+  var s=document.getElementById('toSite'); if(s && d.site) s.href = d.site;
+  var pdf=document.getElementById('downloadProfilePdf'); if(pdf && window.__MSHARE__ && window.__MSHARE__.quickDownloadPdf){ pdf.addEventListener('click', function(){ window.__MSHARE__.quickDownloadPdf(); }); }
+})();
+</script>
+  <script src="assets/js/site-core.js"></script>
+  <script src="assets/js/nav-2025.js"></script>
 </body>
-
 </html>
