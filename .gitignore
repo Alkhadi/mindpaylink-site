@@ -1,0 +1,13 @@
+.DS_Store
+Thumbs.db
+_backup_*/
+_rollback_*/
+node_modules/
+dist/
+build/
+.cache/
+.parcel-cache/
+.vscode/
+*.zip
+*.tar
+*.tgz
