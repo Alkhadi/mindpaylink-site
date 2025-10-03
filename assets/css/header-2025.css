@@ -30,3 +30,29 @@
   .nav-group.open .menu.menu-wide{display:grid}
   .nav-toggle{display:inline-block}
 }
+.brand .logo{
+  background:#3b82f6 !important;
+  color:#0b1020 !important;
+  box-shadow:0 6px 18px rgba(59,130,246,.45);
+}
+.menu-group{position:relative}
+.menu-toggle{appearance:none;border:1px solid var(--b);background:#0a1020;color:var(--fg);padding:8px 12px;border-radius:12px;display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14px;cursor:pointer}
+.submenu{display:none;position:absolute;top:110%;left:0;min-width:220px;background:#0a1020;border:1px solid var(--b);border-radius:14px;box-shadow:var(--shadow-2);padding:8px;z-index:60}
+.menu-group.open>.submenu{display:block}
+@media(max-width:760px){
+  .main-nav{display:none;position:absolute;right:20px;top:64px;flex-direction:column;gap:8px;background:#0a1020;border:1px solid var(--b);border-radius:14px;box-shadow:var(--shadow-2);width:min(96vw,360px);padding:10px;z-index:70}
+  .main-nav.open{display:flex}
+  .submenu{position:static;display:none;border-radius:12px;margin:6px 0}
+  .menu-group.open>.submenu{display:block}
+}
+.nav-core-css-sentinel{}
+.menu-group{position:relative}
+.menu-toggle{appearance:none;border:1px solid var(--b);background:var(--bg,#0a1020);color:var(--fg,#e5e7eb);padding:8px 12px;border-radius:12px;display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14px;cursor:pointer}
+.submenu{display:none;position:absolute;top:110%;left:0;min-width:220px;background:var(--bg,#0a1020);border:1px solid var(--b);border-radius:14px;box-shadow:var(--shadow-2);padding:8px;z-index:60}
+.menu-group.open>.submenu{display:block}
+@media(max-width:760px){
+  .main-nav{display:none;position:absolute;right:20px;top:64px;flex-direction:column;gap:8px;background:var(--bg,#0a1020);border:1px solid var(--b);border-radius:14px;box-shadow:var(--shadow-2);width:min(96vw,360px);padding:10px;z-index:70}
+  .main-nav.open{display:flex}
+  .submenu{position:static;display:none;border-radius:12px;margin:6px 0}
+  .menu-group.open>.submenu{display:block}
+}

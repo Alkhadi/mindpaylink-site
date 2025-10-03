@@ -12,3 +12,8 @@
 .footer-2025 .bottom{display:flex;gap:12px;justify-content:space-between;align-items:center;margin-top:12px;padding-top:10px;border-top:1px solid #1f2937;flex-wrap:wrap}
 .footer-2025 .theme-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
 .footer-2025 .theme-controls label{display:flex;gap:6px;align-items:center}
+.footer-2025 .brandline .logo{
+  background:#3b82f6 !important;
+  color:#0b1020 !important;
+  box-shadow:0 6px 18px rgba(59,130,246,.45);
+}
