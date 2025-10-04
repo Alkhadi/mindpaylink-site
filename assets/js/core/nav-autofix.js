@@ -1,22 +1,4 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>About • M Share</title>
-<meta name="description" content="About Alkhadi Koroma and the mission behind M Share." />
-<link rel="stylesheet" href="style.css" />
-<link rel="stylesheet" href="assets/css/nav-footer-uni.css" />
-<link rel="stylesheet" href="assets/css/pages/about.inline.css" />
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
-<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png" />
-<link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png" />
-<link rel="manifest" href="manifest.webmanifest" />
-<meta name="theme-color" content="#0f172a" />
-</head>
-<body>
-<a id="top" style="position:absolute;top:0;left:0;width:0;height:0;overflow:hidden"> </a>
-
+(()=>{if(window.__NAV_AUTOFIX__)return;window.__NAV_AUTOFIX__=true;const H=`
 <header class="site-header">
   <div class="container navbar">
     <a id="brandLink" class="brand" data-href="index.html" href="index.html"><span class="logo">M</span><span class="brand-text">M Share</span></a>
@@ -76,43 +58,8 @@
     </nav>
     <button type="button" id="navToggle" class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="mainNav">☰</button>
   </div>
-</header>
-
-<main class="container">
-  <h1>About</h1>
-  <section class="card about-hero">
-    <p class="muted">Hello, I’m Alkhadi Koroma, London‑based and proudly dyslexic. Growing up as one of fifteen children, I wrestled with words but fell in love with problem‑solving. These tools—colour overlays, chunked reading drills, paced breathing, focus timers, gentle reminders—helped me graduate and become the first in my family to earn a Computer Science degree. I built <b>M Share</b> to pass that lifeline to every neurodivergent learner—and to parents seeking understanding and calm.</p>
-    <div id="accWrap" class="accordion">
-      <button id="acc1" class="acc-btn">Read My Full Story <span>▾</span></button>
-      <div class="acc-panel">
-        <p>I learned to engineer systems before I could fully read them. When language felt slippery, I relied on rhythm and structure: count the breath, square the task, name the next action. At work, I build quiet experiences that make hard moments easier: one‑button focus sprints, 60‑second resets, printable PDFs you can share with a teacher or manager. M Share is deliberately calm—no ads, no noise—just the essentials to help you breathe, learn, and show your best work.</p>
-      </div>
-    </div>
-    <div class="actions">
-      <a class="btn btn-success" id="dlPdf" href="#">⬇ Download Profile PDF</a>
-      <a class="btn" href="coffee.html">Buy me coffee</a>
-    </div>
-  </section>
-
-  <section class="card profile">
-    <div class="pad">
-      <h2>Styled Profile PDF</h2>
-      <p class="muted">Download a single‑page card with active links (tap to call, text, email, visit the site) and a QR code pointing here.</p>
-    </div>
-    <div class="profile-card pad">
-      <div class="profile-photo"><img src="assets/img/alkhadi.png" alt="Alkhadi Koroma"></div>
-      <div class="profile-grid">
-        <div class="profile-btn">📞 Call</div>
-        <div class="profile-btn">💬 Text</div>
-        <div class="profile-btn">✉️ Email</div>
-        <div class="profile-btn">🌐 Website</div>
-        <div class="profile-btn">🧘 Wellbeing</div>
-        <div class="profile-btn">🧭 Directions</div>
-      </div>
-    </div>
-  </section>
-</main>
-
+</header>`;
+const F=`
 <footer class="footer-2025" id="footer2025">
   <div class="wrap">
     <div class="grid">
@@ -132,14 +79,4 @@
     </div>
     <div class="bottom"><div>© <span id="yearFooter"></span> MindPayLink · Educational information only; not medical advice.</div><div class="credit">Designed by <b>Alkhadi M Koroma</b></div></div>
   </div>
-</footer><script src="assets/js/core/nav-autofix.js"></script>
-<script src="assets/header/header.js"></script>
-<script src="assets/footer/footer.js"></script><script src="assets/js/pages/about.inline.js"></script>
-<script src="assets/js/core/nav-core.js"></script>
-<script src="assets/js/core/nav-autofix.js"></script>
-<script src="assets/header/header.js"></script>
-<script src="assets/footer/footer.js"></script>
-<script src="assets/js/core/voice-coach.js"></script>
-<script src="assets/js/core/sound-kit.js"></script>
-</body>
-</html>
+</footer>`;const inject=()=>{const hasHeader=document.querySelector('header.site-header');const hasFooter=document.querySelector('#footer2025');if(!hasHeader){document.body.insertAdjacentHTML('afterbegin',H);}if(!hasFooter){document.body.insertAdjacentHTML('beforeend',F);}};if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',inject,{once:true});}else inject();})();

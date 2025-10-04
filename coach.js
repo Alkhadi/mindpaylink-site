@@ -32,17 +32,7 @@
     list.forEach(v => { const sc = score(v); if (sc > bestScore) { best = v; bestScore = sc; } });
     return best;
   }
-  function speak(text, {rate=1, pitch=1} = {}){
-    if (typeof speechSynthesis === 'undefined') return;
-    try {
-      speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      const want = getVoicePref();
-      const v = pickVoice(want);
-      if (v) u.voice = v;
-      u.rate = rate; u.pitch = pitch;
-      speechSynthesis.speak(u);
-    } catch {}
+  function speak(){}  catch {}
   }
   Coach.speak = speak;
   Coach.getVoicePref = getVoicePref;
