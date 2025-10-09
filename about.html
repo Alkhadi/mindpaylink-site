@@ -3,264 +3,476 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>About • M Share</title>
-  <meta name="description" content="About Alkhadi Koroma and the mission behind M Share." />
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="assets/css/nav-footer-uni.css" />
-  <link rel="stylesheet" href="assets/css/pages/about.inline.css" />
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
-  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png" />
-  <link rel="manifest" href="manifest.webmanifest" />
-  <meta name="theme-color" content="#0f172a" />
-  <link rel="stylesheet" href="assets/css/nav-unified.css">
-  <link rel="stylesheet" href="assets/css/voice-coach-pro.css">
-  <link rel="stylesheet" href="voice-coach-fix.css">
+  <meta name="description" content="About Alkhadi Koroma and the M Share project." />
 
-<style id="nav-chevrons-style-v2">
-  /* Ensure [hidden] actually hides menus even if a theme doesn't style it. */
-  nav .submenu[hidden] { display: none !important; }
-  /* Improve focus ring targets */
-  .menu-toggle { outline-offset: 2px; }
+  <!-- Your styles -->
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="assets/css/ux-fixes.css" />
+  <link rel="stylesheet" href="assets/css/header-2025.css" />
+  <link rel="stylesheet" href="assets/css/footer-2025.css" />
+
+  <!-- Page-local styles (small, scoped) -->
+  <style>
+    .profile-card {
+      text-align: center;
+      padding: 18px
+    }
+
+    .profile-photo {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid rgba(255, 255, 255, .9);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
+      margin: 0 auto 10px
+    }
+
+    .profile-name {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin: .2rem 0
+    }
+
+    .profile-title {
+      opacity: .9;
+      margin: .2rem 0 .6rem
+    }
+
+    .profile-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap
+    }
+
+    .profile-actions .btn {
+      min-width: 140px
+    }
+
+    .about-intro {
+      max-width: 78ch;
+      margin: 0 auto
+    }
+  </style>
+
+  <!-- Navigation visibility/accessibility helpers -->
+  <!-- Footer grid polish (non-intrusive) -->
+  <style id="footer-fix-2025">
+    .footer-2025 .grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width:640px) {
+      .footer-2025 .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width:960px) {
+      .footer-2025 .grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width:1200px) {
+      .footer-2025 .grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+    }
+
+    .footer-2025 .col h4 {
+      margin: 0 0 8px;
+    }
+
+    .footer-2025 .col p {
+      margin: .4rem 0;
+    }
+
+    .footer-2025 nav.pay .btn {
+      display: inline-block;
+      margin: 4px 8px 4px 0;
+    }
+  </style>
+
+
+<style id="mpl-mobile-nav-style-v4">
+  /* Ensure [hidden] truly hides dropdowns in any theme */
+  nav .menu[hidden], nav .submenu[hidden] { display:none !important; }
+
+  /* Small/medium behavior only */
+  @media (max-width: 1024px) {
+    /* Collapsible whole nav */
+    #mainNav[hidden] { display: none !important; }
+    /* Group baseline */
+    .nav-group, .menu-group { position: relative; }
+    /* When marked open, reveal child menu block / list */
+    .nav-group.open > .menu,
+    .menu-group.open > .submenu { display:block; }
+
+    /* Clickable targets (chevrons/toggles) */
+    .nav-group > .menu-toggle,
+    .nav-group > .chevron,
+    .nav-group [data-chevron],
+    .menu-group > .menu-toggle,
+    .menu-group > .chevron,
+    .menu-group [data-chevron] { cursor:pointer; touch-action: manipulation; }
+
+    /* A11y focus rings on triggers */
+    .nav-group > a:focus,
+    .nav-group > button:focus,
+    .nav-group > .menu-toggle:focus,
+    .nav-group > .chevron:focus,
+    .menu-group > a:focus,
+    .menu-group > button:focus,
+    .menu-group > .menu-toggle:focus,
+    .menu-group > .chevron:focus { outline:2px solid currentColor; outline-offset:2px; }
+  }
+
+  /* Hamburger is hidden on desktop */
+  @media (min-width: 1025px) { #navToggle{ display:none !important; } }
+</style>
+
+<style id="mpl-gp-cards-style-v2">
+  #gp-cards { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:12px; }
+  @media (max-width: 640px){ #gp-cards{ grid-template-columns: 1fr; } }
+  .gp-card { border:1px solid var(--gp-border,#ddd); border-radius:10px; padding:12px; background:var(--gp-bg,#fff); }
+  .gp-card h4 { margin:0 0 8px; font-size:1rem; }
+  .gp-examples { display:flex; flex-wrap:wrap; gap:8px; }
+  .gp-examples .chip { padding:4px 8px; border-radius:999px; border:1px solid #ccc; font-size:.88rem; }
+  .gp-card[aria-selected="true"] { outline:3px solid #4a90e2; }
+  #gp-overlay[hidden]{ display:none; }
+  #gp-overlay { position:fixed; inset:0; background:rgba(0,0,0,.5); display:flex; justify-content:center; align-items:center; z-index:2147483641; }
+  #gp-overlay .gp-modal{ width:clamp(280px, 90vw, 720px); max-height:85vh; overflow:auto; background:#fff; padding:16px; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,.35); position:relative; }
+  #gp-overlay .close { position:absolute; top:14px; right:16px; }
+</style>
+
+<style id="mpl-vc-style-v2">
+  .vc-draggable { position: fixed !important; z-index: 2147483642 !important; }
+  .vc-drag-handle { cursor: move; user-select:none; -webkit-user-select:none; padding:6px 10px; font-weight:600; }
+  .vc-pin-toggle { position: absolute; top:8px; right:8px; }
+  .vc-pinned { box-shadow: 0 0 0 2px rgba(0,0,0,.1); }
 </style>
 </head>
 
 <body>
-  <a id="top" style="position:absolute;top:0;left:0;width:0;height:0;overflow:hidden"> </a>
-
+  <!-- HEADER (mirrors live site structure) -->
   <header class="site-header">
     <div class="container navbar">
-      <a id="brandLink" class="brand" data-href="index.html" href="index.html"><span class="logo">M</span><span
-          class="brand-text">M Share</span></a>
-      <nav class="main-nav" id="mainNav">
-        <a data-href="index.html" href="index.html">Wellbeing</a>
-        <div class="menu-group">
-          <button class="menu-toggle" aria-expanded="false">Conditions <span class="icon">▾</span></button>
-          <div class="submenu">
-            <div class="menu-label">Neurodevelopmental</div>
-            <a data-href="autism.html" href="autism.html">Autism</a>
-            <a data-href="adhd.html" href="adhd.html">ADHD</a>
-            <a data-href="dyslexia-reading-training.html" href="dyslexia-reading-training.html">Dyslexia</a>
-            <div class="menu-label">Mental Health</div>
-            <a data-href="anxiety.html" href="anxiety.html">Anxiety</a>
-            <a data-href="depression.html" href="depression.html">Depression</a>
-            <a data-href="stress.html" href="stress.html">Stress</a>
-            <a data-href="sleep.html" href="sleep.html">Sleep</a>
+      <a id="brandLink" class="brand" href="index.html" aria-label="Home">
+        <span class="logo">M</span><span class="brand-text">M Share</span>
+      </a>
+
+      <nav class="main-nav" id="mainNav" aria-label="Primary">
+        <a href="index.html">Wellbeing</a>
+
+        <div class="nav-group">
+          <button class="nav-button" type="button" aria-expanded="false"
+            aria-controls="menu-conditions">Conditions</button>
+          <div id="menu-conditions" class="menu menu-wide" role="menu">
+            <div class="menu-col">
+              <div class="menu-title">Neurodevelopmental</div>
+              <a role="menuitem" href="autism.html">Autism</a>
+              <a role="menuitem" href="adhd.html">ADHD</a>
+              <a role="menuitem" href="dyslexia-reading-training.html">Dyslexia</a>
+            </div>
+            <div class="menu-col">
+              <div class="menu-title">Mental Health</div>
+              <a role="menuitem" href="anxiety.html">Anxiety</a>
+              <a role="menuitem" href="depression.html">Depression</a>
+              <a role="menuitem" href="stress.html">Stress</a>
+              <a role="menuitem" href="sleep.html">Sleep</a>
+            </div>
           </div>
         </div>
-        <div class="menu-group">
-          <button class="menu-toggle" aria-expanded="false">Breathing &amp; Focus <span class="icon">▾</span></button>
-          <div class="submenu">
-            <div class="menu-label">Guides</div>
-            <a data-href="breath.html" href="breath.html">Breath (how‑to)</a>
-            <a data-href="focus.html" href="focus.html">Focus</a>
-            <a data-href="mindfulness.html" href="mindfulness.html">Mindfulness</a>
-            <div class="menu-label">Techniques</div>
-            <a data-href="sos-60.html" href="sos-60.html">60‑second Reset</a>
-            <a data-href="box-breathing.html" href="box-breathing.html">Box Breathing</a>
-            <a data-href="4-7-8-breathing.html" href="4-7-8-breathing.html">4‑7‑8 Breathing</a>
-            <a data-href="coherent-5-5.html" href="coherent-5-5.html">Coherent 5‑5</a>
+
+        <div class="nav-group">
+          <button class="nav-button" type="button" aria-expanded="false" aria-controls="menu-breath">Breathing &amp;
+            Focus</button>
+          <div id="menu-breath" class="menu menu-wide" role="menu">
+            <div class="menu-col">
+              <div class="menu-title">Guides</div>
+              <a role="menuitem" href="breath.html">Breath (how‑to)</a>
+              <a role="menuitem" href="focus.html">Focus</a>
+              <a role="menuitem" href="mindfulness.html">Mindfulness</a>
+            </div>
+            <div class="menu-col">
+              <div class="menu-title">Techniques</div>
+              <a role="menuitem" href="sos-60.html">60‑second Reset</a>
+              <a role="menuitem" href="box-breathing.html">Box Breathing</a>
+              <a role="menuitem" href="4-7-8-breathing.html">4‑7‑8 Breathing</a>
+              <a role="menuitem" href="coherent-5-5.html">Coherent 5‑5</a>
+            </div>
           </div>
         </div>
-        <div class="menu-group">
-          <button class="menu-toggle" aria-expanded="false">Toolkits <span class="icon">▾</span></button>
-          <div class="submenu">
-            <div class="menu-label">General</div>
-            <a data-href="sleep-tools.html" href="sleep-tools.html">Sleep Tools</a>
-            <a data-href="breath-tools.html" href="breath-tools.html">Breath Tools</a>
-            <a data-href="mood-tools.html" href="mood-tools.html">Mood Tools</a>
-            <div class="menu-label">Condition‑specific</div>
-            <a data-href="adhd-tools.html" href="adhd-tools.html">ADHD Tools</a>
-            <a data-href="autism-tools.html" href="autism-tools.html">Autism Tools</a>
-            <a data-href="depression-tools.html" href="depression-tools.html">Depression Tools</a>
-            <a data-href="anxiety-tools.html" href="anxiety-tools.html">Anxiety Tools</a>
-            <a data-href="stress-tools.html" href="stress-tools.html">Stress Tools</a>
+
+        <div class="nav-group">
+          <button class="nav-button" type="button" aria-expanded="false" aria-controls="menu-tools">Toolkits</button>
+          <div id="menu-tools" class="menu menu-wide" role="menu">
+            <div class="menu-col">
+              <div class="menu-title">General</div>
+              <a role="menuitem" href="sleep-tools.html">Sleep Tools</a>
+              <a role="menuitem" href="breath-tools.html">Breath Tools</a>
+              <a role="menuitem" href="mood-tools.html">Mood Tools</a>
+            </div>
+            <div class="menu-col">
+              <div class="menu-title">Condition‑specific</div>
+              <a role="menuitem" href="adhd-tools.html">ADHD Tools</a>
+              <a role="menuitem" href="autism-tools.html">Autism Tools</a>
+              <a role="menuitem" href="depression-tools.html">Depression Tools</a>
+              <a role="menuitem" href="anxiety-tools.html">Anxiety Tools</a>
+              <a role="menuitem" href="stress-tools.html">Stress Tools</a>
+            </div>
           </div>
         </div>
-        <div class="menu-group">
-          <button class="menu-toggle" aria-expanded="false">About <span class="icon">▾</span></button>
-          <div class="submenu">
-            <a data-href="about.html" href="about.html">About</a>
-            <a data-href="coffee.html" href="coffee.html">Support Us</a>
-            <a data-href="contact.html" href="contact.html">Contact</a>
+
+        <div class="nav-group">
+          <button class="nav-button" type="button" aria-expanded="false" aria-controls="menu-about">About</button>
+          <div id="menu-about" class="menu" role="menu">
+            <a role="menuitem" href="about.html">About</a>
+            <a role="menuitem" href="coffee.html">Support Us</a>
+            <a role="menuitem" href="contact.html">Contact</a>
           </div>
         </div>
       </nav>
-      <button type="button" id="navToggle" class="nav-toggle" aria-label="Menu" aria-expanded="false"
+
+      <button id="navToggle" class="nav-toggle" aria-label="Menu" aria-expanded="false"
         aria-controls="mainNav">☰</button>
     </div>
   </header>
 
+  <!-- MAIN content (unchanged) -->
   <main class="container">
-    <h1>About</h1>
-    <section class="card about-hero">
-      <p class="muted">Hello, I’m Alkhadi Koroma, London‑based and proudly dyslexic. Growing up as one of fifteen
-        children, I wrestled with words but fell in love with problem‑solving. These tools—colour overlays, chunked
-        reading drills, paced breathing, focus timers, and gentle reminders—helped me graduate and become the first in
-        my family to earn a Computer Science degree. I built <b>M&nbsp;Share</b> to pass that lifeline to every
-        neurodivergent learner—and to parents seeking understanding and calm—to help us co‑exist. If this space helps
-        you breathe easier, learn faster, or feel seen, please tap “Buy me coffee.” Your support funds new features,
-        guides and access.</p>
-      <div id="accWrap" class="accordion">
-        <button id="acc1" class="acc-btn">Read My Full Story <span>▾</span></button>
-        <div class="acc-panel">
-          <p>I learned to engineer systems before I could fully read them. When language felt slippery, I relied on
-            rhythm and structure: count the breath, square the task, name the next action. At work, I build quiet
-            experiences that make hard moments easier: one‑button focus sprints, 60‑second resets, printable PDFs you
-            can share with a teacher or manager. M&nbsp;Share is deliberately calm—no ads, no noise—just the essentials
-            to help you breathe, learn, and show your best work.</p>
+    <div class="card about-intro" data-excerpt="5">
+      <h1>About</h1>
+      <p>Hello, I’m Alkhadi Koroma, London‑based and proudly dyslexic. Growing up as one of fifteen children, I wrestled
+        with words but fell in love with problem‑solving. These tools—colour overlays, chunked reading drills, paced
+        breathing, focus timers, and gentle reminders—helped me graduate and become the first in my family to earn a
+        Computer Science degree. I built M Share to pass that lifeline to every neurodivergent learner—and to parents
+        seeking understanding and calm—to help us co‑exist. If this space helps you breathe easier, learn faster, or
+        feel seen, please tap “Support Us.” Your support funds new features, guides, and access.</p>
+      <details>
+        <summary>Read more</summary>
+        <div style="margin-top:8px">
+          <p>I live in Southwark, London, where double‑decker buses hum like metronomes and the Thames reminds you to
+            keep moving. For years, my days started early—coding in the quiet, building small tools I needed myself—then
+            driving private hire across the city, picking up stories from people heading to interviews, hospitals,
+            schools, and first dates. Dyslexia shaped my routes as surely as any sat‑nav: I take the road that gives me
+            time to think, the one with cleaner signage, the one that lets me rehearse a conversation twice before I say
+            a word. M Share began as a folder of these hacks—little bridges over noisy gaps in attention and
+            memory—because I believed what carried me could carry others, too.</p>
+          <p>At school I learned to measure progress in breaths, not pages. Breathing tools became my first lifeline:
+            four seconds in, six out, repeated until the letters stopped shaking. When revision turned to fog, I used
+            colour overlays and the screen settled down. Chunked reading taught me to trust small wins—three lines, then
+            a break; one paragraph, then a note to future me. I wrote scripts that nudged me kindly: “Stand, breathe,
+            blink, sip water.” The first time those prompts ran on my phone, I cried—not because the code was clever,
+            but because the compassion was. M Share is the public version of that private kindness.</p>
+          <p>University was a landslide and a lighthouse at once. Lectures moved fast; assignment briefs felt like
+            riddles dropped in a storm. But the tools worked. A dyslexia trainer I prototyped made words behave: spacing
+            widened, backgrounds shifted to a calmer blue, and exercises gamified the practice of decoding shape before
+            sound. A focus timer turned ninety minutes into a train of gentle stops—work, pause, breathe, repeat—until
+            the track ran out exactly at submission. On the day I graduated—first in a family of fifteen to hold a
+            Computer Science degree—I recognised the real certificate was a mindset: there are many legitimate ways to
+            learn, and each deserves an app that meets it halfway.</p>
+          <p>That belief is why M Share is both toolbox and table. Toolbox, because you will find practical,
+            low‑friction helpers: breathing sequences that open on a tap; reading modes that shift contrast and spacing
+            instantly; a mood page that treats emotions like weather—real, passing, and worthy of a forecast; gentle
+            reminders that respect dignity. Table, because community matters: parents can sit beside their
+            neurodivergent children and try settings together; teachers can borrow templates for accessible handouts;
+            students can share what actually works at 2 a.m. before a deadline. I built the interface to be quiet,
+            roomy, and forgiving—the way I wish every classroom had felt.</p>
+          <p>London taught me another lesson: synergy. The city only functions because millions of differences
+            coordinate. Neurodivergence is not a malfunction; it is a different form of coordination. When we tune the
+            environment—fonts, colours, timing, feedback—the person doesn’t change; the world meets them where they are.
+            M Share, in its best moments, is a tuning fork. Switch to the dyslexia‑friendly overlay, and your eyes
+            exhale. Start the paced‑breathing guide, and your mind re‑enters the room. Use the chunked‑reading trainer,
+            and paragraphs become stepping stones instead of waves. I cannot promise miracles, but I can promise craft,
+            iteration, and a listening ear.</p>
+          <p>Your support does concrete things. A coffee funds hosting, accessibility audits, and the small design
+            details that make the difference between “usable” and “I can finally do this.” It pays for expert
+            consultations so I can translate best practice into friendly defaults. It turns ideas into features: a
+            parent view with plain‑language guides; printable worksheets that mirror the on‑screen trainers; an offline
+            mode for low‑connectivity households; gentle analytics that help you see which settings helped most. I test
+            every addition with one question: would this have helped teenage me finish that page without shame?</p>
+          <p>I also need your feedback. Tell me what feels clumsy, what took too many taps, what wording made you
+            hesitate. Request features shamelessly. If you’re a parent, say which parts helped you understand your
+            child’s day. If you’re a student, describe the moment something clicked. If you’re a teacher or therapist,
+            lend the phrases you use when you explain dyslexia to a nervous family—I will bake them into the product.
+            This is a living project; your notes are blueprints.</p>
+          <p>Most nights, after a late shift, I still open the builder and refine a corner: a focus ring brighter here,
+            a label kinder there. I do it because I remember the library desk where I nearly gave up, and the bus ride
+            where a stranger said, “Try changing the background—you’ll be surprised.” They were right. If M Share
+            surprises you into a calmer breath, a completed paragraph, a kinder day, then it is working. If it earns
+            your trust, please tap Support Us. You will help me help the next person breathe, read, finish, and feel
+            seen.</p>
         </div>
-      </div>
-      <div class="actions">
-        <a class="btn btn-success" id="downloadPdf" href="#">Download Profile PDF</a>
-        <a class="btn" href="coffee.html">Buy me coffee</a>
-      </div>
-    </section>
+      </details>
+    </div>
 
-    <section class="card profile">
-      <div class="pad">
-        <h2>Styled Profile PDF</h2>
-        <p class="muted">Download a single‑page card with active links (tap to call, text, email, visit the site) and a
-          QR code pointing here.</p>
+    <div class="card profile-card">
+      <img class="profile-photo" src="assets/alkhadi.png" alt="Profile photo of Alkhadi Koroma" />
+      <div class="profile-name">Alkhadi Koroma</div>
+      <div class="profile-title">Professional Title · Flutter Developer</div>
+      <div class="profile-actions">
+        <a id="callMe" class="btn" href="tel:07736806367">📞 Call</a>
+        <a id="mailMe" class="btn" href="mailto:info@mindpaylink.com">✉️ Email</a>
+        <a id="toSite" class="btn" href="https://mindpaylink.com" target="_blank" rel="noopener">🌐 Website</a>
+        <button id="downloadProfilePdf" class="btn">⬇ Download Profile PDF</button>
       </div>
-      <div class="profile-card pad">
-        <div class="profile-photo"><img src="assets/img/alkhadi.png" alt="Alkhadi Koroma"></div>
-        <div class="profile-grid">
-          <div class="profile-btn">📞 Call</div>
-          <div class="profile-btn">💬 Text</div>
-          <div class="profile-btn">✉️ Email</div>
-          <div class="profile-btn">🌐 Website</div>
-          <div class="profile-btn">🧘 Wellbeing</div>
-          <div class="profile-btn">🧭 Directions</div>
-        </div>
-      </div>
-    </section>
+    </div>
   </main>
 
+  <!-- FOOTER (layout fixed; full site links; payments kept) -->
   <footer class="footer-2025" id="footer2025">
     <div class="wrap">
       <div class="grid">
         <section class="col brand">
-          <div class="brandline"><span class="logo">M</span>
+          <div class="brandline">
+            <span class="logo">M</span>
             <div><b>M Share</b>
               <div class="muted">Quiet, practical tools for mental health and wellbeing.</div>
             </div>
           </div>
-          <div class="actions" style="margin-top:8px"><a class="btn" href="#top" id="backToTop">Back to top ↑</a></div>
+          <nav class="pay">
+            <!-- Keep your Stripe links -->
+            <a class="btn" href="https://buy.stripe.com/28E4gy5j6cmD2wu3pk4Rq00" target="_blank" rel="noopener">☕
+              Support Us</a>
+            <a class="btn" href="https://buy.stripe.com/28E4gy5j6cmD2wu3pk4Rq00" target="_blank" rel="noopener"> Apple
+              Pay</a>
+            <a class="btn" href="https://buy.stripe.com/28E4gy5j6cmD2wu3pk4Rq00" target="_blank" rel="noopener">Google
+              Pay</a>
+            <a class="btn" href="https://buy.stripe.com/28E4gy5j6cmD2wu3pk4Rq00" target="_blank" rel="noopener">💳
+              Card</a>
+            <a class="btn" href="https://buy.stripe.com/28E4gy5j6cmD2wu3pk4Rq00" target="_blank" rel="noopener">Cash
+              App</a>
+            <a class="btn" href="https://buy.stripe.com/28E4gy5j6cmD2wu3pk4Rq00" target="_blank" rel="noopener">Link by
+              Stripe</a>
+          </nav>
+          <div class="theme-controls">
+            <label>Background <input id="themeColor" type="color" value="#0f172a"></label>
+            <label>Brightness <input id="themeBrightness" type="range" min="0.85" max="1.25" step="0.01"
+                value="1"></label>
+          </div>
         </section>
+
         <section class="col">
           <h4>Explore</h4>
-          <p><a data-href="index.html" href="index.html">Wellbeing</a> • <a data-href="breath.html"
-              href="breath.html">Breath</a> • <a data-href="focus.html" href="focus.html">Focus</a> • <a
-              data-href="mindfulness.html" href="mindfulness.html">Mindfulness</a> • <a data-href="about.html"
-              href="about.html">About</a></p>
+          <p>
+            <a href="index.html">Wellbeing</a> •
+            <a href="breath.html">Breath</a> •
+            <a href="focus.html">Focus</a> •
+            <a href="mindfulness.html">Mindfulness</a> •
+            <a href="about.html">About</a>
+          </p>
         </section>
+
+        <section class="col">
+          <h4>Breathing Techniques</h4>
+          <p>
+            <a href="sos-60.html">60‑second Reset</a> •
+            <a href="box-breathing.html">Box Breathing</a> •
+            <a href="4-7-8-breathing.html">4‑7‑8 Breathing</a> •
+            <a href="coherent-5-5.html">Coherent 5‑5</a>
+          </p>
+        </section>
+
+        <section class="col">
+          <h4>Conditions</h4>
+          <p>
+            <a href="autism.html">Autism</a> •
+            <a href="adhd.html">ADHD</a> •
+            <a href="dyslexia-reading-training.html">Dyslexia</a> •
+            <a href="anxiety.html">Anxiety</a> •
+            <a href="depression.html">Depression</a> •
+            <a href="stress.html">Stress</a> •
+            <a href="sleep.html">Sleep</a>
+          </p>
+        </section>
+
         <section class="col">
           <h4>Toolkits</h4>
-          <p><a data-href="mood-tools.html" href="mood-tools.html">Mood</a> • <a data-href="breath-tools.html"
-              href="breath-tools.html">Breath Tools</a> • <a data-href="sleep-tools.html"
-              href="sleep-tools.html">Sleep</a> • <a data-href="anxiety-tools.html"
-              href="anxiety-tools.html">Anxiety</a> • <a data-href="stress-tools.html"
-              href="stress-tools.html">Stress</a></p>
+          <p>
+            <a href="mood-tools.html">Mood</a> •
+            <a href="breath-tools.html">Breath Tools</a> •
+            <a href="sleep-tools.html">Sleep</a> •
+            <a href="anxiety-tools.html">Anxiety</a> •
+            <a href="stress-tools.html">Stress</a> •
+            <a href="adhd-tools.html">ADHD</a> •
+            <a href="autism-tools.html">Autism</a> •
+            <a href="depression-tools.html">Depression</a>
+          </p>
         </section>
+
         <section class="col">
           <h4>Contact</h4>
-          <p><a data-href="contact.html" href="contact.html">Contact</a> • <a
-              href="mailto:info@mindpaylink.com">info@mindpaylink.com</a></p>
+          <p>
+            <a href="contact.html">Contact</a> •
+            <a href="mailto:info@mindpaylink.com">info@mindpaylink.com</a>
+          </p>
         </section>
       </div>
+
       <div class="bottom">
-        <div>© <span id="yearFooter"></span> MindPayLink · Educational information only; not medical advice.</div>
+        <div>© 2025 MindPayLink · Educational information only; not medical advice.</div>
         <div class="credit">Designed by <b>Alkhadi M Koroma</b></div>
       </div>
     </div>
   </footer>
-  <script src="assets/js/core/nav-autofix.js"></script>
-  <script src="assets/header/header.js"></script>
-  <script src="assets/footer/footer.js"></script>
-  <script src="assets/js/pages/about.inline.js"></script>
-  <script src="assets/js/core/nav-core.js"></script>
-  <script src="assets/js/core/nav-autofix.js"></script>
-  <script src="assets/header/header.js"></script>
-  <script src="assets/footer/footer.js"></script>
-  <script src="assets/js/core/sound-kit.js"></script>
-  <script defer src="assets/js/nav-unified.js"></script>
-  <script defer src="assets/js/voice-coach-pro.js"></script>
-  <script defer src="voice-coach-fix.js"></script>
 
-<script id="menu-chevron-fix">
+  <!-- Your scripts -->
+  <script src="app.js"></script>
+  <script src="assets/js/paylinks.js"></script>
+  <script src="assets/js/ux-fixes.js"></script>
+  <script src="assets/js/site-core.js"></script>
+
+  <!-- Small, robust nav controller (desktop + mobile) -->
+  <!-- Small utility: wire profile buttons if globals are present -->
+  <script>
+    (function () {
+      var M = window.__MSHARE__ || {};
+      var d = M.data || { name: 'Alkhadi Koroma', title: 'Professional Title · Flutter Developer', phone: '07736806367', email: 'info@mindpaylink.com', site: 'https://mindpaylink.com' };
+      var c = document.getElementById('callMe'); if (c && d.phone) c.href = 'tel:' + d.phone;
+      var m = document.getElementById('mailMe'); if (m && d.email) m.href = 'mailto:' + d.email;
+      var s = document.getElementById('toSite'); if (s && d.site) s.href = d.site;
+      var pdf = document.getElementById('downloadProfilePdf');
+      if (pdf && window.__MSHARE__ && window.__MSHARE__.quickDownloadPdf) {
+        pdf.addEventListener('click', function () { window.__MSHARE__.quickDownloadPdf(); });
+      }
+    })();
+  </script>
+
+<script id="mpl-mobile-nav-patch-v4">
 (function(){
-  var onReady = function(fn){ if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn, {once:true}); };
-  onReady(function(){
-    // Click or keyboard on a chevron-like control opens/closes the adjacent submenu.
-    function toggleFrom(trigger, prevent){
-      var btn = trigger.closest('[data-chevron], .chevron, .menu-chevron, .accordion-toggle, .has-children > button, .has-children > a, .hamburger, [aria-haspopup="menu"]');
-      if(!btn) return false;
+  var MQ = window.matchMedia ? window.matchMedia('(max-width: 1024px)') : {matches:true, addEventListener:function(){}};
 
-      // Find the submenu: aria-controls target, the next sibling UL/.submenu, or a nested [role="menu"].
-      var submenu = null;
-      var ctrl = btn.getAttribute('aria-controls');
-      if (ctrl) submenu = document.getElementById(ctrl);
-      if (!submenu) {
-        var li = btn.closest('li, .has-children, nav, .menu, .accordion');
-        if (li) submenu = li.querySelector(':scope > ul, :scope > .submenu, :scope > [role="menu"]');
-      }
-      if (!submenu) return false;
-
-      if (prevent) prevent.preventDefault();
-
-      var open = btn.getAttribute('aria-expanded') === 'true';
-      btn.setAttribute('aria-expanded', String(!open));
-
-      // Hide/show with both the hidden attribute and display style — covers most CSS frameworks.
-      if (!open) {
-        submenu.removeAttribute('hidden');
-        submenu.style.display = submenu.style.display || 'block';
-      } else {
-        submenu.setAttribute('hidden', '');
-        submenu.style.display = 'none';
-      }
-
-      // If the UI uses a class toggle for transitions:
-      var host = btn.closest('.has-children, li, .accordion-item');
-      if (host) host.classList.toggle('open', !open);
-
-      return true;
-    }
-
-    document.addEventListener('click', function(e){
-      if (toggleFrom(e.target, e)) return;
-    }, {passive:false});
-
-    document.addEventListener('keydown', function(e){
-      // Space or Enter should also toggle when the chevron has keyboard focus
-      if ((e.key === 'Enter' || e.key === ' ') && toggleFrom(e.target, e)) {
-        e.preventDefault();
-      }
-    }, {passive:false});
-  });
-})();
-<\/script>
-
-<script id="nav-chevrons-patch-v2">
-(function(){
-  var onReady = function(fn){
+  function onReady(fn){
     if (document.readyState !== 'loading') fn();
     else document.addEventListener('DOMContentLoaded', fn, {once:true});
-  };
+  }
 
-  onReady(function(){
+  function findNav(){
+    return document.getElementById('mainNav')
+        || document.querySelector('nav.main-nav')
+        || document.querySelector('header nav')
+        || document.querySelector('nav');
+  }
 
-    // ---- Mobile hamburger (#navToggle controls #mainNav) ----
-    var nav = document.getElementById('mainNav') || document.querySelector('nav.main-nav');
-    var toggle = document.getElementById('navToggle') || document.querySelector('.nav-toggle');
+  function setup(){
+    var nav = findNav();
+    if (!nav) return;
+
+    // Hamburger toggle for entire nav (mobile only)
+    var toggle = document.getElementById('navToggle')
+      || document.querySelector('.nav-toggle, .hamburger, [aria-controls="mainNav"]');
 
     function openNav(){
-      if (!nav || !toggle) return;
+      if (!MQ.matches || !nav || !toggle) return;
       toggle.setAttribute('aria-expanded','true');
       nav.removeAttribute('hidden');
-      // If CSS hides it via display, ensure visible on mobile:
       var cs = window.getComputedStyle(nav);
       if (cs.display === 'none') nav.style.display = 'block';
       document.body.classList.add('nav-open');
@@ -268,152 +480,337 @@
     function closeNav(){
       if (!nav || !toggle) return;
       toggle.setAttribute('aria-expanded','false');
-      nav.setAttribute('hidden','');
-      // Respect themes that rely on display toggling:
-      nav.style.display = 'none';
+      if (MQ.matches) {
+        nav.setAttribute('hidden','');
+        nav.style.display = 'none';
+      }
       document.body.classList.remove('nav-open');
     }
     function isOpen(){ return toggle && toggle.getAttribute('aria-expanded') === 'true'; }
 
-    if (toggle && nav){
+    if (toggle) {
       toggle.setAttribute('aria-controls', nav.id || 'mainNav');
       if (!toggle.hasAttribute('aria-expanded')) toggle.setAttribute('aria-expanded','false');
-
       toggle.addEventListener('click', function(e){
+        if (!MQ.matches) return;
         e.preventDefault();
         isOpen() ? closeNav() : openNav();
       }, {passive:false});
-
-      // Close on outside click (mobile)
+      // Close nav on outside click
       document.addEventListener('click', function(e){
-        if (!isOpen()) return;
-        if (e.target.closest('#mainNav, #navToggle, .nav-toggle')) return;
+        if (!MQ.matches || !isOpen()) return;
+        if (e.target.closest('#mainNav, #navToggle, .nav-toggle, .hamburger')) return;
         closeNav();
       }, {passive:true});
-
-      // Close on Escape
+      // Close nav on Escape key
       document.addEventListener('keydown', function(e){
-        if (e.key === 'Escape' && isOpen()) closeNav();
+        if (MQ.matches && e.key === 'Escape' && isOpen()) closeNav();
       }, {passive:true});
     }
 
-    // ---- Chevron submenus (.menu-group -> .menu-toggle + .submenu) ----
-    var groups = Array.prototype.slice.call(document.querySelectorAll('.menu-group'));
-    var finePointer = window.matchMedia && window.matchMedia('(pointer:fine)').matches;
-
+    // Submenu groups toggling
     function closeOthers(except){
-      groups.forEach(function(g){
+      if (!MQ.matches) return;
+      nav.querySelectorAll('.menu-group.open').forEach(function(g){
         if (g === except) return;
-        var b = g.querySelector('.menu-toggle, [data-chevron]');
         var m = g.querySelector('.submenu, [role="menu"], :scope > ul');
-        if (!b || !m) return;
-        b.setAttribute('aria-expanded','false');
-        m.setAttribute('hidden','');
+        if (m) m.setAttribute('hidden','');
         g.classList.remove('open');
+        var c = g.querySelector('.chevron, [data-chevron], .menu-toggle, :scope > a, :scope > button');
+        if (c) c.setAttribute('aria-expanded','false');
       });
     }
 
-    groups.forEach(function(g){
-      var btn = g.querySelector('.menu-toggle, [data-chevron]');
-      var menu = g.querySelector('.submenu, [role="menu"], :scope > ul');
-      if (!btn || !menu) return;
-
-      btn.setAttribute('aria-haspopup','menu');
-      if (!btn.hasAttribute('aria-expanded')) btn.setAttribute('aria-expanded','false');
-      // initial hidden state
-      if (btn.getAttribute('aria-expanded') !== 'true') menu.setAttribute('hidden','');
-
-      function open(){
-        closeOthers(g);
-        btn.setAttribute('aria-expanded','true');
-        menu.removeAttribute('hidden');
-        g.classList.add('open');
-      }
-      function close(){
-        btn.setAttribute('aria-expanded','false');
+    Array.prototype.slice.call(nav.querySelectorAll('.menu-group')).forEach(function(group){
+      var menu = group.querySelector('.submenu, [role="menu"], :scope > ul');
+      if (!menu) return;
+      var toggleEl = group.querySelector('.chevron, [data-chevron], .menu-toggle')
+                    || group.querySelector(':scope > a')
+                    || group.firstElementChild;
+      function initState(){
+        if (!MQ.matches) {
+          // On desktop, menus are always visible; clear attributes
+          menu.removeAttribute('hidden');
+          group.classList.remove('open');
+          if (toggleEl) toggleEl.setAttribute('aria-expanded','false');
+          return;
+        }
         menu.setAttribute('hidden','');
-        g.classList.remove('open');
+        group.classList.remove('open');
+        if (toggleEl) {
+          toggleEl.setAttribute('tabindex','0');
+          toggleEl.setAttribute('aria-haspopup','menu');
+          toggleEl.setAttribute('aria-expanded','false');
+        }
       }
-      function toggle(){
-        (btn.getAttribute('aria-expanded') === 'true') ? close() : open();
+      function open(){ closeOthers(group); menu.removeAttribute('hidden'); group.classList.add('open'); if (toggleEl) toggleEl.setAttribute('aria-expanded','true'); }
+      function close(){ menu.setAttribute('hidden',''); group.classList.remove('open'); if (toggleEl) toggleEl.setAttribute('aria-expanded','false'); }
+      function toggle(e){ if (e) e.preventDefault(); group.classList.contains('open') ? close() : open(); }
+
+      // Initialize now and on viewport changes
+      initState();
+      if (MQ.addEventListener) MQ.addEventListener('change', initState);
+      else if (MQ.addListener) MQ.addListener(initState);
+
+      // Click/tap support on mobile
+      if (toggleEl) {
+        toggleEl.addEventListener('click', function(e){ if (!MQ.matches) return; toggle(e); }, {passive:false});
+        toggleEl.addEventListener('keydown', function(e){
+          if (!MQ.matches) return;
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(e); }
+          if (e.key === 'Escape') { e.preventDefault(); close(); toggleEl.focus(); }
+        }, {passive:false});
       }
-
-      // Click / tap on chevron
-      btn.addEventListener('click', function(e){
-        e.preventDefault();
-        toggle();
-      }, {passive:false});
-
-      // Keyboard toggle
-      btn.addEventListener('keydown', function(e){
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
-        if (e.key === 'Escape') { close(); btn.focus(); }
-      }, {passive:false});
-
-      // Hover/focus open (desktop only; won't fire on touch-only devices)
-      if (finePointer){
-        g.addEventListener('mouseenter', open, {passive:true});
-        g.addEventListener('mouseleave', close, {passive:true});
-        g.addEventListener('focusin', open, {passive:true});
-        g.addEventListener('focusout', function(ev){
-          if (!g.contains(ev.relatedTarget)) close();
-        }, {passive:true});
+      // Hover/focus for desktop (pointer:fine only)
+      if (window.matchMedia && window.matchMedia('(pointer:fine)').matches) {
+        group.addEventListener('mouseenter', function(){ if (!MQ.matches) open(); }, {passive:true});
+        group.addEventListener('mouseleave', function(){ if (!MQ.matches) close(); }, {passive:true});
+        group.addEventListener('focusin',   function(){ if (!MQ.matches) open(); }, {passive:true});
+        group.addEventListener('focusout',  function(ev){ if (MQ.matches) return; if (!group.contains(ev.relatedTarget)) close(); }, {passive:true});
       }
     });
 
-    // Close open submenu on outside click (desktop)
+    // Close open submenu when clicking outside (mobile only)
     document.addEventListener('click', function(e){
-      var hitGroup = e.target.closest('.menu-group');
-      if (!hitGroup) closeOthers(null);
+      if (!MQ.matches) return;
+      var hit = e.target.closest('.menu-group');
+      if (!hit) closeOthers(null);
     }, {passive:true});
-
-  });
+  }
+  onReady(setup);
 })();
 <\/script>
 
-<script id="focus-overlay-dedupe-v2">
+<script id="mpl-vc-patch-v2">
 (function(){
-  var onReady = function(fn){
+  function onReady(fn){
     if (document.readyState !== 'loading') fn();
     else document.addEventListener('DOMContentLoaded', fn, {once:true});
-  };
-  onReady(function(){
-    // Keep the visible "square" focus panel if present:
-    var keep = document.querySelector('#focusModal, .focus-screen, .focus-panel, .breathing-panel');
-    // Potential legacy/round visuals to remove:
-    var extraSel = [
-      '#vc-focus', '.vc-focus', '.breathing-circle', '.focus-circle',
-      '#breathCanvas', '#voiceCoachCircle', '.circle-bg', '.legacy-breathing', '.coach-circle'
-    ].join(',');
-
-    function hide(node){ try{ node.style.display='none'; node.setAttribute('data-removed-by-fix','true'); }catch{} }
-
-    if (keep){
-      // Hide large canvases/SVGs NOT inside the keep panel (the behind layer).
-      Array.prototype.slice.call(document.querySelectorAll('canvas,svg')).forEach(function(n){
-        if (keep.contains(n)) return;
-        var r; try{ r = n.getBoundingClientRect(); }catch(e){}
-        if (r && r.width >= 180 && r.height >= 180) hide(n);
-      });
-      // Hide known legacy containers not in keep
-      Array.prototype.slice.call(document.querySelectorAll(extraSel)).forEach(function(n){
-        if (!keep.contains(n)) hide(n);
-      });
-    } else {
-      // If no "square" panel exists, but both a ring + some other panel exist, keep the top-most by z-index and hide others
-      var layers = Array.prototype.slice.call(document.querySelectorAll('#vc-focus, .vc-focus, .focus-panel, .breathing-panel, #focusModal, .focus-screen, canvas, svg'));
-      if (!layers.length) return;
-      // Pick the visible one with largest z-index
-      var top = null, topZ = -Infinity;
-      layers.forEach(function(el){
-        var cs = window.getComputedStyle(el);
-        if (cs.display === 'none' || cs.visibility === 'hidden' || cs.opacity === '0') return;
-        var z = parseInt(cs.zIndex || '0', 10); if (isNaN(z)) z = 0;
-        if (z >= topZ) { topZ = z; top = el; }
-      });
-      layers.forEach(function(el){ if (el !== top) hide(el); });
+  }
+  function findPanel(){
+    return document.querySelector('#voiceCoachPanel, .voice-coach, #vcPanel, #voiceCoach, #vc-focus-panel');
+  }
+  function persist(key, val){ try { localStorage.setItem(key, JSON.stringify(val)); } catch(e){} }
+  function restore(key){ try { var v = localStorage.getItem(key); return v ? JSON.parse(v) : null; } catch(e){ return null; } }
+  function makeDraggable(panel){
+    if (!panel) return;
+    panel.classList.add('vc-draggable');
+    panel.style.inset = 'auto';
+    var handle = panel.querySelector('.vc-drag-handle');
+    if (!handle) {
+      handle = document.createElement('div');
+      handle.className = 'vc-drag-handle';
+      handle.textContent = 'Voice Coach';
+      handle.setAttribute('role','toolbar');
+      panel.insertBefore(handle, panel.firstChild);
     }
-  });
+    var pin = panel.querySelector('.vc-pin-toggle');
+    if (!pin) {
+      pin = document.createElement('button');
+      pin.type = 'button';
+      pin.className = 'vc-pin-toggle';
+      pin.textContent = 'Pin';
+      pin.setAttribute('aria-pressed','false');
+      panel.appendChild(pin);
+    }
+    var pref = restore('mpl.vc.pref') || { pinned: false, x: 20, y: 20 };
+    var dragging = false, startX=0, startY=0, origX=0, origY=0;
+    function applyPos(){ panel.style.left = (pref.x|0) + 'px'; panel.style.top  = (pref.y|0) + 'px'; }
+    function updatePinUI(){
+      if (pref.pinned) { panel.classList.add('vc-pinned'); pin.textContent = 'Unpin'; pin.setAttribute('aria-pressed','true'); }
+      else { panel.classList.remove('vc-pinned'); pin.textContent = 'Pin'; pin.setAttribute('aria-pressed','false'); }
+    }
+    applyPos(); updatePinUI();
+    pin.addEventListener('click', function(){ pref.pinned = !pref.pinned; updatePinUI(); persist('mpl.vc.pref', pref); });
+    function onDown(ev){ if (pref.pinned) return; dragging = true; var p = ('touches' in ev && ev.touches.length) ? ev.touches[0] : ev; startX = p.clientX; startY = p.clientY; var rect = panel.getBoundingClientRect(); origX = rect.left + window.scrollX; origY = rect.top + window.scrollY; ev.preventDefault(); }
+    function onMove(ev){ if (!dragging || pref.pinned) return; var p = ('touches' in ev && ev.touches.length) ? ev.touches[0] : ev; var dx = p.clientX - startX; var dy = p.clientY - startY; pref.x = Math.max(0, Math.min(window.innerWidth  - (panel.offsetWidth  || 300), origX + dx)); pref.y = Math.max(0, Math.min(window.innerHeight - (panel.offsetHeight || 200), origY + dy)); applyPos(); }
+    function onUp(){ if (!dragging) return; dragging = false; persist('mpl.vc.pref', pref); }
+    handle.addEventListener('mousedown', onDown, {passive:false});
+    document.addEventListener('mousemove', onMove, {passive:false});
+    document.addEventListener('mouseup', onUp, {passive:true});
+    handle.addEventListener('touchstart', onDown, {passive:false});
+    document.addEventListener('touchmove', onMove, {passive:false});
+    document.addEventListener('touchend', onUp, {passive:true});
+    document.addEventListener('touchcancel', onUp, {passive:true});
+  }
+  onReady(function(){ var p = findPanel(); if (p) makeDraggable(p); });
+})();
+<\/script>
+
+<script id="mpl-gp-patch-v2">
+(function(){
+  function onReady(fn){ if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn, {once:true}); }
+  // Data object containing six categories and eight examples per line (two originals + six new)
+  var DATA = {
+    "Short vowels": [
+      ["a /a/", ["cat","map","sad","bag","flag","hand","pan","track"]],
+      ["e /e/", ["bed","hem","pen","bell","nest","tent","best","neck"]],
+      ["i /i/", ["sit","milk","fish","list","swim","brick","hill","chip"]],
+      ["o /o/", ["hot","pond","lock","mop","fox","rock","cob","sock"]],
+      ["u /u/", ["sun","drum","duck","cup","jump","brush","luck","bus"]]
+    ],
+    "Long vowels": [
+      ["a /ā/", ["late","paper","bake","game","snake","frame","table","gate"]],
+      ["e /ē/", ["tree","even","these","meter","theme","delete","piece","chief"]],
+      ["i /ī/", ["time","pilot","smile","kite","drive","hike","prize","spider"]],
+      ["o /ō/", ["home","open","stone","rope","nose","global","focus","hotel"]],
+      ["u /yoo/", ["unit","music","unicorn","human","pupil","future","cube","uniform"]]
+    ],
+    "Digraphs / trigraphs": [
+      ["sh", ["ship","brush","shine","wish","splash","sheep","shop","finish"]],
+      ["ch", ["chat","teacher","chess","bench","kitchen","chocolate","chapter","lunch"]],
+      ["th (/θ/ or /ð/)", ["thin","this","think","bath","path","father","weather","both"]],
+      ["ph", ["phone","graph","photo","dolphin","alphabet","trophy","sphere","elephant"]],
+      ["wh", ["when","whale","wheel","whisper","white","where","while","which"]],
+      ["igh", ["high","night","sight","light","bright","flight","right","might"]],
+      ["tch", ["catch","match","watch","patch","stitch","latch","witch","fetch"]],
+      ["dge", ["bridge","edge","badge","hedge","judge","fudge","lodge","wedge"]]
+    ],
+    "Vowel teams": [
+      ["ai/ay", ["rain","day","paint","mail","chain","tray","play","display"]],
+      ["ee/ea", ["see","team","green","please","speed","read","beach","seat"]],
+      ["oa/ow", ["boat","snow","float","soap","coach","slow","crow","window"]],
+      ["oi/oy", ["coin","boy","boil","toy","point","joy","soil","enjoy"]],
+      ["ou/ow", ["sound","cloud","house","loud","mouth","brown","crowd","down"]],
+      ["au/aw", ["cause","saw","author","August","draw","crawl","sauce","lawn"]]
+    ],
+    "R‑controlled vowels": [
+      ["ar", ["car","start","park","farm","dark","sharp","large","garden"]],
+      ["er/ir/ur", ["her","bird","turn","fern","first","nurse","curl","girl"]],
+      ["or", ["fork","north","storm","short","horse","corn","porch","torch"]]
+    ],
+    "Silent letters": [
+      ["kn/gn", ["knee","gnome","knife","knight","knock","knead","gnat","gnash"]],
+      ["wr", ["write","wrist","wrong","wrap","wreck","wriggle","wren","wrench"]],
+      ["mb", ["thumb","comb","lamb","climb","numb","tomb","bomb","crumb"]],
+      ["igh", ["light","night","bright","sight","tight","high","slight","delight"]],
+      ["tch", ["(pattern)", "—", "hatch","stitch","notch","clutch","sketch","batch"]]
+    ]
+  };
+  // Attempt to locate the GP section using stable IDs or heuristics
+  function findGPSection(){
+    var byId = document.querySelector('#gp-section, #dyslexia-gp, [data-section="dyslexia-gp"]');
+    if (byId) return byId;
+    var nodes = Array.prototype.slice.call(document.querySelectorAll('section,div,main,article'));
+    return nodes.find(function(n){ return /Grapheme[–-]phoneme|GP mapping/i.test(n.textContent); }) || null;
+  }
+  function findStartButtonNear(el){
+    if (!el) return null;
+    var btn = el.querySelector('button, .btn, [role="button"]');
+    if (btn && /start/i.test(btn.textContent)) return btn;
+    var candidates = Array.prototype.slice.call(el.querySelectorAll('button, .btn, [role="button"]'));
+    return candidates.find(function(b){ return /start/i.test(b.textContent); }) || null;
+  }
+  function buildCards(){
+    var host = document.createElement('div');
+    host.id = 'gp-cards';
+    Object.keys(DATA).forEach(function(name){
+      var card = document.createElement('section');
+      card.className = 'gp-card';
+      card.setAttribute('tabindex','0');
+      card.setAttribute('role','group');
+      card.setAttribute('aria-label', name);
+      var h = document.createElement('h4');
+      h.textContent = name;
+      card.appendChild(h);
+      DATA[name].forEach(function(item){
+        var label = item[0];
+        var words = item[1];
+        var row = document.createElement('div');
+        row.className = 'gp-examples';
+        var tag = document.createElement('strong');
+        tag.textContent = label + ' — ';
+        tag.style.marginRight = '6px';
+        row.appendChild(tag);
+        words.forEach(function(w){
+          var chip = document.createElement('span');
+          chip.className = 'chip';
+          chip.textContent = w;
+          row.appendChild(chip);
+        });
+        card.appendChild(row);
+      });
+      host.appendChild(card);
+    });
+    return host;
+  }
+  function ensureOverlay(){
+    var ov = document.getElementById('gp-overlay');
+    if (ov) return ov;
+    ov = document.createElement('div');
+    ov.id = 'gp-overlay';
+    ov.setAttribute('hidden','');
+    ov.setAttribute('role','dialog');
+    ov.setAttribute('aria-modal','true');
+    var modal = document.createElement('div');
+    modal.className = 'gp-modal';
+    var close = document.createElement('button');
+    close.className = 'close';
+    close.type = 'button';
+    close.textContent = 'Close';
+    close.addEventListener('click', function(){ ov.setAttribute('hidden',''); });
+    ov.appendChild(modal);
+    ov.appendChild(close);
+    ov.addEventListener('click', function(e){ if (e.target === ov) ov.setAttribute('hidden',''); }, {passive:true});
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !ov.hasAttribute('hidden')) ov.setAttribute('hidden',''); }, {passive:true});
+    document.body.appendChild(ov);
+    return ov;
+  }
+  function run(){
+    var sec = findGPSection();
+    if (!sec) return;
+    // Preserve original content if not already stored
+    if (!sec.__mpl_gp_bak) sec.__mpl_gp_bak = sec.innerHTML;
+    // Replace section content with cards
+    sec.innerHTML = '';
+    var cards = buildCards();
+    sec.appendChild(cards);
+    // Selection handling
+    var selected = null;
+    cards.addEventListener('click', function(e){ var c = e.target.closest('.gp-card'); if (!c) return; Array.prototype.slice.call(cards.querySelectorAll('.gp-card')).forEach(function(x){ x.setAttribute('aria-selected','false'); }); c.setAttribute('aria-selected','true'); selected = c; }, {passive:true});
+    cards.addEventListener('keydown', function(e){ if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('gp-card')) { e.preventDefault(); e.target.click(); } });
+    // Hook Start button to show overlay
+    var startBtn = findStartButtonNear(sec);
+    if (startBtn) {
+      var overlay = ensureOverlay();
+      startBtn.addEventListener('click', function(){ var card = selected || cards.querySelector('.gp-card'); if (!card) return; var clone = card.cloneNode(true); overlay.querySelector('.gp-modal').innerHTML = ''; overlay.querySelector('.gp-modal').appendChild(clone); overlay.removeAttribute('hidden'); });
+    }
+  }
+  onReady(run);
+})();
+<\/script>
+
+<script id="mpl-tts-patch-v2">
+(function(){
+  function onReady(fn){ if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn, {once:true}); }
+  function findReadingSection(){ var byId = document.querySelector('#reading-section, [data-section="reading"], #section4'); if (byId) return byId; var nodes = Array.prototype.slice.call(document.querySelectorAll('section,div,main,article')); return nodes.find(function(n){ return /section\s*4|reading section|Press\s*start\s*begin\s*reading/i.test(n.textContent); }) || null; }
+  function findStartButtonWithin(el){ if (!el) return null; var btns = Array.prototype.slice.call(el.querySelectorAll('button, .btn, [role="button"]')); return btns.find(function(b){ return /start/i.test((b.textContent||'').trim()); }) || null; }
+  function getSelectionText(){ var sel = window.getSelection && window.getSelection(); if (sel && String(sel).trim()) return String(sel); return ''; }
+  function pickDefaultText(sectionEl){ var target = sectionEl.querySelector('[data-reading-default], .reading-text, article, p') || sectionEl; return (target.innerText || target.textContent || '').trim(); }
+  function pickVoice(synth){ try { var voices = synth.getVoices() || []; var preferred = [ 'Microsoft Sonia Online (Natural)', 'Google UK English Female', 'Microsoft Ryan Online (Natural)', 'Google US English', 'Microsoft Aria Online (Natural)' ]; for (var i=0; i<preferred.length; i++){ var v = voices.find(function(x){ return x.name.indexOf(preferred[i]) !== -1; }); if (v) return v; } var enGB = voices.find(function(v){ return /en-GB/i.test(v.lang); }); if (enGB) return enGB; var en = voices.find(function(v){ return /en/i.test(v.lang); }); return en || voices[0] || null; } catch(e){ return null; } }
+  function run(){ if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) return; var synth = window.speechSynthesis; var sec = findReadingSection(); if (!sec) return; var startBtn = findStartButtonWithin(sec); if (!startBtn) return; var speaking = false; var currentUtterance = null; function speak(text){ if (!text) return; if (synth.speaking) synth.cancel(); var u = new SpeechSynthesisUtterance(text); var v = pickVoice(synth); if (v) u.voice = v; u.rate = 0.95; u.pitch = 1.0; u.volume = 1.0; u.onend = function(){ speaking = false; startBtn.textContent = 'Start'; }; u.onerror = function(){ speaking = false; startBtn.textContent = 'Start'; }; speaking = true; startBtn.textContent = 'Stop'; synth.speak(u); currentUtterance = u; }
+    startBtn.addEventListener('click', function(){ if (speaking){ synth.cancel(); speaking = false; startBtn.textContent = 'Start'; return; } var chosen = getSelectionText(); if (!chosen) chosen = pickDefaultText(sec); speak(chosen); }); }
+  onReady(run);
+})();
+<\/script>
+
+<script id="mpl-focus-dedupe-v4">
+(function(){
+  function onReady(fn){ if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn, {once:true}); }
+  function hide(node){ if (!node) return; node.style.display='none'; node.setAttribute('data-removed-by-fix','true'); }
+  function run(){
+    // Keep GP overlay if present; otherwise choose topmost focus layer
+    var keep = document.getElementById('gp-overlay') || document.querySelector('#focusModal, .focus-screen');
+    var layers = Array.prototype.slice.call(document.querySelectorAll('#focusModal, .focus-screen, .focus-overlay, #vc-focus, .vc-focus'));
+    if (!layers.length) return;
+    if (!keep) {
+      var top = null, z = -Infinity;
+      layers.forEach(function(el){ var cs = window.getComputedStyle(el); if (cs.display === 'none' || cs.visibility === 'hidden' || cs.opacity === '0') return; var zi = parseInt(cs.zIndex || '0',10); if (isNaN(zi)) zi = 0; if (zi >= z) { z = zi; top = el; } });
+      keep = top;
+    }
+    layers.forEach(function(el){ if (el !== keep) hide(el); });
+  }
+  onReady(run);
 })();
 <\/script>
 </body>

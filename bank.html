@@ -32,11 +32,65 @@
   <link rel="stylesheet" href="assets/css/voice-coach-pro.css">
   <link rel="stylesheet" href="voice-coach-fix.css">
 
-<style id="nav-chevrons-style-v2">
-  /* Ensure [hidden] actually hides menus even if a theme doesn't style it. */
-  nav .submenu[hidden] { display: none !important; }
-  /* Improve focus ring targets */
-  .menu-toggle { outline-offset: 2px; }
+
+
+
+<style id="mpl-mobile-nav-style-v4">
+  /* Ensure [hidden] truly hides dropdowns in any theme */
+  nav .menu[hidden], nav .submenu[hidden] { display:none !important; }
+
+  /* Small/medium behavior only */
+  @media (max-width: 1024px) {
+    /* Collapsible whole nav */
+    #mainNav[hidden] { display: none !important; }
+    /* Group baseline */
+    .nav-group, .menu-group { position: relative; }
+    /* When marked open, reveal child menu block / list */
+    .nav-group.open > .menu,
+    .menu-group.open > .submenu { display:block; }
+
+    /* Clickable targets (chevrons/toggles) */
+    .nav-group > .menu-toggle,
+    .nav-group > .chevron,
+    .nav-group [data-chevron],
+    .menu-group > .menu-toggle,
+    .menu-group > .chevron,
+    .menu-group [data-chevron] { cursor:pointer; touch-action: manipulation; }
+
+    /* A11y focus rings on triggers */
+    .nav-group > a:focus,
+    .nav-group > button:focus,
+    .nav-group > .menu-toggle:focus,
+    .nav-group > .chevron:focus,
+    .menu-group > a:focus,
+    .menu-group > button:focus,
+    .menu-group > .menu-toggle:focus,
+    .menu-group > .chevron:focus { outline:2px solid currentColor; outline-offset:2px; }
+  }
+
+  /* Hamburger is hidden on desktop */
+  @media (min-width: 1025px) { #navToggle{ display:none !important; } }
+</style>
+
+<style id="mpl-gp-cards-style-v2">
+  #gp-cards { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:12px; }
+  @media (max-width: 640px){ #gp-cards{ grid-template-columns: 1fr; } }
+  .gp-card { border:1px solid var(--gp-border,#ddd); border-radius:10px; padding:12px; background:var(--gp-bg,#fff); }
+  .gp-card h4 { margin:0 0 8px; font-size:1rem; }
+  .gp-examples { display:flex; flex-wrap:wrap; gap:8px; }
+  .gp-examples .chip { padding:4px 8px; border-radius:999px; border:1px solid #ccc; font-size:.88rem; }
+  .gp-card[aria-selected="true"] { outline:3px solid #4a90e2; }
+  #gp-overlay[hidden]{ display:none; }
+  #gp-overlay { position:fixed; inset:0; background:rgba(0,0,0,.5); display:flex; justify-content:center; align-items:center; z-index:2147483641; }
+  #gp-overlay .gp-modal{ width:clamp(280px, 90vw, 720px); max-height:85vh; overflow:auto; background:#fff; padding:16px; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,.35); position:relative; }
+  #gp-overlay .close { position:absolute; top:14px; right:16px; }
+</style>
+
+<style id="mpl-vc-style-v2">
+  .vc-draggable { position: fixed !important; z-index: 2147483642 !important; }
+  .vc-drag-handle { cursor: move; user-select:none; -webkit-user-select:none; padding:6px 10px; font-weight:600; }
+  .vc-pin-toggle { position: absolute; top:8px; right:8px; }
+  .vc-pinned { box-shadow: 0 0 0 2px rgba(0,0,0,.1); }
 </style>
 </head>
 <body>
