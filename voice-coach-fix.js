@@ -9,8 +9,8 @@
    ----------------------------------------------------------- */
 (() => {
   // ---------- tiny DOM helpers ----------
-  const $ = (sel, root=document) => root.querySelector(sel);
-  const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
   const byText = (el) => (el.textContent || '').trim().toLowerCase();
 
   // ---------- SPEECH ENGINE ----------
@@ -42,7 +42,7 @@
             }, 300);
           }
         };
-        try { window.speechSynthesis.getVoices(); } catch {}
+        try { window.speechSynthesis.getVoices(); } catch { }
         if ('onvoiceschanged' in window.speechSynthesis) {
           window.speechSynthesis.onvoiceschanged = () => load();
         }
@@ -61,7 +61,7 @@
         'Google UK English Male',
         'Google US English',
         'Google UK English Female',
-        'Samantha','Alex','Victoria','Fred', // macOS voices
+        'Samantha', 'Alex', 'Victoria', 'Fred', // macOS voices
       ];
       v = list.find(v => fallbacks.includes(v.name));
       if (v) return v;
@@ -70,7 +70,7 @@
       return v || list[0];
     }
 
-    async speak(text, opts={}) {
+    async speak(text, opts = {}) {
       if (!('speechSynthesis' in window)) {
         console.warn('SpeechSynthesis not supported.');
         return;
@@ -87,13 +87,13 @@
         if (v) u.voice = v;
         u.rate = (opts.rate ?? this.rate);
         u.pitch = (opts.pitch ?? this.pitch);
-        u.lang  = (opts.lang  ?? v?.lang ?? 'en-US');
+        u.lang = (opts.lang ?? v?.lang ?? 'en-US');
         await this._speakOne(u);
       }
     }
 
     _splitText(t) {
-      const s = (t || '').replace(/\s+/g,' ').trim();
+      const s = (t || '').replace(/\s+/g, ' ').trim();
       if (!s) return [];
       // split by sentence stops but keep it robust
       const raw = s.split(/(?<=[\.\?!])\s+(?=[A-Z0-9])/g);
@@ -101,7 +101,7 @@
       for (const r of raw) {
         if (r.length <= 220) { out.push(r); continue; }
         // chunk very long sentences
-        for (let i=0; i<r.length; i+=220) out.push(r.slice(i, i+220));
+        for (let i = 0; i < r.length; i += 220) out.push(r.slice(i, i + 220));
       }
       return out;
     }
@@ -115,12 +115,12 @@
       });
     }
 
-    pause() { try { window.speechSynthesis.pause(); this._paused = true; } catch{} }
-    resume() { try { window.speechSynthesis.resume(); this._paused = false; } catch{} }
-    stop() { try { window.speechSynthesis.cancel(); this._speaking = false; this._paused = false; } catch{} }
+    pause() { try { window.speechSynthesis.pause(); this._paused = true; } catch { } }
+    resume() { try { window.speechSynthesis.resume(); this._paused = false; } catch { } }
+    stop() { try { window.speechSynthesis.cancel(); this._speaking = false; this._paused = false; } catch { } }
 
-    setRate(x){ this.rate = x; localStorage.setItem('vc.rate', String(x)); }
-    setVoiceByName(name){ this.voiceNamePref = name; localStorage.setItem('vc.voice', name); }
+    setRate(x) { this.rate = x; localStorage.setItem('vc.rate', String(x)); }
+    setVoiceByName(name) { this.voiceNamePref = name; localStorage.setItem('vc.voice', name); }
   }
 
   const VC = new SpeechEngine();
@@ -134,6 +134,10 @@
       panel.className = 'voice-coach';
       panel.innerHTML = `
         <div class="vc-grid" role="group" aria-label="Voice Coach">
+          <div class="vc-drag" id="vc-drag" style="cursor:move;touch-action:none;user-select:none;-webkit-user-select:none;background:rgba(255,255,255,.06);border-radius:10px;padding:6px 10px;margin:-2px -2px 8px -2px;display:flex;align-items:center;gap:8px">
+            <span aria-hidden="true">⋮⋮</span>
+            <span class="vc-label" style="font-size:12px;opacity:.8">Drag me</span>
+          </div>
           <div class="vc-row">
             <div class="vc-label">Status</div>
             <div class="vc-value"><button class="vc-btn" id="vc-toggle" aria-pressed="true">On</button></div>
@@ -159,6 +163,26 @@
         </div>`;
       document.body.appendChild(panel);
     }
+    // Ensure fixed positioning and high z-index
+    if (!panel.style.position) panel.style.position = 'fixed';
+    panel.style.zIndex = panel.style.zIndex || '100000';
+
+    // Restore saved position or default to bottom-right
+    try {
+      const saved = JSON.parse(localStorage.getItem('vc.pos') || 'null');
+      if (saved && typeof saved.x === 'number' && typeof saved.y === 'number') {
+        panel.style.left = saved.x + 'px';
+        panel.style.top = saved.y + 'px';
+        panel.style.right = '';
+        panel.style.bottom = '';
+      } else {
+        // Default corner if no saved position
+        if (!panel.style.left && !panel.style.top) {
+          panel.style.right = '24px';
+          panel.style.bottom = '24px';
+        }
+      }
+    } catch { }
     // Populate voices (async-safe)
     VC.ready.then(() => {
       const sel = $('#vc-voice', panel);
@@ -194,6 +218,122 @@
         document.querySelector('main, [role="main"]')?.textContent ||
         document.body.textContent;
       if (candidate) VC.speak(candidate, { clear: true });
+    });
+
+    // Lock initial size so it doesn't grow when dragging
+    lockPanelSize(panel);
+
+    // ----- Draggable behavior (whole panel) -----
+    makeDraggable(panel); // allow dragging from anywhere; interactive controls are ignored
+  }
+
+  function lockPanelSize(panel) {
+    try {
+      const r = panel.getBoundingClientRect();
+      // Fix width/height to current render size so height won't grow while dragging
+      panel.style.boxSizing = panel.style.boxSizing || 'border-box';
+      panel.style.width = Math.round(r.width) + 'px';
+      panel.style.height = Math.round(r.height) + 'px';
+      // If content exceeds height, allow vertical scroll instead of growing
+      if (!panel.style.overflow) panel.style.overflow = 'auto';
+    } catch { }
+  }
+
+  function makeDraggable(panel, handle) {
+    if (!panel) return;
+
+    let dragging = false;
+    let startX = 0, startY = 0; // pointer screen coords
+    let panelX = 0, panelY = 0; // panel top-left
+    const dragTarget = handle || panel; // default to whole panel
+
+    const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+    function save(x, y) {
+      try { localStorage.setItem('vc.pos', JSON.stringify({ x: Math.round(x), y: Math.round(y) })); } catch { }
+    }
+
+    function rect() { return panel.getBoundingClientRect(); }
+
+    function toFixedPosition() {
+      // Convert current position to explicit left/top to avoid right/bottom conflicts
+      const r = rect();
+      panel.style.left = r.left + 'px';
+      panel.style.top = r.top + 'px';
+      panel.style.right = '';
+      panel.style.bottom = '';
+    }
+
+    function isInteractive(el) {
+      return !!el.closest('button,a,select,input,textarea,[role="button"],[contenteditable="true"],label');
+    }
+
+    function onPointerDown(e) {
+      e.preventDefault();
+      // Only left button / primary pointer
+      if (e.button !== undefined && e.button !== 0) return;
+      // Ignore drags from interactive controls
+      if (isInteractive(e.target)) return;
+      dragTarget.setPointerCapture?.(e.pointerId || 0);
+      toFixedPosition();
+      const r = rect();
+      dragging = true;
+      startX = e.clientX; startY = e.clientY;
+      panelX = r.left; panelY = r.top;
+    }
+    function onPointerMove(e) {
+      if (!dragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      const nx = panelX + dx;
+      const ny = panelY + dy;
+      const r = rect();
+      const maxX = window.innerWidth - r.width;
+      const maxY = window.innerHeight - r.height;
+      const cx = clamp(nx, 6, Math.max(6, maxX - 6));
+      const cy = clamp(ny, 6, Math.max(6, maxY - 6));
+      panel.style.left = cx + 'px';
+      panel.style.top = cy + 'px';
+    }
+    function onPointerUp(e) {
+      if (!dragging) return;
+      dragging = false;
+      dragTarget.releasePointerCapture?.(e.pointerId || 0);
+      const r = rect();
+      save(r.left, r.top);
+    }
+
+    // Improve drag UX
+    dragTarget.style.touchAction = 'none';
+    // Optional: show move cursor for the panel background
+    panel.style.cursor = panel.style.cursor || 'move';
+
+    dragTarget.addEventListener('pointerdown', onPointerDown, { passive: false });
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
+    window.addEventListener('pointerup', onPointerUp, { passive: true });
+
+    // Keep the panel within viewport on resize/rotation
+    window.addEventListener('resize', () => {
+      const r = rect();
+      // Responsively cap width/height to viewport, but do not increase them
+      const currentW = parseFloat(panel.style.width || r.width);
+      const currentH = parseFloat(panel.style.height || r.height);
+      const maxW = Math.max(120, window.innerWidth - 12);
+      const maxH = Math.max(120, window.innerHeight - 12);
+      const newW = Math.min(currentW, maxW);
+      const newH = Math.min(currentH, maxH);
+      panel.style.width = Math.round(newW) + 'px';
+      panel.style.height = Math.round(newH) + 'px';
+
+      const maxX = Math.max(0, window.innerWidth - r.width);
+      const maxY = Math.max(0, window.innerHeight - r.height);
+      const x = clamp(r.left, 6, maxX - 6);
+      const y = clamp(r.top, 6, maxY - 6);
+      panel.style.left = x + 'px';
+      panel.style.top = y + 'px';
+      panel.style.right = '';
+      panel.style.bottom = '';
+      save(x, y);
     });
   }
 
@@ -233,7 +373,7 @@
       let keep = screens[0], keepDist = Infinity, vh = window.innerHeight;
       screens.forEach(s => {
         const r = s.getBoundingClientRect();
-        const centerDist = Math.abs((r.top + r.bottom)/2 - vh/2);
+        const centerDist = Math.abs((r.top + r.bottom) / 2 - vh / 2);
         if (centerDist < keepDist) { keep = s; keepDist = centerDist; }
       });
       screens.forEach(s => { if (s !== keep) s.classList.add('vc-hide'); });
@@ -265,7 +405,7 @@
         const kind = btn.getAttribute('data-vc');
         if (kind === 'start') {
           // Try to narrate visible instruction (Inhale/Hold/Exhale) if present
-          const visible = document.elementFromPoint(window.innerWidth/2, window.innerHeight/2);
+          const visible = document.elementFromPoint(window.innerWidth / 2, window.innerHeight / 2);
           const maybeText = (visible?.textContent || '').trim();
           const program = detectBreathingProgram(host) || defaultBoxProgram();
           narrateBreathing(program);
@@ -285,9 +425,9 @@
     // 4-4-4-4 classic box; can be overridden on pages with data attributes
     return [
       { label: 'Inhale', seconds: 4 },
-      { label: 'Hold',   seconds: 4 },
+      { label: 'Hold', seconds: 4 },
       { label: 'Exhale', seconds: 4 },
-      { label: 'Hold',   seconds: 4 },
+      { label: 'Hold', seconds: 4 },
     ];
   }
 
@@ -353,7 +493,7 @@
         body.appendChild(list);
       }
       document.body.style.overflow = 'hidden';
-      $('#vc-mobile-overlay').setAttribute('open','');
+      $('#vc-mobile-overlay').setAttribute('open', '');
     }
     function closeOverlay() {
       document.body.style.overflow = '';
