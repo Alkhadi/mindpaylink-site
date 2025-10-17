@@ -103,14 +103,17 @@
   right: max(16px, env(safe-area-inset-right));
   bottom: max(16px, env(safe-area-inset-bottom));
   z-index: var(--vcz) !important;
-  width: 48px; height: 48px;
+  width: 48px;
+  height: 48px;
   border-radius: 999px;
   border: 1px solid var(--vcbd);
   background: #0b1220;
   color: var(--vcfg);
   box-shadow: var(--vcshadow);
-  display: none; /* shown via JS when hidden */
-  align-items: center; justify-content: center;
+  display: none;
+  /* shown via JS when hidden */
+  align-items: center;
+  justify-content: center;
   font-size: 22px;
 }
 
@@ -258,12 +261,22 @@ button.vc-speak,
 
 /* Compact sizing on small screens to keep panel out of the way */
 @media (max-width: 520px) {
-  .voice-coach, #voice-coach {
+
+  .voice-coach,
+  #voice-coach {
     max-width: 280px;
     width: calc(100vw - 24px);
     padding: 8px;
     max-height: min(62vh, 440px);
   }
-  .vc-btn { min-height: 36px; padding: 8px 10px; font-size: 12px; }
-  .vc-label { font-size: 11px; }
+
+  .vc-btn {
+    min-height: 36px;
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .vc-label {
+    font-size: 11px;
+  }
 }

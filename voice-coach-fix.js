@@ -13,6 +13,9 @@
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
   const byText = (el) => (el.textContent || '').trim().toLowerCase();
 
+  // Flag to let other scripts know this VC enhancer is active
+  window.__VC_FIX_ACTIVE = true;
+
   // ---------- SPEECH ENGINE ----------
   class SpeechEngine {
     constructor() {
@@ -125,6 +128,24 @@
 
   const VC = new SpeechEngine();
 
+  // Prime/unlock speech on first user gesture (iOS/Safari policies)
+  let __vc_unlocked = false;
+  function unlockSpeechOnce() {
+    if (__vc_unlocked) return;
+    __vc_unlocked = true;
+    try { window.speechSynthesis.resume(); } catch {}
+    try {
+      const u = new SpeechSynthesisUtterance('.');
+      u.volume = 0; // silent primer
+      u.rate = 1; u.pitch = 1;
+      window.speechSynthesis.speak(u);
+      // Cancel quickly to avoid audible blip
+      setTimeout(() => { try { window.speechSynthesis.cancel(); } catch {} }, 60);
+    } catch {}
+  }
+  window.addEventListener('pointerdown', unlockSpeechOnce, { once: true, passive: true });
+  window.addEventListener('keydown', unlockSpeechOnce, { once: true });
+
   // ---------- BUILD / WIRE THE VOICE COACH PANEL ----------
   function ensureVoiceCoachPanel() {
     let panel = document.querySelector('.voice-coach, #voice-coach');
@@ -204,14 +225,14 @@
     });
 
     // Buttons
-    const $toggle = $('#vc-toggle', panel);
+  const $toggle = $('#vc-toggle', panel);
     const $rate = $('#vc-rate', panel);
     const $start = $('#vc-start', panel);
     const $pause = $('#vc-pause', panel);
     const $stop = $('#vc-stop', panel);
-  const $reset = $('#vc-reset', panel);
-  const $diag = $('#vc-diag', panel);
-  const $hide = $('#vc-hide', panel);
+    const $reset = $('#vc-reset', panel);
+    const $diag = $('#vc-diag', panel);
+    const $hide = $('#vc-hide', panel);
 
     // Initialize toggle from storage (default ON)
     if ($toggle) {
@@ -233,6 +254,8 @@
     $pause?.addEventListener('click', () => VC.pause());
     $stop?.addEventListener('click', () => VC.stop());
     $start?.addEventListener('click', () => {
+      unlockSpeechOnce();
+      ensureEnabled();
       const candidate = document.getSelection()?.toString().trim() ||
         $('[data-read-target]')?.textContent ||
         document.querySelector('main, [role="main"]')?.textContent ||
@@ -243,10 +266,18 @@
     // Hide panel -> show mini toggle
     ensureMiniToggle();
     $hide?.addEventListener('click', () => {
-      try { localStorage.setItem('vc.hidden', 'true'); } catch {}
+      try { localStorage.setItem('vc.hidden', 'true'); } catch { }
       panel.style.display = 'none';
       showMiniToggle(true);
     });
+
+    function ensureEnabled() {
+      if ($toggle?.getAttribute('aria-pressed') === 'false') {
+        $toggle.setAttribute('aria-pressed', 'true');
+        $toggle.textContent = 'On';
+        try { localStorage.setItem('vc.enabled', 'true'); } catch {}
+      }
+    }
 
     // Reset position to bottom-right
     $reset?.addEventListener('click', () => {
@@ -397,7 +428,7 @@
         const panel = document.querySelector('.voice-coach, #voice-coach');
         if (panel) {
           panel.style.display = '';
-          try { localStorage.setItem('vc.hidden', 'false'); } catch {}
+          try { localStorage.setItem('vc.hidden', 'false'); } catch { }
         }
         showMiniToggle(false);
       });
@@ -461,8 +492,14 @@
     document.addEventListener('click', (ev) => {
       const btn = ev.target.closest(selectors);
       if (!btn) return;
-      const off = $('#vc-toggle')?.getAttribute('aria-pressed') === 'false';
-      if (off) return;
+      unlockSpeechOnce();
+      // Turn on automatically if currently off
+      const toggle = $('#vc-toggle');
+      if (toggle?.getAttribute('aria-pressed') === 'false') {
+        toggle.setAttribute('aria-pressed', 'true');
+        toggle.textContent = 'On';
+        try { localStorage.setItem('vc.enabled', 'true'); } catch {}
+      }
       ev.preventDefault();
       // Possible targets
       let text = btn.getAttribute('data-say') || btn.getAttribute('data-read');
@@ -500,8 +537,13 @@
       anchor.after(bar);
       sayBtn.addEventListener('click', (ev) => {
         ev.preventDefault();
-        const off = document.getElementById('vc-toggle')?.getAttribute('aria-pressed') === 'false';
-        if (off) return;
+        unlockSpeechOnce();
+        const toggle = document.getElementById('vc-toggle');
+        if (toggle?.getAttribute('aria-pressed') === 'false') {
+          toggle.setAttribute('aria-pressed', 'true');
+          toggle.textContent = 'On';
+          try { localStorage.setItem('vc.enabled', 'true'); } catch {}
+        }
         const txt = (card.textContent || '').trim();
         if (txt) VC.speak(txt, { clear: true });
       });
