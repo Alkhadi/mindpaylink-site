@@ -23,7 +23,7 @@
 		}
 	],
 	"settings": {
-		"liveServer.settings.port": 5501,
+		"liveServer.settings.port": 5502,
 		"terminal.integrated.defaultProfile.osx": "zsh",
 		"terminal.integrated.profiles.osx": {
 			"zsh": {
@@ -39,6 +39,6 @@
 				]
 			}
 		},
-		"liveServer.settings.multiRootWorkspaceName": "m-share"
+		"liveServer.settings.multiRootWorkspaceName": "m-share-site"
 	}
 }
