@@ -156,9 +156,11 @@
             <button class="vc-btn" id="vc-start">Start</button>
             <button class="vc-btn" id="vc-pause">Pause</button>
             <button class="vc-btn" id="vc-stop">Stop</button>
+            <button class="vc-btn" id="vc-reset" title="Reset position">Reset</button>
+            <button class="vc-btn" id="vc-diag" title="Toggle tap diagnostic">Diag</button>
           </div>
-          <p class="vc-label" style="grid-column:1/-1;margin:6px 0 0">
-            Tip: Use the headphone buttons on any page to narrate selected text.
+          <p class="vc-label" style="grid-column:1/-1;margin:2px 0 0;display:none">
+            Tip
           </p>
         </div>`;
       document.body.appendChild(panel);
@@ -206,6 +208,8 @@
     const $start = $('#vc-start', panel);
     const $pause = $('#vc-pause', panel);
     const $stop = $('#vc-stop', panel);
+  const $reset = $('#vc-reset', panel);
+  const $diag = $('#vc-diag', panel);
 
     // Initialize toggle from storage (default ON)
     if ($toggle) {
@@ -232,6 +236,22 @@
         document.querySelector('main, [role="main"]')?.textContent ||
         document.body.textContent;
       if (candidate) VC.speak(candidate, { clear: true });
+    });
+
+    // Reset position to bottom-right
+    $reset?.addEventListener('click', () => {
+      try { localStorage.removeItem('vc.pos'); } catch{}
+      panel.style.left = '';
+      panel.style.top = '';
+      panel.style.right = '24px';
+      panel.style.bottom = '24px';
+    });
+
+    // Toggle diagnostic overlay
+    $diag?.addEventListener('click', () => {
+      const on = toggleTapDiagnostic();
+      try { localStorage.setItem('vc.tapdiag', String(on)); } catch{}
+      $diag.textContent = on ? 'Diag✓' : 'Diag';
     });
 
     // Lock initial size so it doesn't grow when dragging
@@ -349,6 +369,43 @@
       panel.style.bottom = '';
       save(x, y);
     });
+  }
+
+  // ---- Tap diagnostic overlay ----
+  function installTapDiagnostic() {
+    if (document.getElementById('vc-tap-diag')) return;
+    const box = document.createElement('div');
+    box.id = 'vc-tap-diag';
+    box.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:1000000;display:none';
+    const marker = document.createElement('div');
+    marker.style.cssText = 'position:absolute;border:2px solid #22c55e;border-radius:8px;background:rgba(34,197,94,.12);left:0;top:0;width:0;height:0;box-shadow:0 0 0 2px rgba(34,197,94,.4) inset';
+    const label = document.createElement('div');
+    label.style.cssText = 'position:fixed;left:8px;bottom:8px;background:#0b1220;color:#e5e7eb;border:1px solid rgba(255,255,255,.15);padding:6px 8px;border-radius:8px;font:12px system-ui;max-width:70vw';
+    box.appendChild(marker); box.appendChild(label);
+    document.body.appendChild(box);
+
+    function showAt(x,y){
+      const el = document.elementFromPoint(x,y);
+      if (!el || el === box) return;
+      const r = el.getBoundingClientRect();
+      marker.style.left = r.left + 'px';
+      marker.style.top  = r.top  + 'px';
+      marker.style.width  = r.width + 'px';
+      marker.style.height = r.height + 'px';
+      const cs = getComputedStyle(el);
+      label.textContent = `tap@(${Math.round(x)},${Math.round(y)}) → ${el.tagName.toLowerCase()}${el.id?('#'+el.id):''}${el.className?('.'+String(el.className).trim().replace(/\s+/g,'.')):''} · pointer-events:${cs.pointerEvents} · z:${cs.zIndex}`;
+    }
+    function onTap(e){ showAt(e.clientX, e.clientY); }
+    window.addEventListener('pointerdown', onTap, { passive: true });
+    box.__vc_cleanup = () => window.removeEventListener('pointerdown', onTap);
+  }
+
+  function toggleTapDiagnostic() {
+    let box = document.getElementById('vc-tap-diag');
+    if (!box) installTapDiagnostic(), box = document.getElementById('vc-tap-diag');
+    const on = box.style.display !== 'block';
+    box.style.display = on ? 'block' : 'none';
+    return on;
   }
 
   // ---------- HEADPHONE BUTTONS ----------
