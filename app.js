@@ -25,3 +25,32 @@
     }
   });
 })();
+
+// Admin hash override: ensure the new passcode takes effect without touching minified block above
+;(()=>{
+  try{
+    const MS = window.__MSHARE__ = window.__MSHARE__ || {};
+    const KEY = "mshare_admin_ok";
+    const NEW_HASH = "7ecee5122a3e96f7422e3757dcab88e58f3fc8dd5a65e6aa593fb027e41e2a9b";
+    async function sha256Hex(str){
+      const bytes = new TextEncoder().encode(str);
+      const digest = await crypto.subtle.digest('SHA-256', bytes);
+      return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');
+    }
+    // Override to use the new hash
+    MS.isAdmin = () => sessionStorage.getItem(KEY) === '1';
+    MS.requireAdmin = async () => {
+      if (MS.isAdmin()) return true;
+      const input = prompt('Enter admin passcode:');
+      if (!input) return false;
+      const ok = (await sha256Hex(input)) === NEW_HASH;
+      if (ok) {
+        sessionStorage.setItem(KEY, '1');
+        try { typeof MS.revealStorageLink === 'function' && MS.revealStorageLink(); } catch {}
+        return true;
+      }
+      alert('Incorrect passcode');
+      return false;
+    };
+  }catch{}
+})();
