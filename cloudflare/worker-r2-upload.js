@@ -8,12 +8,17 @@
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    const origin = request.headers.get('origin') || '*';
+    const baseHeaders = { 'content-type': 'application/json', 'Access-Control-Allow-Origin': origin, 'Vary': 'Origin' };
+    if (request.method === 'OPTIONS') {
+      return new Response(null, { status: 204, headers: { 'Access-Control-Allow-Origin': origin, 'Access-Control-Allow-Methods': 'GET,POST,OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Authorization', 'Access-Control-Max-Age': '86400', 'Vary': 'Origin' } });
+    }
     if (url.searchParams.get('ping')) {
-      return new Response(JSON.stringify({ ok: true, pong: Date.now() }), { headers: { 'content-type': 'application/json' } });
+      return new Response(JSON.stringify({ ok: true, pong: Date.now() }), { headers: baseHeaders });
     }
 
     if (request.method !== 'POST') {
-      return new Response('Method Not Allowed', { status: 405 });
+      return new Response('Method Not Allowed', { status: 405, headers: { 'Access-Control-Allow-Origin': origin, 'Vary': 'Origin' } });
     }
 
     // Optional bearer token auth
@@ -21,7 +26,7 @@ export default {
     const expected = env.AUTH_TOKEN || '';
     if (expected) {
       if (!auth || !auth.toLowerCase().startsWith('bearer ') || auth.slice(7) !== expected) {
-        return new Response('Unauthorized', { status: 401 });
+        return new Response('Unauthorized', { status: 401, headers: { 'Access-Control-Allow-Origin': origin, 'Vary': 'Origin' } });
       }
     }
 
@@ -36,9 +41,9 @@ export default {
       const object = await env.MSHARE.put(name, body, { httpMetadata: { contentType: 'application/pdf' } });
       const publicBase = env.PUBLIC_BASE || '';
       const urlOut = publicBase ? `${publicBase.replace(/\/$/, '')}/${name}` : '';
-      return new Response(JSON.stringify({ ok: true, key: name, url: urlOut, etag: object.httpEtag }), { headers: { 'content-type': 'application/json' } });
+      return new Response(JSON.stringify({ ok: true, key: name, url: urlOut, etag: object.httpEtag }), { headers: baseHeaders });
     } catch (err) {
-      return new Response('Upload failed: ' + (err.message || String(err)), { status: 500 });
+      return new Response('Upload failed: ' + (err.message || String(err)), { status: 500, headers: { 'Access-Control-Allow-Origin': origin, 'Vary': 'Origin' } });
     }
   }
 }
