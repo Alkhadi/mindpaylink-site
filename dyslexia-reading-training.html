@@ -643,6 +643,11 @@
       <p class="muted"><strong>Why it helps:</strong> fluent mapping turns symbols into reliable sounds.</p>
       <p><strong>Rotate sets over the week.</strong> Keep each mini‑set short (3–6 items).</p>
 
+      <style>
+        /* Force exactly 2 columns for GP mapping topics (3x2 layout), stack to 1 on small screens */
+        #sec-gp .grid-2-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        @media (max-width: 560px) { #sec-gp .grid-2-cols { grid-template-columns: 1fr; } }
+      </style>
       <div class="grid-2-cols">
         <div class="tile">
           <h4>Short vowels</h4>
