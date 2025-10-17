@@ -95,7 +95,7 @@
         return;
       }
       await this.ready;
-      try { window.speechSynthesis.resume(); } catch {}
+      try { window.speechSynthesis.resume(); } catch { }
       // Stop any current speech if requested (default true on explicit speak buttons)
       if (opts.clear !== false) window.speechSynthesis.cancel();
 
@@ -145,12 +145,12 @@
           const dur = startedAt ? (performance.now() - startedAt) : 0;
           // If it ended almost immediately and we set a specific voice, retry using default voice
           if (dur < 80 && v) {
-            try { window.speechSynthesis.cancel(); } catch {}
+            try { window.speechSynthesis.cancel(); } catch { }
             const u2 = new SpeechSynthesisUtterance(u.text);
             u2.rate = u.rate; u2.pitch = u.pitch; u2.lang = u.lang;
             u2.onend = () => resolve();
             u2.onerror = () => resolve();
-            try { window.speechSynthesis.resume(); } catch {}
+            try { window.speechSynthesis.resume(); } catch { }
             this._speaking = true;
             try { window.speechSynthesis.speak(u2); } catch { resolve(); }
             return;
