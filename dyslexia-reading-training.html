@@ -645,8 +645,15 @@
 
       <style>
         /* Force exactly 2 columns for GP mapping topics (3x2 layout), stack to 1 on small screens */
-        #sec-gp .grid-2-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        @media (max-width: 560px) { #sec-gp .grid-2-cols { grid-template-columns: 1fr; } }
+        #sec-gp .grid-2-cols {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        @media (max-width: 560px) {
+          #sec-gp .grid-2-cols {
+            grid-template-columns: 1fr;
+          }
+        }
       </style>
       <div class="grid-2-cols">
         <div class="tile">

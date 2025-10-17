@@ -158,6 +158,7 @@
             <button class="vc-btn" id="vc-stop">Stop</button>
             <button class="vc-btn" id="vc-reset" title="Reset position">Reset</button>
             <button class="vc-btn" id="vc-diag" title="Toggle tap diagnostic">Diag</button>
+            <button class="vc-btn" id="vc-hide" title="Hide panel">Hide</button>
           </div>
           <p class="vc-label" style="grid-column:1/-1;margin:2px 0 0;display:none">
             Tip
@@ -208,8 +209,9 @@
     const $start = $('#vc-start', panel);
     const $pause = $('#vc-pause', panel);
     const $stop = $('#vc-stop', panel);
-    const $reset = $('#vc-reset', panel);
-    const $diag = $('#vc-diag', panel);
+  const $reset = $('#vc-reset', panel);
+  const $diag = $('#vc-diag', panel);
+  const $hide = $('#vc-hide', panel);
 
     // Initialize toggle from storage (default ON)
     if ($toggle) {
@@ -236,6 +238,14 @@
         document.querySelector('main, [role="main"]')?.textContent ||
         document.body.textContent;
       if (candidate) VC.speak(candidate, { clear: true });
+    });
+
+    // Hide panel -> show mini toggle
+    ensureMiniToggle();
+    $hide?.addEventListener('click', () => {
+      try { localStorage.setItem('vc.hidden', 'true'); } catch {}
+      panel.style.display = 'none';
+      showMiniToggle(true);
     });
 
     // Reset position to bottom-right
@@ -373,6 +383,37 @@
     });
   }
 
+  // ---- Mini toggle button when hidden ----
+  function ensureMiniToggle() {
+    let btn = document.getElementById('vc-mini-btn');
+    if (!btn) {
+      btn = document.createElement('button');
+      btn.id = 'vc-mini-btn';
+      btn.setAttribute('type', 'button');
+      btn.setAttribute('aria-label', 'Show Voice Coach');
+      btn.textContent = '🎧';
+      document.body.appendChild(btn);
+      btn.addEventListener('click', () => {
+        const panel = document.querySelector('.voice-coach, #voice-coach');
+        if (panel) {
+          panel.style.display = '';
+          try { localStorage.setItem('vc.hidden', 'false'); } catch {}
+        }
+        showMiniToggle(false);
+      });
+    }
+    // Respect saved state
+    const hidden = (localStorage.getItem('vc.hidden') === 'true');
+    showMiniToggle(hidden);
+    const panel = document.querySelector('.voice-coach, #voice-coach');
+    if (panel) panel.style.display = hidden ? 'none' : '';
+  }
+
+  function showMiniToggle(on) {
+    const btn = document.getElementById('vc-mini-btn');
+    if (btn) btn.style.display = on ? 'inline-flex' : 'none';
+  }
+
   // ---- Tap diagnostic overlay ----
   function installTapDiagnostic() {
     if (document.getElementById('vc-tap-diag')) return;
@@ -434,6 +475,37 @@
         text = (host?.textContent || '').trim();
       }
       if (text) VC.speak(text, { clear: true });
+    });
+  }
+
+  // ---------- PER-CARD NARRATOR BUTTONS ----------
+  function ensureCardNarrators() {
+    const cards = Array.from(document.querySelectorAll('.card, section.card, article.card'));
+    cards.forEach((card) => {
+      if (card.querySelector('.vc-auto-bar')) return;
+      const bar = document.createElement('div');
+      bar.className = 'vc-auto-bar';
+      bar.style.cssText = 'display:flex;gap:8px;align-items:center;margin:8px 0 0;flex-wrap:wrap';
+      const sayBtn = document.createElement('button');
+      sayBtn.type = 'button';
+      sayBtn.className = 'btn vc-speak';
+      sayBtn.innerHTML = '🎧 Start';
+      const stopBtn = document.createElement('button');
+      stopBtn.type = 'button';
+      stopBtn.className = 'btn';
+      stopBtn.textContent = '■ Stop';
+      bar.appendChild(sayBtn); bar.appendChild(stopBtn);
+      // Insert after heading if present
+      const anchor = card.querySelector('h2, h3, header') || card.firstElementChild || card;
+      anchor.after(bar);
+      sayBtn.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        const off = document.getElementById('vc-toggle')?.getAttribute('aria-pressed') === 'false';
+        if (off) return;
+        const txt = (card.textContent || '').trim();
+        if (txt) VC.speak(txt, { clear: true });
+      });
+      stopBtn.addEventListener('click', () => VC.stop());
     });
   }
 
@@ -595,6 +667,7 @@
   function init() {
     ensureVoiceCoachPanel();
     bindHeadphoneButtons();
+    ensureCardNarrators();
     fixFocusScreens();
     ensureMobileOverlay();
 
@@ -606,6 +679,7 @@
       });
       if (needs) {
         bindHeadphoneButtons();
+        ensureCardNarrators();
         fixFocusScreens();
       }
     });

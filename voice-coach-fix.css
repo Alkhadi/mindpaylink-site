@@ -97,6 +97,23 @@
   box-shadow: inset 0 0 0 1px var(--vcaccent);
 }
 
+/* Mini toggle (appears when the panel is hidden) */
+#vc-mini-btn {
+  position: fixed !important;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: var(--vcz) !important;
+  width: 48px; height: 48px;
+  border-radius: 999px;
+  border: 1px solid var(--vcbd);
+  background: #0b1220;
+  color: var(--vcfg);
+  box-shadow: var(--vcshadow);
+  display: none; /* shown via JS when hidden */
+  align-items: center; justify-content: center;
+  font-size: 22px;
+}
+
 /* Headphone speak buttons (existing or injected) */
 button.vc-speak,
 .vc-speak.btn,
@@ -237,4 +254,16 @@ button.vc-speak,
   padding: 0;
   clip: rect(0 0 0 0);
   overflow: hidden;
+}
+
+/* Compact sizing on small screens to keep panel out of the way */
+@media (max-width: 520px) {
+  .voice-coach, #voice-coach {
+    max-width: 280px;
+    width: calc(100vw - 24px);
+    padding: 8px;
+    max-height: min(62vh, 440px);
+  }
+  .vc-btn { min-height: 36px; padding: 8px 10px; font-size: 12px; }
+  .vc-label { font-size: 11px; }
 }
