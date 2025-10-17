@@ -183,6 +183,10 @@
         }
       }
     } catch { }
+    // Persisted enabled state (default: ON)
+    const savedEnabled = (()=>{ try { return localStorage.getItem('vc.enabled'); } catch { return null; } })();
+    const enabledDefault = (savedEnabled == null) ? true : (savedEnabled === 'true');
+
     // Populate voices (async-safe)
     VC.ready.then(() => {
       const sel = $('#vc-voice', panel);
@@ -203,11 +207,21 @@
     const $pause = $('#vc-pause', panel);
     const $stop = $('#vc-stop', panel);
 
+    // Initialize toggle from storage (default ON)
+    if ($toggle) {
+      const on = enabledDefault;
+      $toggle.setAttribute('aria-pressed', String(on));
+      $toggle.textContent = on ? 'On' : 'Off';
+      if (!on) VC.stop();
+      try { localStorage.setItem('vc.enabled', String(on)); } catch {}
+    }
+
     $toggle?.addEventListener('click', () => {
       const on = $toggle.getAttribute('aria-pressed') !== 'true';
       $toggle.setAttribute('aria-pressed', String(on));
       $toggle.textContent = on ? 'On' : 'Off';
       if (!on) VC.stop();
+      try { localStorage.setItem('vc.enabled', String(on)); } catch {}
     });
     $rate?.addEventListener('input', () => VC.setRate(parseFloat($rate.value)));
     $pause?.addEventListener('click', () => VC.pause());
@@ -305,8 +319,8 @@
 
     // Improve drag UX
     dragTarget.style.touchAction = 'none';
-    // Optional: show move cursor for the panel background
-    panel.style.cursor = panel.style.cursor || 'move';
+  // Optional: show move cursor for the panel background (don’t override when inside form controls)
+  if (!panel.style.cursor) panel.style.cursor = 'move';
 
     dragTarget.addEventListener('pointerdown', onPointerDown, { passive: false });
     window.addEventListener('pointermove', onPointerMove, { passive: true });

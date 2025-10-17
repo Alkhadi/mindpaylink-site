@@ -1,3 +1,48 @@
+/* Site-wide interactive and visibility fixes for embedded/vehicle browsers */
+/* Ensure buttons/links remain tappable and visible across layers */
+
+/* Tappable targets: size + highlight removal */
+button, [role="button"], .btn, .menu-toggle, .mpl-footer-toggle, summary {
+  min-height: 40px; min-width: 44px;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+/* Prevent overlays from blocking clicks invisibly */
+[aria-hidden="true"], .hidden, [hidden] { pointer-events: none !important; }
+
+/* Ensure nav and footer interactive elements are clickable */
+header, header * { pointer-events: auto; }
+footer, footer * { pointer-events: auto; }
+
+/* Theme control visibility: enforce contrast and clickability */
+#mpl-theme-slot, .mpl-theme-host, .mpl-theme-host * {
+  color: var(--fg, #e5e7eb) !important;
+}
+.mpl-theme-host input[type="checkbox"],
+.mpl-theme-host input[type="range"],
+.mpl-theme-host input[type="color"],
+.mpl-theme-host button {
+  pointer-events: auto !important;
+}
+
+/* Gray/disabled appearance fix: ensure not disabled by default */
+.menu-group .menu-toggle,
+.mpl-footer-toggle,
+.btn,
+nav a,
+summary { opacity: 1 !important; filter: none !important; }
+
+/* Better focus indication for keyboard and car browsers */
+a:focus-visible, button:focus-visible, [role="button"]:focus-visible,
+summary:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 2px solid #a5b4fc; outline-offset: 2px;
+}
+
+/* Avoid accidental text color inheritance that turns text invisible on dark */
+body, nav, footer, .submenu, .sheet, .sheet-card {
+  color: var(--fg, #e5e7eb);
+}
+
 html{scroll-behavior:smooth}
 :root{
   --bg:#0f172a;
@@ -27,11 +72,11 @@ main{transition:opacity .18s ease}
 .actions .btn+.btn{margin-left:8px}
 .truncate{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:640px){
-  .ellipsis-1{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:1;overflow:hidden}
-  .ellipsis-2{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
-  .ellipsis-3{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
-  [data-excerpt].excerpted{display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden;-webkit-line-clamp:var(--excerpt-lines,3)}
-  [data-excerpt].excerpt-open{-webkit-line-clamp:unset;display:block}
+  .ellipsis-1{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:1;line-clamp:1;overflow:hidden}
+  .ellipsis-2{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden}
+  .ellipsis-3{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;overflow:hidden}
+  [data-excerpt].excerpted{display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden;-webkit-line-clamp:var(--excerpt-lines,3);line-clamp:var(--excerpt-lines,3)}
+  [data-excerpt].excerpt-open{-webkit-line-clamp:unset;line-clamp:unset;display:block}
   .excerpt-toggle{margin-top:6px}
   .nav-toggle{padding:10px}
   .main-nav a,.main-nav button{min-height:40px}
