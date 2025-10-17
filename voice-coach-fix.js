@@ -73,25 +73,44 @@
       return v || list[0];
     }
 
+    _sanitizeText(t) {
+      if (!t) return '';
+      // collapse whitespace
+      let s = String(t).replace(/\s+/g, ' ').trim();
+      // remove URLs/emails
+      s = s.replace(/https?:\/\/\S+/gi, '');
+      s = s.replace(/\b[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}\b/g, '');
+      // strip noisy symbols (keep basic punctuation for prosody)
+      s = s.replace(/[•·●►▶▪︎▸▹▻▵▿§©®™¤€£¥°≠≈±×÷=+*_#@^<>\[\]{}()\|\\]/g, ' ');
+      // collapse multiple punctuation to one
+      s = s.replace(/[.,!?;:]{2,}/g, (m) => m[m.length - 1]);
+      // clean leftover doublespaces
+      s = s.replace(/\s{2,}/g, ' ');
+      return s;
+    }
+
     async speak(text, opts = {}) {
       if (!('speechSynthesis' in window)) {
         console.warn('SpeechSynthesis not supported.');
         return;
       }
       await this.ready;
+      try { window.speechSynthesis.resume(); } catch {}
       // Stop any current speech if requested (default true on explicit speak buttons)
       if (opts.clear !== false) window.speechSynthesis.cancel();
 
+      const cleaned = this._sanitizeText(text);
       // Split long text into shorter utterances to avoid Chrome truncation
-      const parts = this._splitText(text);
+      const parts = this._splitText(cleaned);
       for (const part of parts) {
         const u = new SpeechSynthesisUtterance(part);
         const v = this._chooseVoice();
-        if (v) u.voice = v;
+        if (v) u.voice = v; // first try with chosen voice
         u.rate = (opts.rate ?? this.rate);
         u.pitch = (opts.pitch ?? this.pitch);
         u.lang = (opts.lang ?? v?.lang ?? 'en-US');
-        await this._speakOne(u);
+        // Retry without explicit voice if Chrome ends instantly (rare voice bug)
+        await this._speakOneWithRetry(u, v);
       }
     }
 
@@ -118,6 +137,34 @@
       });
     }
 
+    _speakOneWithRetry(u, v) {
+      return new Promise((resolve) => {
+        let startedAt = 0;
+        const onEnd = async () => {
+          this._speaking = false;
+          const dur = startedAt ? (performance.now() - startedAt) : 0;
+          // If it ended almost immediately and we set a specific voice, retry using default voice
+          if (dur < 80 && v) {
+            try { window.speechSynthesis.cancel(); } catch {}
+            const u2 = new SpeechSynthesisUtterance(u.text);
+            u2.rate = u.rate; u2.pitch = u.pitch; u2.lang = u.lang;
+            u2.onend = () => resolve();
+            u2.onerror = () => resolve();
+            try { window.speechSynthesis.resume(); } catch {}
+            this._speaking = true;
+            try { window.speechSynthesis.speak(u2); } catch { resolve(); }
+            return;
+          }
+          resolve();
+        };
+        u.onstart = () => { startedAt = performance.now(); };
+        u.onend = onEnd;
+        u.onerror = onEnd; // treat error same as quick end → resolve or retry path
+        this._speaking = true;
+        try { window.speechSynthesis.speak(u); } catch { resolve(); }
+      });
+    }
+
     pause() { try { window.speechSynthesis.pause(); this._paused = true; } catch { } }
     resume() { try { window.speechSynthesis.resume(); this._paused = false; } catch { } }
     stop() { try { window.speechSynthesis.cancel(); this._speaking = false; this._paused = false; } catch { } }
@@ -133,15 +180,15 @@
   function unlockSpeechOnce() {
     if (__vc_unlocked) return;
     __vc_unlocked = true;
-    try { window.speechSynthesis.resume(); } catch {}
+    try { window.speechSynthesis.resume(); } catch { }
     try {
       const u = new SpeechSynthesisUtterance('.');
       u.volume = 0; // silent primer
       u.rate = 1; u.pitch = 1;
       window.speechSynthesis.speak(u);
       // Cancel quickly to avoid audible blip
-      setTimeout(() => { try { window.speechSynthesis.cancel(); } catch {} }, 60);
-    } catch {}
+      setTimeout(() => { try { window.speechSynthesis.cancel(); } catch { } }, 60);
+    } catch { }
   }
   window.addEventListener('pointerdown', unlockSpeechOnce, { once: true, passive: true });
   window.addEventListener('keydown', unlockSpeechOnce, { once: true });
@@ -225,7 +272,7 @@
     });
 
     // Buttons
-  const $toggle = $('#vc-toggle', panel);
+    const $toggle = $('#vc-toggle', panel);
     const $rate = $('#vc-rate', panel);
     const $start = $('#vc-start', panel);
     const $pause = $('#vc-pause', panel);
@@ -275,7 +322,7 @@
       if ($toggle?.getAttribute('aria-pressed') === 'false') {
         $toggle.setAttribute('aria-pressed', 'true');
         $toggle.textContent = 'On';
-        try { localStorage.setItem('vc.enabled', 'true'); } catch {}
+        try { localStorage.setItem('vc.enabled', 'true'); } catch { }
       }
     }
 
@@ -498,7 +545,7 @@
       if (toggle?.getAttribute('aria-pressed') === 'false') {
         toggle.setAttribute('aria-pressed', 'true');
         toggle.textContent = 'On';
-        try { localStorage.setItem('vc.enabled', 'true'); } catch {}
+        try { localStorage.setItem('vc.enabled', 'true'); } catch { }
       }
       ev.preventDefault();
       // Possible targets
@@ -542,7 +589,7 @@
         if (toggle?.getAttribute('aria-pressed') === 'false') {
           toggle.setAttribute('aria-pressed', 'true');
           toggle.textContent = 'On';
-          try { localStorage.setItem('vc.enabled', 'true'); } catch {}
+          try { localStorage.setItem('vc.enabled', 'true'); } catch { }
         }
         const txt = (card.textContent || '').trim();
         if (txt) VC.speak(txt, { clear: true });
