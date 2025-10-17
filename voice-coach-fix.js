@@ -186,7 +186,7 @@
       }
     } catch { }
     // Persisted enabled state (default: ON)
-    const savedEnabled = (()=>{ try { return localStorage.getItem('vc.enabled'); } catch { return null; } })();
+    const savedEnabled = (() => { try { return localStorage.getItem('vc.enabled'); } catch { return null; } })();
     const enabledDefault = (savedEnabled == null) ? true : (savedEnabled === 'true');
 
     // Populate voices (async-safe)
@@ -208,8 +208,8 @@
     const $start = $('#vc-start', panel);
     const $pause = $('#vc-pause', panel);
     const $stop = $('#vc-stop', panel);
-  const $reset = $('#vc-reset', panel);
-  const $diag = $('#vc-diag', panel);
+    const $reset = $('#vc-reset', panel);
+    const $diag = $('#vc-diag', panel);
 
     // Initialize toggle from storage (default ON)
     if ($toggle) {
@@ -217,7 +217,7 @@
       $toggle.setAttribute('aria-pressed', String(on));
       $toggle.textContent = on ? 'On' : 'Off';
       if (!on) VC.stop();
-      try { localStorage.setItem('vc.enabled', String(on)); } catch {}
+      try { localStorage.setItem('vc.enabled', String(on)); } catch { }
     }
 
     $toggle?.addEventListener('click', () => {
@@ -225,7 +225,7 @@
       $toggle.setAttribute('aria-pressed', String(on));
       $toggle.textContent = on ? 'On' : 'Off';
       if (!on) VC.stop();
-      try { localStorage.setItem('vc.enabled', String(on)); } catch {}
+      try { localStorage.setItem('vc.enabled', String(on)); } catch { }
     });
     $rate?.addEventListener('input', () => VC.setRate(parseFloat($rate.value)));
     $pause?.addEventListener('click', () => VC.pause());
@@ -240,7 +240,7 @@
 
     // Reset position to bottom-right
     $reset?.addEventListener('click', () => {
-      try { localStorage.removeItem('vc.pos'); } catch{}
+      try { localStorage.removeItem('vc.pos'); } catch { }
       panel.style.left = '';
       panel.style.top = '';
       panel.style.right = '24px';
@@ -250,7 +250,7 @@
     // Toggle diagnostic overlay
     $diag?.addEventListener('click', () => {
       const on = toggleTapDiagnostic();
-      try { localStorage.setItem('vc.tapdiag', String(on)); } catch{}
+      try { localStorage.setItem('vc.tapdiag', String(on)); } catch { }
       $diag.textContent = on ? 'Diag✓' : 'Diag';
     });
 
@@ -339,8 +339,8 @@
 
     // Improve drag UX
     dragTarget.style.touchAction = 'none';
-  // Optional: show move cursor for the panel background (don’t override when inside form controls)
-  if (!panel.style.cursor) panel.style.cursor = 'move';
+    // Optional: show move cursor for the panel background (don’t override when inside form controls)
+    if (!panel.style.cursor) panel.style.cursor = 'move';
 
     dragTarget.addEventListener('pointerdown', onPointerDown, { passive: false });
     window.addEventListener('pointermove', onPointerMove, { passive: true });
@@ -384,18 +384,18 @@
     box.appendChild(marker); box.appendChild(label);
     document.body.appendChild(box);
 
-    function showAt(x,y){
-      const el = document.elementFromPoint(x,y);
+    function showAt(x, y) {
+      const el = document.elementFromPoint(x, y);
       if (!el || el === box) return;
       const r = el.getBoundingClientRect();
       marker.style.left = r.left + 'px';
-      marker.style.top  = r.top  + 'px';
-      marker.style.width  = r.width + 'px';
+      marker.style.top = r.top + 'px';
+      marker.style.width = r.width + 'px';
       marker.style.height = r.height + 'px';
       const cs = getComputedStyle(el);
-      label.textContent = `tap@(${Math.round(x)},${Math.round(y)}) → ${el.tagName.toLowerCase()}${el.id?('#'+el.id):''}${el.className?('.'+String(el.className).trim().replace(/\s+/g,'.')):''} · pointer-events:${cs.pointerEvents} · z:${cs.zIndex}`;
+      label.textContent = `tap@(${Math.round(x)},${Math.round(y)}) → ${el.tagName.toLowerCase()}${el.id ? ('#' + el.id) : ''}${el.className ? ('.' + String(el.className).trim().replace(/\s+/g, '.')) : ''} · pointer-events:${cs.pointerEvents} · z:${cs.zIndex}`;
     }
-    function onTap(e){ showAt(e.clientX, e.clientY); }
+    function onTap(e) { showAt(e.clientX, e.clientY); }
     window.addEventListener('pointerdown', onTap, { passive: true });
     box.__vc_cleanup = () => window.removeEventListener('pointerdown', onTap);
   }
