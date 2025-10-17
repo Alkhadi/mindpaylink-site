@@ -34,6 +34,8 @@
   padding: var(--vcpad);
   max-width: 320px;
   width: calc(100vw - 32px);
+  max-height: min(70vh, 520px);
+  overflow: auto;
   pointer-events: auto !important;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }

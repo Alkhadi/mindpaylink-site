@@ -266,8 +266,10 @@
       const r = panel.getBoundingClientRect();
       // Fix width/height to current render size so height won't grow while dragging
       panel.style.boxSizing = panel.style.boxSizing || 'border-box';
-      panel.style.width = Math.round(r.width) + 'px';
-      panel.style.height = Math.round(r.height) + 'px';
+      const maxH = Math.min(Math.round(window.innerHeight * 0.7), 520);
+      const maxW = Math.max(240, Math.min(360, Math.round(window.innerWidth - 32)));
+      panel.style.width = Math.min(Math.round(r.width), maxW) + 'px';
+      panel.style.height = Math.min(Math.round(r.height), maxH) + 'px';
       // If content exceeds height, allow vertical scroll instead of growing
       if (!panel.style.overflow) panel.style.overflow = 'auto';
     } catch { }
@@ -352,15 +354,15 @@
       // Responsively cap width/height to viewport, but do not increase them
       const currentW = parseFloat(panel.style.width || r.width);
       const currentH = parseFloat(panel.style.height || r.height);
-      const maxW = Math.max(120, window.innerWidth - 12);
-      const maxH = Math.max(120, window.innerHeight - 12);
+      const maxW = Math.max(240, Math.min(360, window.innerWidth - 32));
+      const maxH = Math.min(Math.round(window.innerHeight * 0.7), 520);
       const newW = Math.min(currentW, maxW);
       const newH = Math.min(currentH, maxH);
       panel.style.width = Math.round(newW) + 'px';
       panel.style.height = Math.round(newH) + 'px';
 
-      const maxX = Math.max(0, window.innerWidth - r.width);
-      const maxY = Math.max(0, window.innerHeight - r.height);
+      const maxX = Math.max(0, window.innerWidth - newW);
+      const maxY = Math.max(0, window.innerHeight - newH);
       const x = clamp(r.left, 6, maxX - 6);
       const y = clamp(r.top, 6, maxY - 6);
       panel.style.left = x + 'px';
