@@ -1,5 +1,5 @@
-(()=>{
-	const FOOTER_HTML = `
+(() => {
+    const FOOTER_HTML = `
 <footer id="footer2025" class="footer-2025 mpl-footer-v3">
 	<div class="mpl-footer-wrap">
 		<div class="mpl-footer-grid" role="navigation" aria-label="Site footer">
@@ -36,24 +36,24 @@
 	</div>
 </footer>`;
 
-	function applyFooter(){
-		const footers = Array.from(document.querySelectorAll('footer'));
-		if (footers.length) {
-			footers.forEach((f,i)=>{ if(i>0) f.remove(); });
-			footers[0].outerHTML = FOOTER_HTML;
-		} else {
-			const d = document.createElement('div'); d.innerHTML = FOOTER_HTML; document.body.appendChild(d.firstElementChild);
-		}
+    function applyFooter() {
+        const footers = Array.from(document.querySelectorAll('footer'));
+        if (footers.length) {
+            footers.forEach((f, i) => { if (i > 0) f.remove(); });
+            footers[0].outerHTML = FOOTER_HTML;
+        } else {
+            const d = document.createElement('div'); d.innerHTML = FOOTER_HTML; document.body.appendChild(d.firstElementChild);
+        }
 
-			// set year
-			const y = document.getElementById('yearFooter');
-			if (y) y.textContent = new Date().getFullYear();
+        // set year
+        const y = document.getElementById('yearFooter');
+        if (y) y.textContent = new Date().getFullYear();
 
-			// back to top wiring
-		const b = document.getElementById('backToTop') || document.querySelector('a[href="#top"]');
-		if (b) b.addEventListener('click', e=>{ e.preventDefault(); try {(document.getElementById('top')||document.body).scrollIntoView({behavior:'smooth',block:'start'})} catch { location.hash='#top'; }});
-	}
+        // back to top wiring
+        const b = document.getElementById('backToTop') || document.querySelector('a[href="#top"]');
+        if (b) b.addEventListener('click', e => { e.preventDefault(); try { (document.getElementById('top') || document.body).scrollIntoView({ behavior: 'smooth', block: 'start' }) } catch { location.hash = '#top'; } });
+    }
 
-	if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyFooter, { once:true });
-	else applyFooter();
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyFooter, { once: true });
+    else applyFooter();
 })();
