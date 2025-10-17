@@ -111,6 +111,13 @@ body {
   filter: brightness(var(--brightness))
 }
 
+/* Ensure cards are responsive and never touch each other */
+.card { margin: 12px 0 !important; }
+.grid .card, .cards .card, main .card { margin: 12px 0 !important; }
+@media (min-width:700px){
+  .grid.cards, .cards.grid { gap: 16px !important; }
+}
+
 .no-scroll {
   position: fixed;
   overflow: hidden;
