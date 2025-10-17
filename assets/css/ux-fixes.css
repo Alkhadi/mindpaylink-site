@@ -372,7 +372,14 @@ main {
 
 /* Reusable grid utilities */
 /* Two-column grid that collapses to one column on narrow screens */
-.grid-2-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.grid-2-cols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
 @media (max-width: 720px) {
-  .grid-2-cols { grid-template-columns: 1fr; }
+  .grid-2-cols {
+    grid-template-columns: 1fr;
+  }
 }
