@@ -8,11 +8,11 @@
     <meta name="theme-color" content="#2a0b12" />
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="assets/css/nav-footer-uni.css" />
-<link rel="stylesheet" href="assets/css/pages/sos.inline.css" />
-<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png" />
-<link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png" />
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
-<link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="assets/css/pages/sos.inline.css" />
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+    <link rel="manifest" href="manifest.webmanifest" />
 </head>
 
 <body>
@@ -207,7 +207,15 @@
             }
             let bgm = null;
 
-            function speak(){}  catch { } }
+            function cleanSpeak(t) { try { return (t || '').replace(/[\uD800-\uDFFF\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, ' ').replace(/[^a-zA-Z0-9.,;:!?'\u2019()\-\s]/g, ' ').replace(/\s+/g, ' ').trim(); } catch { return t || ''; } }
+            function speak(text) {
+                if (tts.value !== 'on') return;
+                const tx = cleanSpeak(text);
+                try {
+                    if (window.__MSHARE__?.TTS?.speak) { window.__MSHARE__.TTS.speak(tx, { clear: true, rate: 0.95, pitch: 1.0 }); }
+                    else if ('speechSynthesis' in window) { const u = new SpeechSynthesisUtterance(tx); u.rate = 0.95; u.pitch = 1.0; speechSynthesis.cancel(); speechSynthesis.speak(u); }
+                } catch { }
+            }
             function vibrate(ms) { if (vib.value === 'on' && navigator.vibrate) try { navigator.vibrate(ms); } catch { } }
             function rmEnabled() { if (rm.value === 'on') return true; if (rm.value === 'off') return false; return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches; }
             function applyFocus(on) { document.body.classList.toggle('focus-mode', !!on); }
@@ -295,14 +303,12 @@
                 if (q.get('tts') === 'on') tts.value = 'on';
             })();
         })();
-    </script><script src="assets/js/core/nav-autofix.js"></script><script src="assets/header/header.js"></script>
-<script src="assets/footer/footer.js"></script>
-<script src="assets/js/core/nav-core.js"></script>
-<script src="assets/js/core/nav-autofix.js"></script>
-<script src="assets/header/header.js"></script>
-<script src="assets/footer/footer.js"></script>
-<script src="assets/js/core/voice-coach.js"></script>
-<script src="assets/js/core/sound-kit.js"></script>
+    </script>
+    <script defer src="assets/js/core/sound-kit.js"></script>
+    <script defer src="assets/header/header.js"></script>
+    <script defer src="assets/footer/footer.js"></script>
+    <script defer src="assets/js/voice-coach-pro.js"></script>
+    <script defer src="voice-coach-fix.js"></script>
 </body>
 
 </html>

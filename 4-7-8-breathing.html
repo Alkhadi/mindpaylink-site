@@ -543,7 +543,7 @@
   </style>
   <style id="mpl-theme-vars-css-v3">
     :root {
-      --bg: #f7f7fb;
+      --bg: #B0B0CD;
       --fg: #111111;
       --muted: #6b7280;
       --b: rgba(0, 0, 0, .12);
@@ -757,7 +757,13 @@
       }
       let bgm = null;
 
-      function speak(text) { if (tts.value !== 'on') return; try { const u = new SpeechSynthesisUtterance(text); u.rate = 0.95; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch { } }
+      function speak(text) {
+        if (tts.value !== 'on') return;
+        try {
+          if (window.__MSHARE__?.TTS?.speak) { window.__MSHARE__.TTS.speak(text, { clear: true, rate: 0.95 }); }
+          else if ('speechSynthesis' in window) { const u = new SpeechSynthesisUtterance(text); u.rate = 0.95; speechSynthesis.cancel(); speechSynthesis.speak(u); }
+        } catch { }
+      }
       function vibrate(ms) { if (vib.value === 'on' && navigator.vibrate) try { navigator.vibrate(ms); } catch { } }
       function rmEnabled() { if (rm.value === 'on') return true; if (rm.value === 'off') return false; return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches; }
       function applyFocus(on) { document.body.classList.toggle('focus-mode', !!on); }
@@ -846,14 +852,9 @@
       })();
     })();
   </script>
-  <script src="assets/js/nav-core.js"></script>
-  <script src="assets/js/sound-kit.js"></script>
-  <script src="assets/js/core/nav-autofix.js"></script>
-  <script src="assets/js/core/nav-core.js"></script>
   <script src="assets/js/core/sound-kit.js"></script>
   <script src="assets/header/header.js"></script>
   <script src="assets/footer/footer.js"></script>
-  <script defer src="assets/js/nav-unified.js"></script>
   <script defer src="assets/js/voice-coach-pro.js"></script>
   <script defer src="voice-coach-fix.js"></script>
 
@@ -875,11 +876,11 @@
         const root = document.documentElement;
         let bg, fg, muted, b; let brightness = Number(state.brightness || 1) || 1;
         if (state.auto) {
-          const base = isDay() ? '#f7f7fb' : '#0b0b10';
+          const base = isDay() ? '#B0B0CD' : '#0b0b10';
           const pal = derivePalette(base); ({ bg, fg, muted, b } = pal);
           root.dataset.mplTheme = isDay() ? 'day-auto' : 'night-auto';
         } else {
-          const base = state.color || '#f7f7fb'; const pal = derivePalette(base); ({ bg, fg, muted, b } = pal); delete root.dataset.mplTheme;
+          const base = state.color || '#B0B0CD'; const pal = derivePalette(base); ({ bg, fg, muted, b } = pal); delete root.dataset.mplTheme;
         }
         root.style.setProperty('--bg', bg);
         root.style.setProperty('--fg', fg);
@@ -911,7 +912,7 @@
 
         // Color
         const colorId = 'mpl-theme-color'; const colorL = document.createElement('label'); colorL.setAttribute('for', colorId); colorL.textContent = 'Color';
-        const color = document.createElement('input'); color.type = 'color'; color.id = colorId; color.value = state.color || '#f7f7fb';
+        const color = document.createElement('input'); color.type = 'color'; color.id = colorId; color.value = state.color || '#B0B0CD';
 
         // Brightness
         const brId = 'mpl-theme-brightness'; const brL = document.createElement('label'); brL.setAttribute('for', brId); brL.textContent = 'Brightness';
@@ -922,7 +923,7 @@
         function reflect() {
           auto.checked = !!state.auto;
           color.disabled = !!state.auto; br.disabled = !!state.auto;
-          if (!state.color) color.value = '#f7f7fb';
+          if (!state.color) color.value = '#B0B0CD';
         }
 
         wrap.append(autoL, auto, colorL, color, brL, br, reset);

@@ -17,6 +17,136 @@
   window.__VC_FIX_ACTIVE = true;
 
   // ---------- SPEECH ENGINE ----------
+  // Optional API-backed TTS (disabled by default). Configure via the Voice Coach panel.
+  class ApiTTS {
+    constructor() {
+      this._audio = null;
+      this._queue = [];
+      this._playing = false;
+      this._cfg = this._load();
+    }
+
+    _load() {
+      try {
+        return {
+          enabled: localStorage.getItem('vc.api.enabled') === 'true',
+          base: localStorage.getItem('vc.api.base') || '', // e.g. https://your-endpoint/tts?voice={voice}&text={text}
+          voice: localStorage.getItem('vc.api.voice') || 'en-GB',
+          auth: localStorage.getItem('vc.api.auth') || '', // optional Authorization header (e.g. Bearer ...)
+          mode: localStorage.getItem('vc.api.mode') || 'get-template', // get-template | post-json
+          format: localStorage.getItem('vc.api.format') || 'audio/mpeg',
+        };
+      } catch { return { enabled: false, base: '', voice: 'en-GB', auth: '', mode: 'get-template', format: 'audio/mpeg' }; }
+    }
+    _save() {
+      try {
+        localStorage.setItem('vc.api.enabled', String(!!this._cfg.enabled));
+        localStorage.setItem('vc.api.base', this._cfg.base || '');
+        localStorage.setItem('vc.api.voice', this._cfg.voice || '');
+        localStorage.setItem('vc.api.auth', this._cfg.auth || '');
+        localStorage.setItem('vc.api.mode', this._cfg.mode || 'get-template');
+        localStorage.setItem('vc.api.format', this._cfg.format || 'audio/mpeg');
+      } catch { }
+    }
+    get enabled() { return !!this._cfg.enabled && !!this._cfg.base; }
+    setEnabled(on) { this._cfg.enabled = !!on; this._save(); }
+    setVoice(v) { this._cfg.voice = v || this._cfg.voice; this._save(); }
+    async speakChunks(chunks, opts = {}) {
+      if (!this.enabled) return false;
+      // Stop any current
+      this.stop();
+      for (const part of chunks) {
+        const ok = await this._playOne(part, opts).catch(() => false);
+        if (!ok) return false; // abort on failure
+      }
+      return true;
+    }
+    stop() {
+      try {
+        if (this._audio) { this._audio.pause(); this._audio.src = ''; this._audio = null; }
+      } catch { }
+      this._playing = false;
+    }
+    async _playOne(text, opts) {
+      const url = this._makeUrl(text);
+      if (!url && this._cfg.mode !== 'post-json') return false;
+      const headers = {};
+      if (this._cfg.auth) headers['Authorization'] = this._cfg.auth;
+      let res;
+      try {
+        if (this._cfg.mode === 'post-json') {
+          res = await fetch(this._cfg.base, {
+            method: 'POST',
+            headers: { 'content-type': 'application/json', ...headers },
+            body: JSON.stringify({ text, voice: this._cfg.voice, format: this._cfg.format })
+          });
+        } else {
+          res = await fetch(url, { headers });
+        }
+      } catch (e) {
+        console.warn('API TTS fetch failed', e);
+        return false;
+      }
+      if (!res || !res.ok) return false;
+      // Try common response shapes: direct audio, JSON with base64 or URL
+      const ct = (res.headers.get('content-type') || '').toLowerCase();
+      try {
+        if (ct.startsWith('audio') || ct.includes('octet-stream')) {
+          const blob = await res.blob();
+          return await this._playBlob(blob);
+        } else {
+          const data = await res.json();
+          if (data && data.url) {
+            return await this._playUrl(data.url);
+          }
+          const b64 = data.audio || data.audioBase64 || data.audioContent;
+          const mime = data.contentType || this._cfg.format || 'audio/mpeg';
+          if (b64) {
+            const blob = this._b64ToBlob(b64, mime);
+            return await this._playBlob(blob);
+          }
+        }
+      } catch (e) {
+        console.warn('API TTS parse/play failed', e);
+        return false;
+      }
+      return false;
+    }
+    _makeUrl(text) {
+      if (!this._cfg.base) return '';
+      if (this._cfg.mode === 'get-template') {
+        return this._cfg.base
+          .replace('{voice}', encodeURIComponent(this._cfg.voice || ''))
+          .replace('{text}', encodeURIComponent(text));
+      }
+      return this._cfg.base;
+    }
+    _b64ToBlob(b64, mime) {
+      try {
+        const bin = atob(b64.replace(/^data:[^,]+,/, ''));
+        const len = bin.length; const arr = new Uint8Array(len);
+        for (let i = 0; i < len; i++) arr[i] = bin.charCodeAt(i);
+        return new Blob([arr], { type: mime || 'audio/mpeg' });
+      } catch { return new Blob(); }
+    }
+    _playUrl(url) { return this._playWithAudio(url); }
+    async _playBlob(blob) {
+      const url = URL.createObjectURL(blob);
+      try { return await this._playWithAudio(url); } finally { setTimeout(() => URL.revokeObjectURL(url), 4000); }
+    }
+    _playWithAudio(url) {
+      return new Promise((resolve) => {
+        try { if (this._audio) { this._audio.pause(); this._audio.src = ''; } } catch { }
+        const audio = new Audio();
+        this._audio = audio; this._playing = true;
+        audio.src = url; audio.preload = 'auto'; audio.crossOrigin = 'anonymous';
+        audio.onended = () => { this._playing = false; resolve(true); };
+        audio.onerror = () => { this._playing = false; resolve(false); };
+        audio.play().catch(() => resolve(false));
+      });
+    }
+  }
+
   class SpeechEngine {
     constructor() {
       this.voices = [];
@@ -28,6 +158,8 @@
       this.rate = parseFloat(localStorage.getItem('vc.rate') || '1') || 1;
       this.pitch = parseFloat(localStorage.getItem('vc.pitch') || '1') || 1;
       this.langPref = localStorage.getItem('vc.lang') || 'en';
+      this.engine = localStorage.getItem('vc.engine') || 'system'; // system | api
+      this.api = new ApiTTS();
     }
 
     _initVoices() {
@@ -38,7 +170,6 @@
             this.voices = list;
             resolve(list);
           } else {
-            // Chrome: voices often load async after first getVoices() call
             setTimeout(() => {
               this.voices = window.speechSynthesis.getVoices() || [];
               resolve(this.voices);
@@ -56,112 +187,131 @@
     _chooseVoice() {
       const list = this.voices;
       if (!list || !list.length) return null;
-      // Preferred exact name
       let v = list.find(v => v.name === this.voiceNamePref);
       if (v) return v;
-      // Smart fallbacks by common Chrome voices
       const fallbacks = [
         'Google UK English Male',
         'Google US English',
         'Google UK English Female',
-        'Samantha', 'Alex', 'Victoria', 'Fred', // macOS voices
+        'Samantha', 'Alex', 'Victoria', 'Fred',
       ];
       v = list.find(v => fallbacks.includes(v.name));
       if (v) return v;
-      // Language fallback
       v = list.find(v => (v.lang || '').toLowerCase().startsWith(this.langPref.toLowerCase()));
       return v || list[0];
     }
 
     _sanitizeText(t) {
       if (!t) return '';
-      // collapse whitespace
       let s = String(t).replace(/\s+/g, ' ').trim();
-      // remove URLs/emails
+      // Remove URLs and emails
       s = s.replace(/https?:\/\/\S+/gi, '');
       s = s.replace(/\b[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}\b/g, '');
-      // strip noisy symbols (keep basic punctuation for prosody)
-      s = s.replace(/[•·●►▶▪︎▸▹▻▵▿§©®™¤€£¥°≠≈±×÷=+*_#@^<>\[\]{}()\|\\]/g, ' ');
-      // collapse multiple punctuation to one
+      // Remove emoji/pictographs
+      try { s = s.replace(/[\u{1F000}-\u{1FAFF}\u{1F300}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, ''); }
+      catch { s = s.replace(/[\u2600-\u27BF]/g, ''); }
+      // Strip extra symbols, keep sentence punctuation
+      s = s.replace(/[~`^_*#@<>{}\[\]|\\/+=]+/g, ' ');
+      // Skip tokens without letters
+      s = s.split(/\s+/).filter(tok => /[A-Za-z]/.test(tok)).join(' ');
+      // Normalize punctuation/space
       s = s.replace(/[.,!?;:]{2,}/g, (m) => m[m.length - 1]);
-      // clean leftover doublespaces
-      s = s.replace(/\s{2,}/g, ' ');
+      s = s.replace(/\s{2,}/g, ' ').trim();
       return s;
     }
 
+    _splitText(s, maxLen = 180) {
+      if (!s) return [];
+      const out = [];
+      // Split by sentences first
+      const sentences = s.match(/[^.!?;]+[.!?;]?/g) || [s];
+      let buf = '';
+      for (const part of sentences) {
+        const next = (buf ? (buf + ' ' + part.trim()) : part.trim());
+        if (next.length <= maxLen) {
+          buf = next;
+        } else {
+          if (buf) out.push(buf.trim());
+          // If a single sentence is too long, chunk by words
+          if (part.length > maxLen) {
+            const words = part.trim().split(/\s+/);
+            let chunk = '';
+            for (const w of words) {
+              const cand = chunk ? (chunk + ' ' + w) : w;
+              if (cand.length > maxLen) { out.push(chunk); chunk = w; }
+              else { chunk = cand; }
+            }
+            if (chunk) out.push(chunk);
+            buf = '';
+          } else {
+            buf = part.trim();
+          }
+        }
+      }
+      if (buf) out.push(buf.trim());
+      return out;
+    }
+
     async speak(text, opts = {}) {
+      const cleaned = this._sanitizeText(text);
+      const parts = this._splitText(cleaned);
+
+      // Prefer API when engine is set to api or when SpeechSynthesis is unavailable
+      const wantApi = (this.engine === 'api') || !('speechSynthesis' in window);
+      if (wantApi && this.api.enabled) {
+        const ok = await this.api.speakChunks(parts, opts).catch(() => false);
+        if (ok) return;
+        // If API fails, fall back to system
+        console.warn('API TTS failed, falling back to system voice');
+      }
+
       if (!('speechSynthesis' in window)) {
-        console.warn('SpeechSynthesis not supported.');
+        console.warn('SpeechSynthesis not supported and API not configured.');
         return;
       }
       await this.ready;
       try { window.speechSynthesis.resume(); } catch { }
-      // Stop any current speech if requested (default true on explicit speak buttons)
-      if (opts.clear !== false) window.speechSynthesis.cancel();
-
-      const cleaned = this._sanitizeText(text);
-      // Split long text into shorter utterances to avoid Chrome truncation
-      const parts = this._splitText(cleaned);
+      if (opts.clear !== false) {
+        try { window.speechSynthesis.cancel(); } catch { }
+      }
       for (const part of parts) {
         const u = new SpeechSynthesisUtterance(part);
         const v = this._chooseVoice();
-        if (v) u.voice = v; // first try with chosen voice
+        if (v) u.voice = v;
         u.rate = (opts.rate ?? this.rate);
         u.pitch = (opts.pitch ?? this.pitch);
         u.lang = (opts.lang ?? v?.lang ?? 'en-US');
-        // Retry without explicit voice if Chrome ends instantly (rare voice bug)
         await this._speakOneWithRetry(u, v);
       }
-    }
-
-    _splitText(t) {
-      const s = (t || '').replace(/\s+/g, ' ').trim();
-      if (!s) return [];
-      // split by sentence stops but keep it robust
-      const raw = s.split(/(?<=[\.\?!])\s+(?=[A-Z0-9])/g);
-      const out = [];
-      for (const r of raw) {
-        if (r.length <= 220) { out.push(r); continue; }
-        // chunk very long sentences
-        for (let i = 0; i < r.length; i += 220) out.push(r.slice(i, i + 220));
-      }
-      return out;
-    }
-
-    _speakOne(u) {
-      return new Promise((resolve) => {
-        u.onend = () => { this._speaking = false; resolve(); };
-        u.onerror = () => { this._speaking = false; resolve(); }; // don't block
-        this._speaking = true;
-        window.speechSynthesis.speak(u);
-      });
     }
 
     _speakOneWithRetry(u, v) {
       return new Promise((resolve) => {
         let startedAt = 0;
-        const onEnd = async () => {
+        const finalize = () => {
           this._speaking = false;
+          resolve();
+        };
+        const onEnd = () => {
           const dur = startedAt ? (performance.now() - startedAt) : 0;
-          // If it ended almost immediately and we set a specific voice, retry using default voice
-          if (dur < 80 && v) {
+          if (dur < 200 && v) {
+            // Retry without explicit voice (Chrome quick-end bug)
             try { window.speechSynthesis.cancel(); } catch { }
             const u2 = new SpeechSynthesisUtterance(u.text);
             u2.rate = u.rate; u2.pitch = u.pitch; u2.lang = u.lang;
-            u2.onend = () => resolve();
-            u2.onerror = () => resolve();
+            u2.onend = finalize; u2.onerror = finalize;
             try { window.speechSynthesis.resume(); } catch { }
             this._speaking = true;
-            try { window.speechSynthesis.speak(u2); } catch { resolve(); }
+            try { window.speechSynthesis.speak(u2); } catch { finalize(); }
             return;
           }
-          resolve();
+          finalize();
         };
         u.onstart = () => { startedAt = performance.now(); };
         u.onend = onEnd;
-        u.onerror = onEnd; // treat error same as quick end → resolve or retry path
+        u.onerror = onEnd;
         this._speaking = true;
-        try { window.speechSynthesis.speak(u); } catch { resolve(); }
+        try { window.speechSynthesis.speak(u); } catch { finalize(); }
       });
     }
 
@@ -171,6 +321,7 @@
 
     setRate(x) { this.rate = x; localStorage.setItem('vc.rate', String(x)); }
     setVoiceByName(name) { this.voiceNamePref = name; localStorage.setItem('vc.voice', name); }
+    setEngine(name) { this.engine = name === 'api' ? 'api' : 'system'; try { localStorage.setItem('vc.engine', this.engine); } catch { } }
   }
 
   const VC = new SpeechEngine();
@@ -190,8 +341,10 @@
       setTimeout(() => { try { window.speechSynthesis.cancel(); } catch { } }, 60);
     } catch { }
   }
-  window.addEventListener('pointerdown', unlockSpeechOnce, { once: true, passive: true });
-  window.addEventListener('keydown', unlockSpeechOnce, { once: true });
+  ['pointerdown', 'pointerup', 'mousedown', 'click', 'touchstart', 'touchend', 'keydown'].forEach((evt) => {
+    window.addEventListener(evt, unlockSpeechOnce, { once: true, passive: true });
+  });
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') unlockSpeechOnce(); });
 
   // ---------- BUILD / WIRE THE VOICE COACH PANEL ----------
   function ensureVoiceCoachPanel() {
@@ -211,6 +364,19 @@
             <div class="vc-value"><button class="vc-btn" id="vc-toggle" aria-pressed="true">On</button></div>
           </div>
           <div class="vc-row">
+            <div class="vc-label">Engine</div>
+            <div class="vc-value"><span id="vc-engine-status">System</span></div>
+          </div>
+          <div class="vc-row">
+            <label class="vc-label" for="vc-engine">Engine</label>
+            <div class="vc-value">
+              <select id="vc-engine" style="min-width:160px">
+                <option value="system">System</option>
+                <option value="api">API</option>
+              </select>
+            </div>
+          </div>
+          <div class="vc-row">
             <label class="vc-label" for="vc-voice">Voice</label>
             <div class="vc-value"><select id="vc-voice" style="min-width:160px"></select></div>
           </div>
@@ -220,11 +386,19 @@
               <input id="vc-rate" type="range" min="0.7" max="1.4" step="0.05" value="${VC.rate}" />
             </div>
           </div>
+          <div class="vc-row" id="vc-api-voice-row" style="display:none">
+            <label class="vc-label" for="vc-api-voice">API Voice</label>
+            <div class="vc-value">
+              <input id="vc-api-voice" type="text" placeholder="e.g. en-GB" style="min-width:160px" />
+            </div>
+          </div>
           <div class="vc-controls">
             <button class="vc-btn" id="vc-start">Start</button>
             <button class="vc-btn" id="vc-pause">Pause</button>
             <button class="vc-btn" id="vc-stop">Stop</button>
             <button class="vc-btn" id="vc-reset" title="Reset position">Reset</button>
+            <button class="vc-btn" id="vc-api" title="Configure API TTS">API ⚙</button>
+            <button class="vc-btn" id="vc-test" title="Test current voice">Test</button>
             <button class="vc-btn" id="vc-diag" title="Toggle tap diagnostic">Diag</button>
             <button class="vc-btn" id="vc-hide" title="Hide panel">Hide</button>
           </div>
@@ -278,6 +452,11 @@
     const $pause = $('#vc-pause', panel);
     const $stop = $('#vc-stop', panel);
     const $reset = $('#vc-reset', panel);
+    const $engine = $('#vc-engine', panel);
+    const $apiBtn = $('#vc-api', panel);
+    const $apiVoice = $('#vc-api-voice', panel);
+    const $engineStatus = $('#vc-engine-status', panel);
+    const $test = $('#vc-test', panel);
     const $diag = $('#vc-diag', panel);
     const $hide = $('#vc-hide', panel);
 
@@ -308,6 +487,44 @@
         document.querySelector('main, [role="main"]')?.textContent ||
         document.body.textContent;
       if (candidate) VC.speak(candidate, { clear: true });
+    });
+
+    // Engine toggle + API voice reflect
+    if ($engine) {
+      $engine.value = VC.engine;
+      const reflect = () => {
+        const apiOn = $engine.value === 'api';
+        $('#vc-api-voice-row', panel).style.display = apiOn ? '' : 'none';
+        if ($engineStatus) $engineStatus.textContent = apiOn ? 'API' : 'System';
+      };
+      reflect();
+      $engine.addEventListener('change', () => { VC.setEngine($engine.value); reflect(); });
+    }
+    if ($apiVoice) {
+      // load saved
+      try { $apiVoice.value = VC.api._cfg.voice || ''; } catch { }
+      $apiVoice.addEventListener('change', () => VC.api.setVoice($apiVoice.value.trim()));
+    }
+    $apiBtn?.addEventListener('click', () => {
+      // Minimal config prompts to avoid heavy UI
+      const base = prompt('Enter API base URL (use {voice} and {text} placeholders)\nExample: https://example.com/tts?voice={voice}&text={text}', VC.api._cfg.base || '');
+      if (base == null) return; VC.api._cfg.base = base.trim();
+      const mode = prompt('Mode: get-template or post-json', VC.api._cfg.mode || 'get-template');
+      if (mode) VC.api._cfg.mode = (/post/i.test(mode) ? 'post-json' : 'get-template');
+      const auth = prompt('Optional Authorization header (e.g. Bearer ...). Leave blank if not needed', VC.api._cfg.auth || '');
+      if (auth != null) VC.api._cfg.auth = auth.trim();
+      const voice = prompt('API voice id/name (used as {voice})', VC.api._cfg.voice || 'en-GB');
+      if (voice) { VC.api._cfg.voice = voice; if ($apiVoice) $apiVoice.value = voice; }
+      const on = confirm('Enable API TTS now? (OK = yes, Cancel = no)');
+      VC.api._cfg.enabled = !!on; VC.setEngine(on ? 'api' : 'system');
+      VC.api._save();
+      if ($engine) $engine.value = on ? 'api' : 'system';
+      if ($engineStatus) $engineStatus.textContent = on ? 'API' : 'System';
+      alert('Saved API TTS settings. Engine: ' + (on ? 'API' : 'System'));
+    });
+    $test?.addEventListener('click', () => {
+      const sample = 'Testing voice coach. This is a sample sentence.';
+      VC.speak(sample, { clear: true });
     });
 
     // Hide panel -> show mini toggle
@@ -758,7 +975,18 @@
     bindHeadphoneButtons();
     ensureCardNarrators();
     fixFocusScreens();
-    ensureMobileOverlay();
+    // Skip Voice Coach's own mobile overlay if a dedicated nav override is present
+    if (!window.__NAV_OVERRIDE__) ensureMobileOverlay();
+
+    // Expose a tiny global so pages can reuse unified TTS (merge, don't clobber existing helpers)
+    window.__MSHARE__ = window.__MSHARE__ || {};
+    const prevTTS = (window.__MSHARE__.TTS && typeof window.__MSHARE__.TTS === 'object') ? window.__MSHARE__.TTS : {};
+    window.__MSHARE__.TTS = Object.assign({}, prevTTS, {
+      speak: (t, opts) => VC.speak(String(t || ''), opts || {}),
+      stop: () => VC.stop(),
+      pause: () => VC.pause(),
+      setEngine: (name) => VC.setEngine(name)
+    });
 
     // If pages are dynamically swapped, keep us alive
     const ro = new MutationObserver((muts) => {

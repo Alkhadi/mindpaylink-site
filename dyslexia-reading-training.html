@@ -407,7 +407,7 @@
   </style>
   <style id="mpl-theme-vars-css-v3">
     :root {
-      --bg: #f7f7fb;
+      --bg: #B0B0CD;
       --fg: #111111;
       --muted: #6b7280;
       --b: rgba(0, 0, 0, .12);
@@ -1233,7 +1233,13 @@
       const out = document.getElementById("vcOut");
       let loop = null, t0 = 0;
 
-      function speak(text, rate) { if (!("speechSynthesis" in window)) return; try { const u = new SpeechSynthesisUtterance(text); window.__MSHARE__?.TTS?.applyVoice(u); u.rate = rate || 1; speechSynthesis.speak(u); } catch { } }
+      function speak(text, rate) {
+        try {
+          if (window.__MSHARE__?.TTS?.speak) { window.__MSHARE__.TTS.speak(text, { clear: true, rate: rate || 1 }); return; }
+          if (!('speechSynthesis' in window)) return;
+          const u = new SpeechSynthesisUtterance(text); window.__MSHARE__?.TTS?.applyVoice?.(u); u.rate = rate || 1; speechSynthesis.speak(u);
+        } catch { }
+      }
       function paceMs() { return pace.value === "slow" ? 800 : pace.value === "fast" ? 320 : 520; }
 
       function start() {
@@ -1265,7 +1271,13 @@
       const root = document.getElementById("svStudio"); if (!root) return;
       const sel = document.getElementById("svSelect"); const tiles = document.getElementById("svTiles"); const out = document.getElementById("svOut"); const btnAll = document.getElementById("svPractice"); const btnStop = document.getElementById("svStop"); const btnCam = document.getElementById("svCam"); const btnCamOff = document.getElementById("svCamOff"); const mirrorWrap = document.getElementById("svMirrorWrap"); const mirror = document.getElementById("svMirror");
       let loop = null, curSet = [], speakOn = "speechSynthesis" in window;
-      function speak(text, rate) { if (!speakOn) return; try { const u = new SpeechSynthesisUtterance(text); window.__MSHARE__?.TTS?.applyVoice(u); u.rate = rate || 1; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch { } }
+      function speak(text, rate) {
+        if (!speakOn) return;
+        try {
+          if (window.__MSHARE__?.TTS?.speak) { window.__MSHARE__.TTS.speak(text, { clear: true, rate: rate || 1 }); return; }
+          const u = new SpeechSynthesisUtterance(text); window.__MSHARE__?.TTS?.applyVoice?.(u); u.rate = rate || 1; speechSynthesis.cancel(); speechSynthesis.speak(u);
+        } catch { }
+      }
       const SETS = {
         short: [{ g: "a", ex: ["cat", "map"] }, { g: "e", ex: ["bed", "hem"] }, { g: "i", ex: ["sit", "milk"] }, { g: "o", ex: ["hot", "pond"] }, { g: "u", ex: ["sun", "drum"] }],
         long: [{ g: "a", ex: ["late", "paper"] }, { g: "e", ex: ["tree", "even"] }, { g: "i", ex: ["time", "pilot"] }, { g: "o", ex: ["home", "open"] }, { g: "u", ex: ["unit", "music"] }],
@@ -1288,7 +1300,13 @@
       const btnWrap = root.querySelector(".grid"); const out = document.getElementById("pronOut"); const btnPractice = document.getElementById("pronPractice"); const btnStop = document.getElementById("pronStop");
       const SETS = [{ g: "a", ex: ["apple", "able"] }, { g: "e", ex: ["egg", "even"] }, { g: "i", ex: ["ink", "idea"] }, { g: "o", ex: ["odd", "open"] }, { g: "u", ex: ["up", "unit"] }, { g: "sh", ex: ["ship", "brush"] }, { g: "ch", ex: ["chip", "teacher"] }, { g: "th", ex: ["thin", "this"] }, { g: "ph", ex: ["phone", "graph"] }, { g: "wh", ex: ["when", "whale"] }, { g: "ai", ex: ["rain", "train"] }, { g: "ee", ex: ["seen", "green"] }, { g: "ea", ex: ["team", "leave"] }, { g: "oa", ex: ["boat", "coast"] }, { g: "ow", ex: ["slow", "grow"] }, { g: "oi", ex: ["coin", "point"] }, { g: "oy", ex: ["boy", "enjoy"] }, { g: "ou", ex: ["out", "sound"] }, { g: "aw", ex: ["saw", "dawn"] }, { g: "au", ex: ["cause", "launch"] }, { g: "ar", ex: ["car", "sharp"] }, { g: "er", ex: ["her", "fern"] }, { g: "ir", ex: ["bird", "shirt"] }, { g: "or", ex: ["for", "storm"] }, { g: "ur", ex: ["turn", "nurse"] }, { g: "igh", ex: ["high", "night"] }, { g: "tch", ex: ["catch", "match"] }, { g: "dge", ex: ["bridge", "edge"] }, { g: "kn", ex: ["knock", "knee"] }, { g: "wr", ex: ["write", "wrap"] }, { g: "mb", ex: ["thumb", "comb"] }];
       let current = null, speakOn = "speechSynthesis" in window, t0 = 0, loop = null, idx = 0;
-      function speak(text, rate) { if (!speakOn) return; try { const u = new SpeechSynthesisUtterance(text); window.__MSHARE__?.TTS?.applyVoice(u); u.rate = rate || .95; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch { } }
+      function speak(text, rate) {
+        if (!speakOn) return;
+        try {
+          if (window.__MSHARE__?.TTS?.speak) { window.__MSHARE__.TTS.speak(text, { clear: true, rate: rate || 0.95 }); return; }
+          const u = new SpeechSynthesisUtterance(text); window.__MSHARE__?.TTS?.applyVoice?.(u); u.rate = rate || .95; speechSynthesis.cancel(); speechSynthesis.speak(u);
+        } catch { }
+      }
       SETS.forEach(s => { const b = document.createElement("button"); b.className = "btn"; b.type = "button"; b.textContent = s.g; b.style.minWidth = "72px"; b.addEventListener("click", () => beginTraining("pronLab", root, () => { current = s; out.innerHTML = "<strong>" + s.g + "</strong>: " + s.ex.join(", "); btnPractice.disabled = false; btnStop.disabled = false; speak(s.g, .8); setTimeout(() => s.ex.forEach((w, i) => setTimeout(() => speak(w, 1), 700 * (i + 1))), 500); })); btnWrap.appendChild(b); });
       btnPractice.addEventListener("click", () => beginTraining("pronLab", root, () => { if (!current) return; if (loop) clearInterval(loop); idx = 0; t0 = performance.now(); loop = setInterval(() => { speak(current.ex[idx % current.ex.length], 1); idx++; }, 1200); }));
       btnStop.addEventListener("click", () => { if (loop) clearInterval(loop); try { speechSynthesis.cancel(); } catch { } const secs = Math.max(0, (performance.now() - t0) / 1000); window.__MSHARE__.Stats.add({ tool: "pronLab", seconds: secs, score: idx || 0 }); endAndDyslexia(); });
@@ -1716,11 +1734,11 @@
         const root = document.documentElement;
         let bg, fg, muted, b; let brightness = Number(state.brightness || 1) || 1;
         if (state.auto) {
-          const base = isDay() ? '#f7f7fb' : '#0b0b10';
+          const base = isDay() ? '#B0B0CD' : '#0b0b10';
           const pal = derivePalette(base); ({ bg, fg, muted, b } = pal);
           root.dataset.mplTheme = isDay() ? 'day-auto' : 'night-auto';
         } else {
-          const base = state.color || '#f7f7fb'; const pal = derivePalette(base); ({ bg, fg, muted, b } = pal); delete root.dataset.mplTheme;
+          const base = state.color || '#B0B0CD'; const pal = derivePalette(base); ({ bg, fg, muted, b } = pal); delete root.dataset.mplTheme;
         }
         root.style.setProperty('--bg', bg);
         root.style.setProperty('--fg', fg);
@@ -1752,7 +1770,7 @@
 
         // Color
         const colorId = 'mpl-theme-color'; const colorL = document.createElement('label'); colorL.setAttribute('for', colorId); colorL.textContent = 'Color';
-        const color = document.createElement('input'); color.type = 'color'; color.id = colorId; color.value = state.color || '#f7f7fb';
+        const color = document.createElement('input'); color.type = 'color'; color.id = colorId; color.value = state.color || '#B0B0CD';
 
         // Brightness
         const brId = 'mpl-theme-brightness'; const brL = document.createElement('label'); brL.setAttribute('for', brId); brL.textContent = 'Brightness';
@@ -1763,7 +1781,7 @@
         function reflect() {
           auto.checked = !!state.auto;
           color.disabled = !!state.auto; br.disabled = !!state.auto;
-          if (!state.color) color.value = '#f7f7fb';
+          if (!state.color) color.value = '#B0B0CD';
         }
 
         wrap.append(autoL, auto, colorL, color, brL, br, reset);

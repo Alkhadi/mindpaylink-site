@@ -211,6 +211,53 @@
         try { const on = localStorage.getItem(TTS_KEY) === 'true'; if (ttsToggle) { ttsToggle.checked = on; } } catch { }
 
         function mountPick() { pick.innerHTML = ''; flows.forEach((f, i) => { const o = document.createElement('option'); o.value = String(i); o.textContent = f.title || f.id || ('Flow ' + (i + 1)); pick.appendChild(o); }); pick.value = String(pickIdx); }
+        function cleanSpeak(t) {
+            if (!t) return '';
+            let s = String(t).replace(/\s+/g, ' ').trim();
+            s = s.replace(/https?:\/\/\S+/gi, '');
+            s = s.replace(/\b[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}\b/g, '');
+            try { s = s.replace(/[\u{1F000}-\u{1FAFF}\u{1F300}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, ''); }
+            catch { s = s.replace(/[\u2600-\u27BF]/g, ''); }
+            s = s.replace(/[~`^_*#@<>{}\[\]|\\/+=]+/g, ' ');
+            s = s.split(/\s+/).filter(tok => /[A-Za-z]/.test(tok)).join(' ');
+            s = s.replace(/[.,!?;:]{2,}/g, m => m[m.length - 1]);
+            s = s.replace(/\s{2,}/g, ' ').trim();
+            return s;
+        }
+
+        async function speakChunks(text) {
+            if (!('speechSynthesis' in window)) return;
+            const synth = window.speechSynthesis;
+            const cleaned = cleanSpeak(text);
+            if (!cleaned) return;
+            try { synth.resume(); } catch { }
+            try { synth.cancel(); } catch { }
+            const parts = (cleaned.match(/[^.!?;]+[.!?;]?/g) || [cleaned]).map(s => s.trim()).filter(Boolean);
+            for (const part of parts) {
+                await new Promise((resolve) => {
+                    const u = new SpeechSynthesisUtterance(part);
+                    let started = 0;
+                    const done = () => { resolve(); };
+                    u.onstart = () => { started = performance.now(); };
+                    u.onerror = done;
+                    u.onend = () => {
+                        const dur = started ? (performance.now() - started) : 0;
+                        if (dur < 200) {
+                            // Retry once without explicit voice to dodge quick-end bug
+                            try { synth.cancel(); } catch { }
+                            const u2 = new SpeechSynthesisUtterance(part);
+                            u2.onend = done; u2.onerror = done;
+                            try { synth.resume(); } catch { }
+                            try { synth.speak(u2); } catch { done(); }
+                        } else {
+                            done();
+                        }
+                    };
+                    try { synth.speak(u); } catch { resolve(); }
+                });
+            }
+        }
+
         function showStep() {
             const flow = flows[pickIdx]; if (!flow) return;
             const steps = flow.steps || []; idx = Math.min(Math.max(0, idx), Math.max(0, steps.length - 1));
@@ -219,10 +266,9 @@
             bBack.disabled = (idx === 0); bNext.style.display = (idx < steps.length - 1) ? 'inline-flex' : 'none'; bDone.style.display = (idx === steps.length - 1) ? 'inline-flex' : 'none';
             // Narrate current step if enabled
             if (ttsToggle?.checked && window.speechSynthesis) {
-                try { window.speechSynthesis.cancel(); } catch { }
                 const st = steps[idx] || {};
-                const parts = [st.title, st.body].filter(Boolean).join('. ');
-                if (parts) { const u = new SpeechSynthesisUtterance(parts); try { window.speechSynthesis.speak(u); } catch { } }
+                const txt = [st.title, st.body].filter(Boolean).join('. ');
+                if (txt) speakChunks(txt);
             }
         }
 
