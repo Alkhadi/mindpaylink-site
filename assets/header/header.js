@@ -52,6 +52,7 @@
 	<div class="menu-group">
 		<button class="menu-toggle" aria-expanded="false">About <span class="icon">▾</span></button>
 		<div class="submenu">
+            <a role="menuitem" data-href="resources.html" href="resources.html" class="no-soft">Resources</a>
 			<a data-href="about.html">About</a>
 			<a data-href="coffee.html">Support Us</a>
 			<a data-href="contact.html">Contact</a>
