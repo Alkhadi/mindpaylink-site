@@ -32,13 +32,11 @@ body {
   height: 100%
 }
 
-html {
-  background: var(--bg);
-}
-
 body {
   margin: 0;
-  background: transparent;
+  background: radial-gradient(1200px 800px at 20% -10%, #13203b 0, transparent 50%),
+    radial-gradient(1100px 700px at 120% 110%, #14203a 0, transparent 55%),
+    var(--bg);
   color: var(--fg);
   font-family: ui-sans-serif, system-ui, -apple-system, "Inter", "Segoe UI", Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji";
   line-height: 1.45;

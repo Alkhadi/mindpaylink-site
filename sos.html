@@ -207,108 +207,105 @@
             }
             let bgm = null;
 
-            function cleanSpeak(t) { try { return (t || '').replace(/[\uD800-\uDFFF\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, ' ').replace(/[^a-zA-Z0-9.,;:!?'\u2019()\-\s]/g, ' ').replace(/\s+/g, ' ').trim(); } catch { return t || ''; } }
-            function speak(text) {
-                if (tts.value !== 'on') return;
-                const tx = cleanSpeak(text);
-                try {
-                    if (window.__MSHARE__?.TTS?.speak) { window.__MSHARE__.TTS.speak(tx, { clear: true, rate: 0.95, pitch: 1.0 }); }
-                    else if ('speechSynthesis' in window) { const u = new SpeechSynthesisUtterance(tx); u.rate = 0.95; u.pitch = 1.0; speechSynthesis.cancel(); speechSynthesis.speak(u); }
-                } catch { }
-            }
+            function speak() { }  catch { }
+        }
             function vibrate(ms) { if (vib.value === 'on' && navigator.vibrate) try { navigator.vibrate(ms); } catch { } }
-            function rmEnabled() { if (rm.value === 'on') return true; if (rm.value === 'off') return false; return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches; }
-            function applyFocus(on) { document.body.classList.toggle('focus-mode', !!on); }
+        function rmEnabled() { if (rm.value === 'on') return true; if (rm.value === 'off') return false; return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches; }
+        function applyFocus(on) { document.body.classList.toggle('focus-mode', !!on); }
 
-            const TECH_ID = 'sos60';
-            let running = false, paused = false, timer = null, breathIdx = 1, breathTotal = 0;
+        const TECH_ID = 'sos60';
+        let running = false, paused = false, timer = null, breathIdx = 1, breathTotal = 0;
 
-            function step(label, dur, next) {
-                phaseEl.textContent = (label === 'in' ? 'Inhale' : label === 'h1' ? 'Hold' : label === 'out' ? 'Exhale' : 'Hold');
-                orb.classList.remove('inhale', 'exhale'); orb.classList.add(label === 'out' ? 'exhale' : 'inhale');
-                speak(phaseEl.textContent); vibrate(label === 'out' ? 18 : 24); chime(Math.max(.18, parseFloat(bgv.value || 0.22) * (label === 'out' ? 1.1 : 0.9)));
-                const start = performance.now();
-                (function raf(now) {
-                    if (!running) { cancelAnimationFrame(timer); return; }
-                    if (paused) { timer = requestAnimationFrame(raf); return; }
-                    const elapsed = (now - start) / 1000, remain = Math.max(0, dur - elapsed);
-                    countEl.textContent = String(Math.ceil(remain)); setProgress(dur ? elapsed / dur : 1);
-                    if (remain <= 0) return next();
-                    timer = requestAnimationFrame(raf);
-                })(performance.now());
-            }
+        function step(label, dur, next) {
+            phaseEl.textContent = (label === 'in' ? 'Inhale' : label === 'h1' ? 'Hold' : label === 'out' ? 'Exhale' : 'Hold');
+            orb.classList.remove('inhale', 'exhale'); orb.classList.add(label === 'out' ? 'exhale' : 'inhale');
+            speak(phaseEl.textContent); vibrate(label === 'out' ? 18 : 24); chime(Math.max(.18, parseFloat(bgv.value || 0.22) * (label === 'out' ? 1.1 : 0.9)));
+            const start = performance.now();
+            (function raf(now) {
+                if (!running) { cancelAnimationFrame(timer); return; }
+                if (paused) { timer = requestAnimationFrame(raf); return; }
+                const elapsed = (now - start) / 1000, remain = Math.max(0, dur - elapsed);
+                countEl.textContent = String(Math.ceil(remain)); setProgress(dur ? elapsed / dur : 1);
+                if (remain <= 0) return next();
+                timer = requestAnimationFrame(raf);
+            })(performance.now());
+        }
 
-            function runOne() {
-                step('in', +inS.value || 4, () => step('h1', +h1S.value || 0, () => step('out', +outS.value || 4, () => {
-                    breathIdx++; if (breathIdx <= breathTotal) { idxEl.textContent = String(breathIdx); runOne(); } else finish();
-                })));
-            }
+        function runOne() {
+            step('in', +inS.value || 4, () => step('h1', +h1S.value || 0, () => step('out', +outS.value || 4, () => {
+                breathIdx++; if (breathIdx <= breathTotal) { idxEl.textContent = String(breathIdx); runOne(); } else finish();
+            })));
+        }
 
-            function startSession() {
-                const mins = Math.max(1, parseInt(minutes.value || '1', 10));
-                const rate = Math.min(8, Math.max(4, parseFloat(bpm.value || '6.0')));
-                breathTotal = Math.max(1, Math.round(mins * rate));
-                totalEl.textContent = String(breathTotal); breathIdx = 1; idxEl.textContent = '1';
-                ensureAC(); if (!bgm && bg.value !== 'none') { bgm = new Background(ac); bgm.setType(bg.value); } if (bgm) bgm.setVol(bgv.value);
-                running = true; paused = false; setProgress(0); applyFocus(focus.value === 'on'); document.body.classList.toggle('rm', rmEnabled());
-                document.querySelector('.setup').classList.add('hidden'); $('inst').classList.add('hidden'); $('session').classList.remove('hidden');
-                runOne();
-            }
+        function startSession() {
+            const mins = Math.max(1, parseInt(minutes.value || '1', 10));
+            const rate = Math.min(8, Math.max(4, parseFloat(bpm.value || '6.0')));
+            breathTotal = Math.max(1, Math.round(mins * rate));
+            totalEl.textContent = String(breathTotal); breathIdx = 1; idxEl.textContent = '1';
+            ensureAC(); if (!bgm && bg.value !== 'none') { bgm = new Background(ac); bgm.setType(bg.value); } if (bgm) bgm.setVol(bgv.value);
+            running = true; paused = false; setProgress(0); applyFocus(focus.value === 'on'); document.body.classList.toggle('rm', rmEnabled());
+            document.querySelector('.setup').classList.add('hidden'); $('inst').classList.add('hidden'); $('session').classList.remove('hidden');
+            runOne();
+        }
 
-            function pauseSession() { if (!running) return; paused = !paused; $('pauseBtn').textContent = paused ? 'Resume' : 'Pause'; applyFocus(!paused); if (!paused) runOne(); }
-            function stopToSetup() {
-                running = false; paused = false; cancelAnimationFrame(timer); setProgress(0); countEl.textContent = '4'; phaseEl.textContent = 'Inhale';
-                $('pauseBtn').textContent = 'Pause'; applyFocus(false); if (bgm) { bgm.stop(); bgm = null; }
-                $('session').classList.add('hidden'); document.querySelector('.setup').classList.remove('hidden');
-            }
+        function pauseSession() { if (!running) return; paused = !paused; $('pauseBtn').textContent = paused ? 'Resume' : 'Pause'; applyFocus(!paused); if (!paused) runOne(); }
+        function stopToSetup() {
+            running = false; paused = false; cancelAnimationFrame(timer); setProgress(0); countEl.textContent = '4'; phaseEl.textContent = 'Inhale';
+            $('pauseBtn').textContent = 'Pause'; applyFocus(false); if (bgm) { bgm.stop(); bgm = null; }
+            $('session').classList.add('hidden'); document.querySelector('.setup').classList.remove('hidden');
+        }
 
-            function finish() {
-                running = false; cancelAnimationFrame(timer); applyFocus(false); if (bgm) { bgm.stop(); bgm = null; }
-                const per = (+inS.value || 4) + (+h1S.value || 0) + (+outS.value || 4) + (+h2S.value || 0); const secs = per * breathTotal;
-                const Stats = (window.__MSHARE__ || {}).Stats; const s = Stats?.addSession?.({ techId: TECH_ID, seconds: secs, breaths: breathTotal }) || null;
-                $('doneMin').textContent = String(s ? Math.floor(s.totalMinutes || 0) : Math.floor(secs / 60));
-                $('doneBreaths').textContent = String(s ? s.totalBreaths || 0 : breathTotal);
-                $('doneStreak').textContent = String(s ? s.dayStreak || 0 : 0);
-                $('done').classList.remove('hidden'); $('session').classList.add('hidden'); document.querySelector('.setup').classList.add('hidden');
-            }
+        function finish() {
+            running = false; cancelAnimationFrame(timer); applyFocus(false); if (bgm) { bgm.stop(); bgm = null; }
+            const per = (+inS.value || 4) + (+h1S.value || 0) + (+outS.value || 4) + (+h2S.value || 0); const secs = per * breathTotal;
+            const Stats = (window.__MSHARE__ || {}).Stats; const s = Stats?.addSession?.({ techId: TECH_ID, seconds: secs, breaths: breathTotal }) || null;
+            $('doneMin').textContent = String(s ? Math.floor(s.totalMinutes || 0) : Math.floor(secs / 60));
+            $('doneBreaths').textContent = String(s ? s.totalBreaths || 0 : breathTotal);
+            $('doneStreak').textContent = String(s ? s.dayStreak || 0 : 0);
+            $('done').classList.remove('hidden'); $('session').classList.add('hidden'); document.querySelector('.setup').classList.add('hidden');
+        }
 
-            $('startBtn').addEventListener('click', startSession);
-            $('resetBtn').addEventListener('click', stopToSetup);
-            $('instBtn').addEventListener('click', () => { document.querySelector('.setup').classList.add('hidden'); $('inst').classList.remove('hidden'); });
-            $('beginFromInst').addEventListener('click', startSession);
-            $('backSetup').addEventListener('click', () => { $('inst').classList.add('hidden'); document.querySelector('.setup').classList.remove('hidden'); });
-            $('pauseBtn').addEventListener('click', pauseSession);
-            $('hardStopBtn').addEventListener('click', stopToSetup);
-            $('againBtn').addEventListener('click', () => { $('done').classList.add('hidden'); startSession(); });
-            $('tapArea').addEventListener('click', pauseSession);
-            document.addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); pauseSession(); } });
+        $('startBtn').addEventListener('click', startSession);
+        $('resetBtn').addEventListener('click', stopToSetup);
+        $('instBtn').addEventListener('click', () => { document.querySelector('.setup').classList.add('hidden'); $('inst').classList.remove('hidden'); });
+        $('beginFromInst').addEventListener('click', startSession);
+        $('backSetup').addEventListener('click', () => { $('inst').classList.add('hidden'); document.querySelector('.setup').classList.remove('hidden'); });
+        $('pauseBtn').addEventListener('click', pauseSession);
+        $('hardStopBtn').addEventListener('click', stopToSetup);
+        $('againBtn').addEventListener('click', () => { $('done').classList.add('hidden'); startSession(); });
+        $('tapArea').addEventListener('click', pauseSession);
+        document.addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); pauseSession(); } });
 
-            qsStart.addEventListener('click', () => {
-                const parts = (qsPreset.value || '').split(',');
-                [inS.value, h1S.value, outS.value, h2S.value] = parts.slice(0, 4);
-                minutes.value = parts[4] || '1';
-                bpm.value = parts[5] || '6.0';
-                tts.value = parts[6] || 'on';
-                bg.value = parts[7] || 'cosmic';
-                bgv.value = parts[8] || '0.22';
-                rm.value = parts[9] || 'auto';
-                focus.value = parts[10] || 'on';
-                startSession();
-            });
-            qsStop.addEventListener('click', stopToSetup);
+        qsStart.addEventListener('click', () => {
+            const parts = (qsPreset.value || '').split(',');
+            [inS.value, h1S.value, outS.value, h2S.value] = parts.slice(0, 4);
+            minutes.value = parts[4] || '1';
+            bpm.value = parts[5] || '6.0';
+            tts.value = parts[6] || 'on';
+            bg.value = parts[7] || 'cosmic';
+            bgv.value = parts[8] || '0.22';
+            rm.value = parts[9] || 'auto';
+            focus.value = parts[10] || 'on';
+            startSession();
+        });
+        qsStop.addEventListener('click', stopToSetup);
 
-            (function () {
-                const q = new URLSearchParams(location.search);
-                if (q.get('focus') === '1') focus.value = 'on';
-                if (q.get('tts') === 'on') tts.value = 'on';
-            })();
+        (function () {
+            const q = new URLSearchParams(location.search);
+            if (q.get('focus') === '1') focus.value = 'on';
+            if (q.get('tts') === 'on') tts.value = 'on';
         })();
+        }) ();
     </script>
-    <script defer src="assets/js/core/sound-kit.js"></script>
-    <script defer src="assets/header/header.js"></script>
-    <script defer src="assets/footer/footer.js"></script>
-    <script defer src="assets/js/voice-coach-pro.js"></script>
-    <script defer src="voice-coach-fix.js"></script>
+    <script src="assets/js/core/nav-autofix.js"></script>
+    <script src="assets/header/header.js"></script>
+    <script src="assets/footer/footer.js"></script>
+    <script src="assets/js/core/nav-core.js"></script>
+    <script src="assets/js/core/nav-autofix.js"></script>
+    <script src="assets/header/header.js"></script>
+    <script src="assets/footer/footer.js"></script>
+    <script src="assets/js/core/voice-coach.js"></script>
+    <script src="assets/js/core/sound-kit.js"></script>
 </body>
 
 </html>
