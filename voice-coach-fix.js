@@ -36,11 +36,13 @@
           const list = window.speechSynthesis.getVoices();
           if (list && list.length) {
             this.voices = list;
+            try { document.dispatchEvent(new CustomEvent('vc:voiceschanged', { detail: { voices: list } })); } catch { }
             resolve(list);
           } else {
             // Chrome: voices often load async after first getVoices() call
             setTimeout(() => {
               this.voices = window.speechSynthesis.getVoices() || [];
+              try { document.dispatchEvent(new CustomEvent('vc:voiceschanged', { detail: { voices: this.voices } })); } catch { }
               resolve(this.voices);
             }, 300);
           }
@@ -174,6 +176,8 @@
   }
 
   const VC = new SpeechEngine();
+  // Default Voice Coach ON across the site if not set
+  try { if (localStorage.getItem('vc.enabled') === null) localStorage.setItem('vc.enabled', 'true'); } catch { }
 
   // Prime/unlock speech on first user gesture (iOS/Safari policies)
   let __vc_unlocked = false;
@@ -202,9 +206,9 @@
       panel.className = 'voice-coach';
       panel.innerHTML = `
         <div class="vc-grid" role="group" aria-label="Voice Coach">
-          <div class="vc-drag" id="vc-drag" style="cursor:move;touch-action:none;user-select:none;-webkit-user-select:none;background:rgba(255,255,255,.06);border-radius:10px;padding:6px 10px;margin:-2px -2px 8px -2px;display:flex;align-items:center;gap:8px">
+          <div class="vc-drag" id="vc-drag" role="button" tabindex="0" aria-label="Move Voice Coach; use arrow keys to move; hold Shift for larger steps" style="cursor:move;touch-action:none;user-select:none;-webkit-user-select:none;background:rgba(255,255,255,.06);border-radius:10px;padding:6px 10px;margin:-2px -2px 8px -2px;display:flex;align-items:center;gap:8px">
             <span aria-hidden="true">⋮⋮</span>
-            <span class="vc-label" style="font-size:12px;opacity:.8">Drag me</span>
+            <span class="vc-label" style="font-size:12px;opacity:.8">Move</span>
           </div>
           <div class="vc-row">
             <div class="vc-label">Status</div>
@@ -254,22 +258,50 @@
         }
       }
     } catch { }
+
+    // Ensure explicit fixed positioning
+    panel.style.position = 'fixed';
+
+    // If overlapping the site header, nudge panel downward within viewport bounds
+    try {
+      const header = document.querySelector('header.site-header, header, .site-header');
+      const pr = panel.getBoundingClientRect();
+      const hr = header ? header.getBoundingClientRect() : null;
+      const needsNudge = hr && pr.top < hr.bottom && pr.right > hr.left && pr.left < hr.right;
+      if (needsNudge) {
+        const dy = Math.ceil(hr.bottom - pr.top + 12);
+        const y = Math.min(Math.max((pr.top + dy), 6), Math.max(6, window.innerHeight - pr.height - 6));
+        const x = Math.min(Math.max(pr.left, 6), Math.max(6, window.innerWidth - pr.width - 6));
+        panel.style.top = y + 'px';
+        panel.style.left = x + 'px';
+        panel.style.right = '';
+        panel.style.bottom = '';
+        try { localStorage.setItem('vc.pos', JSON.stringify({ x: Math.round(x), y: Math.round(y) })); } catch { }
+      }
+    } catch { }
     // Persisted enabled state (default: ON)
     const savedEnabled = (() => { try { return localStorage.getItem('vc.enabled'); } catch { return null; } })();
     const enabledDefault = (savedEnabled == null) ? true : (savedEnabled === 'true');
 
-    // Populate voices (async-safe)
-    VC.ready.then(() => {
+    // Populate voices (async-safe) with System default and repopulate when voices arrive
+    function populateVcVoices() {
       const sel = $('#vc-voice', panel);
       if (!sel) return;
-      const voices = VC.voices.filter(v => /en/i.test(v.lang || 'en'));
-      if (!voices.length) return;
-      sel.innerHTML = voices.map(v => `<option value="${v.name}">${v.name}</option>`).join('');
-      const match = voices.find(v => v.name === VC.voiceNamePref) ? VC.voiceNamePref : voices[0].name;
-      sel.value = match;
-      VC.setVoiceByName(sel.value);
+      const voices = (VC.voices || []).filter(v => /en/i.test(v.lang || 'en'));
+      sel.innerHTML = '';
+      // System default first
+      const def = document.createElement('option'); def.value = ''; def.textContent = 'System default'; sel.appendChild(def);
+      // Add available voices if any
+      voices.forEach(v => { const o = document.createElement('option'); o.value = v.name; o.textContent = v.name; sel.appendChild(o); });
+      // Choose saved or default
+      const pref = (VC.voiceNamePref || '');
+      const hasPref = Array.from(sel.options).some(o => o.value === pref);
+      sel.value = hasPref ? pref : '';
+      VC.setVoiceByName(sel.value); // empty string means let browser choose
       sel.onchange = () => VC.setVoiceByName(sel.value);
-    });
+    }
+    VC.ready.then(populateVcVoices);
+    document.addEventListener('vc:voiceschanged', populateVcVoices);
 
     // Buttons
     const $toggle = $('#vc-toggle', panel);
@@ -345,8 +377,41 @@
     // Lock initial size so it doesn't grow when dragging
     lockPanelSize(panel);
 
-    // ----- Draggable behavior (whole panel) -----
-    makeDraggable(panel); // allow dragging from anywhere; interactive controls are ignored
+    // ----- Draggable behavior (handle + keyboard) -----
+    const handle = $('#vc-drag', panel);
+    makeDraggable(panel, handle);
+    // Keyboard move on handle
+    if (handle) {
+      const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+      const save = (x, y) => { try { localStorage.setItem('vc.pos', JSON.stringify({ x: Math.round(x), y: Math.round(y) })); } catch { } };
+      function toFixedPosition() {
+        const r = panel.getBoundingClientRect();
+        panel.style.left = r.left + 'px';
+        panel.style.top = r.top + 'px';
+        panel.style.right = '';
+        panel.style.bottom = '';
+      }
+      handle.addEventListener('keydown', (e) => {
+        const ARROWS = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
+        if (!ARROWS.includes(e.key)) return;
+        e.preventDefault();
+        toFixedPosition();
+        const step = e.shiftKey ? 10 : 2;
+        const r = panel.getBoundingClientRect();
+        let x = r.left; let y = r.top;
+        if (e.key === 'ArrowLeft') x -= step;
+        if (e.key === 'ArrowRight') x += step;
+        if (e.key === 'ArrowUp') y -= step;
+        if (e.key === 'ArrowDown') y += step;
+        const maxX = Math.max(0, window.innerWidth - r.width);
+        const maxY = Math.max(0, window.innerHeight - r.height);
+        x = clamp(x, 6, Math.max(6, maxX - 6));
+        y = clamp(y, 6, Math.max(6, maxY - 6));
+        panel.style.left = x + 'px';
+        panel.style.top = y + 'px';
+        save(x, y);
+      });
+    }
   }
 
   function lockPanelSize(panel) {
@@ -563,40 +628,9 @@
   }
 
   // ---------- PER-CARD NARRATOR BUTTONS ----------
-  function ensureCardNarrators() {
-    const cards = Array.from(document.querySelectorAll('.card, section.card, article.card'));
-    cards.forEach((card) => {
-      if (card.querySelector('.vc-auto-bar')) return;
-      const bar = document.createElement('div');
-      bar.className = 'vc-auto-bar';
-      bar.style.cssText = 'display:flex;gap:8px;align-items:center;margin:8px 0 0;flex-wrap:wrap';
-      const sayBtn = document.createElement('button');
-      sayBtn.type = 'button';
-      sayBtn.className = 'btn vc-speak';
-      sayBtn.innerHTML = '🎧 Start';
-      const stopBtn = document.createElement('button');
-      stopBtn.type = 'button';
-      stopBtn.className = 'btn';
-      stopBtn.textContent = '■ Stop';
-      bar.appendChild(sayBtn); bar.appendChild(stopBtn);
-      // Insert after heading if present
-      const anchor = card.querySelector('h2, h3, header') || card.firstElementChild || card;
-      anchor.after(bar);
-      sayBtn.addEventListener('click', (ev) => {
-        ev.preventDefault();
-        unlockSpeechOnce();
-        const toggle = document.getElementById('vc-toggle');
-        if (toggle?.getAttribute('aria-pressed') === 'false') {
-          toggle.setAttribute('aria-pressed', 'true');
-          toggle.textContent = 'On';
-          try { localStorage.setItem('vc.enabled', 'true'); } catch { }
-        }
-        const txt = (card.textContent || '').trim();
-        if (txt) VC.speak(txt, { clear: true });
-      });
-      stopBtn.addEventListener('click', () => VC.stop());
-    });
-  }
+  // Removed per user request: do NOT inject extra Start/Stop buttons into cards.
+  // Keep function present as a no-op to avoid breaking existing init flow.
+  function ensureCardNarrators() { /* no-op (duplicate controls removed site-wide) */ }
 
   // ---------- FOCUS SCREEN FIX (controls + duplicate cleanup) ----------
   function fixFocusScreens() {
@@ -613,46 +647,17 @@
       screens.forEach(s => { if (s !== keep) s.classList.add('vc-hide'); });
     }
 
-    // Add Start/Pause/Stop chips inside the visible focus/player container
+    // Identify the visible focus/player container (for potential non-button cleanups)
     const host = $('.focus-screen:not(.vc-hide), .breathing-focus:not(.vc-hide), .breath-player:not(.vc-hide), .breathing-viewport:not(.vc-hide), #focus:not(.vc-hide), .focus:not(.vc-hide)') || screens[0];
     if (!host) return;
 
-    // Remove Back-to-hub/section button
+    // Remove Back-to-hub/section button if present inside the focus container
     $$('a,button', host).forEach(b => {
       const t = byText(b);
       if (t === 'back to hub/section' || t === 'back to hub' || t === 'back') b.remove();
     });
 
-    if (!$('.vc-focus-controls', host)) {
-      const box = document.createElement('div');
-      box.className = 'vc-focus-controls';
-      box.innerHTML = `
-        <button type="button" class="vc-chip" data-vc="start">Start</button>
-        <button type="button" class="vc-chip" data-vc="pause">Pause</button>
-        <button type="button" class="vc-chip" data-vc="stop">Stop</button>`;
-      host.style.position = host.style.position || 'relative';
-      host.appendChild(box);
-
-      box.addEventListener('click', (e) => {
-        const btn = e.target.closest('[data-vc]');
-        if (!btn) return;
-        const kind = btn.getAttribute('data-vc');
-        if (kind === 'start') {
-          // Try to narrate visible instruction (Inhale/Hold/Exhale) if present
-          const visible = document.elementFromPoint(window.innerWidth / 2, window.innerHeight / 2);
-          const maybeText = (visible?.textContent || '').trim();
-          const program = detectBreathingProgram(host) || defaultBoxProgram();
-          narrateBreathing(program);
-          if (maybeText) VC.speak(maybeText, { clear: false });
-        } else if (kind === 'pause') {
-          VC.pause();
-          document.dispatchEvent(new CustomEvent('breathing:pause'));
-        } else if (kind === 'stop') {
-          VC.stop();
-          document.dispatchEvent(new CustomEvent('breathing:stop'));
-        }
-      });
-    }
+    // Do NOT add Start/Pause/Stop chips here; pages already provide their own controls.
   }
 
   function defaultBoxProgram() {
@@ -759,6 +764,9 @@
     ensureCardNarrators();
     fixFocusScreens();
     ensureMobileOverlay();
+    try { if (typeof window.enhanceCoachRunner === 'function') window.enhanceCoachRunner(); else setTimeout(() => { if (typeof window.enhanceCoachRunner === 'function') window.enhanceCoachRunner(); }, 0); } catch { }
+    // Force any page-level TTS select to 'on' so narration is enabled by default
+    try { const ttsSel = document.getElementById('tts'); if (ttsSel) ttsSel.value = 'on'; } catch { }
 
     // If pages are dynamically swapped, keep us alive
     const ro = new MutationObserver((muts) => {
@@ -770,6 +778,7 @@
         bindHeadphoneButtons();
         ensureCardNarrators();
         fixFocusScreens();
+        try { if (typeof window.enhanceCoachRunner === 'function') window.enhanceCoachRunner(); } catch { }
       }
     });
     ro.observe(document.documentElement, { childList: true, subtree: true });
@@ -780,4 +789,95 @@
   } else {
     init();
   }
+})();
+
+// -------- Coach Runner enhancements: readability + drag/persist --------
+(function () {
+  const KEY = 'vc.runner.pos';
+
+  function ensureDragHandle(dlg) {
+    if (!dlg) return null;
+    let h = dlg.querySelector('.cr-drag');
+    if (!h) {
+      h = document.createElement('div');
+      h.className = 'cr-drag';
+      h.id = 'coachRunnerDrag';
+      h.setAttribute('role', 'button');
+      h.setAttribute('tabindex', '0');
+      h.setAttribute('aria-label', 'Move coach window; use arrow keys to move; hold Shift for larger steps');
+      h.innerHTML = '<span aria-hidden="true">⋮⋮</span><span class="vc-label" style="font-size:12px;opacity:.8">Move</span>';
+      // Insert at top of dialog
+      const first = dlg.firstElementChild;
+      dlg.insertBefore(h, first || null);
+    }
+    return h;
+  }
+
+  function savePos(x, y) { try { localStorage.setItem(KEY, JSON.stringify({ x: Math.round(x), y: Math.round(y) })); } catch { } }
+  function loadPos() { try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch { return null; } }
+
+  function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+  function toFixed(dlg) {
+    const r = dlg.getBoundingClientRect();
+    dlg.style.left = r.left + 'px';
+    dlg.style.top = r.top + 'px';
+    dlg.style.right = '';
+    dlg.style.bottom = '';
+    dlg.style.position = 'fixed';
+  }
+
+  function makeDialogDraggable(dlg, handle) {
+    if (!dlg || !handle) return;
+    // Avoid double-binding
+    if (handle.__vc_bound) return; handle.__vc_bound = true;
+    handle.style.touchAction = 'none';
+    let dragging = false, sx = 0, sy = 0, px = 0, py = 0;
+    function rect() { return dlg.getBoundingClientRect(); }
+    function onDown(e) {
+      e.preventDefault();
+      if (e.button !== undefined && e.button !== 0) return;
+      toFixed(dlg);
+      const r = rect(); dragging = true; sx = e.clientX; sy = e.clientY; px = r.left; py = r.top;
+      handle.setPointerCapture?.(e.pointerId || 0);
+    }
+    function onMove(e) { if (!dragging) return; const dx = e.clientX - sx, dy = e.clientY - sy; const r = rect(); let nx = px + dx, ny = py + dy; const maxX = window.innerWidth - r.width; const maxY = window.innerHeight - r.height; nx = clamp(nx, 6, Math.max(6, maxX - 6)); ny = clamp(ny, 6, Math.max(6, maxY - 6)); dlg.style.left = nx + 'px'; dlg.style.top = ny + 'px'; }
+    function onUp(e) { if (!dragging) return; dragging = false; handle.releasePointerCapture?.(e.pointerId || 0); const r = rect(); savePos(r.left, r.top); }
+    handle.addEventListener('pointerdown', onDown, { passive: false });
+    window.addEventListener('pointermove', onMove, { passive: true });
+    window.addEventListener('pointerup', onUp, { passive: true });
+
+    // Keyboard move on handle
+    handle.addEventListener('keydown', (e) => {
+      const AR = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
+      if (!AR.includes(e.key)) return; e.preventDefault(); toFixed(dlg);
+      const step = e.shiftKey ? 10 : 2; const r = rect(); let x = r.left, y = r.top;
+      if (e.key === 'ArrowLeft') x -= step; if (e.key === 'ArrowRight') x += step; if (e.key === 'ArrowUp') y -= step; if (e.key === 'ArrowDown') y += step;
+      const maxX = Math.max(0, window.innerWidth - r.width); const maxY = Math.max(0, window.innerHeight - r.height);
+      x = clamp(x, 6, Math.max(6, maxX - 6)); y = clamp(y, 6, Math.max(6, maxY - 6));
+      dlg.style.left = x + 'px'; dlg.style.top = y + 'px'; savePos(x, y);
+    });
+  }
+
+  function restoreDialogPos(dlg) {
+    const p = loadPos(); if (!p) return;
+    dlg.style.position = 'fixed'; dlg.style.left = p.x + 'px'; dlg.style.top = p.y + 'px'; dlg.style.right = ''; dlg.style.bottom = '';
+  }
+
+  function enhance() {
+    const dlg = document.getElementById('coachRunnerDialog');
+    if (!dlg) return;
+    // Force readable theme (CSS already ensures); ensure role and tabindex for focus trap friendliness
+    dlg.setAttribute('role', dlg.getAttribute('role') || 'dialog');
+    dlg.setAttribute('tabindex', dlg.getAttribute('tabindex') || '-1');
+    restoreDialogPos(dlg);
+    const handle = ensureDragHandle(dlg);
+    makeDialogDraggable(dlg, handle);
+  }
+
+  // Public for reuse in init/mutation
+  window.enhanceCoachRunner = enhance;
+
+  // If dialog already present on load, enhance once
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', enhance, { once: true }); else enhance();
 })();
