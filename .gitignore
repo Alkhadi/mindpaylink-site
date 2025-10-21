@@ -10,3 +10,6 @@ tmp/
 /m-share.zip
 /_backup_mindpaylink/
 /_backup_ux/
+
+# Prevent committing HTML/CSS snapshot backups
+*.bak
