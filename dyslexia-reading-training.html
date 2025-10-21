@@ -472,13 +472,20 @@
       --dlx-line-height: 1.6;
       --dlx-letter-spacing: 0.05em;
       --dlx-word-spacing: 0.12em;
+      /* Default to system stack; upgrade to 'Open Dyslexic' only if a local webfont is available */
+      --dlx-font-stack: Arial, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    }
+
+    /* When the local font loads, flip the stack to use it first */
+    html.dlx-font-loaded {
+      --dlx-font-stack: 'Open Dyslexic', Arial, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     }
 
     body {
       line-height: var(--dlx-line-height);
       letter-spacing: var(--dlx-letter-spacing);
       word-spacing: var(--dlx-word-spacing);
-      font-family: 'Open Dyslexic', Arial, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      font-family: var(--dlx-font-stack);
     }
 
     .dlx-standard-text {
@@ -489,6 +496,20 @@
       font-family: inherit;
     }
   </style>
+  <script id="dlx-font-loader">
+    (function () {
+      // Try to load a local webfont only if it exists; otherwise, keep system stack
+      if (!('fonts' in document) || typeof FontFace === 'undefined') return;
+      var url = 'assets/fonts/OpenDyslexic-Regular.woff2';
+      try {
+        var ff = new FontFace('Open Dyslexic', "url(" + url + ") format('woff2')", { weight: '400', style: 'normal', display: 'swap' });
+        ff.load().then(function (f) {
+          try { document.fonts.add(f); } catch { }
+          document.documentElement.classList.add('dlx-font-loaded');
+        }).catch(function () { /* silent: keep system stack */ });
+      } catch { /* no-op */ }
+    })();
+  </script>
 </head>
 
 <body>
