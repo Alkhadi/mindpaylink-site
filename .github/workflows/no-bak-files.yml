@@ -1,5 +1,5 @@
 name: Block .bak files
-on:
+'on':
   pull_request:
     branches:
       - main
