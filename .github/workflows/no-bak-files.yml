@@ -1,23 +1,26 @@
 name: Block .bak files
-
-'on':
+on:
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   no-bak-files:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
       - name: Fail if *.bak files exist
+        shell: bash
         run: |
           set -euo pipefail
-          if git ls-files "*.bak" | grep -q ".bak$"; then
+          # Collect tracked .bak files
+          mapfile -t FILES < <(git ls-files '*.bak' || true)
+          if [ "${#FILES[@]}" -gt 0 ]; then
             echo "Error: .bak snapshot files detected in the tree:" >&2
-            git ls-files "*.bak" >&2
+            printf '%s\n' "${FILES[@]}" >&2
             exit 1
           fi
           echo "No .bak files found."
