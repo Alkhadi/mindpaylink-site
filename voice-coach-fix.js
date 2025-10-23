@@ -457,7 +457,11 @@
     }
 
     function isInteractive(el) {
-      return !!el.closest('button,a,select,input,textarea,[role="button"],[contenteditable="true"],label');
+      const node = el.closest('button,a,select,input,textarea,[role="button"],[contenteditable="true"],label');
+      if (!node) return false;
+      // Allow drags when the interactive element is the drag handle itself
+      if (dragTarget && (node === dragTarget || dragTarget.contains(node))) return false;
+      return true;
     }
 
     function onPointerDown(e) {

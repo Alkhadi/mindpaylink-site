@@ -84,6 +84,22 @@
         } catch (_) { }
     }
 
+    // Proactively prime on first user gesture (helps Chrome/Tesla)
+    (function wirePrimeOnce() {
+        if (!hasSS()) return;
+        var once = function () {
+            try { if (g.speechSynthesis && g.speechSynthesis.paused) g.speechSynthesis.resume(); } catch (_) { }
+            prime();
+            ['pointerdown', 'touchstart', 'mousedown', 'keydown', 'click'].forEach(function (ev) {
+                g.document.removeEventListener(ev, once, { passive: true });
+            });
+        };
+        ['pointerdown', 'touchstart', 'mousedown', 'keydown', 'click'].forEach(function (ev) {
+            g.document.addEventListener(ev, once, { passive: true, once: true });
+        });
+        g.document.addEventListener('visibilitychange', function () { if (g.document.visibilityState === 'visible') prime(); }, { passive: true });
+    })();
+
     function choose(uri) { setStored({ voiceURI: uri }); }
 
     function populateSelect(selectEl) {
@@ -160,7 +176,7 @@
                 var chosenURI = (selEl && selEl.value) || (getStored().voiceURI) || null;
 
                 var v = pickVoiceByURI(chosenURI) || pickDefault();
-                if (v) u.voice = v; // If no voice chosen, let browser default handle it (key for Chrome)
+                if (v) u.voice = v; // If no voice chosen, let browser default handle it (key for Chrome/Tesla)
                 try {
                     var lang = (v && v.lang) || (opts && opts.lang) || (navigator.language) || 'en-US';
                     if (lang) u.lang = lang;
@@ -186,6 +202,10 @@
         } catch (_) { }
     }
 
+    function stop() {
+        try { if (!hasSS()) return; if (g.speechSynthesis.speaking) g.speechSynthesis.cancel(); } catch (_) { }
+    }
+
     g.MS_TTS = {
         waitForVoices: waitForVoices,
         listVoices: listVoices,
@@ -193,6 +213,18 @@
         connectUI: connectUI,
         choose: choose,
         prime: prime,
-        speak: speak
+        speak: speak,
+        stop: stop
     };
+
+    // Provide a unified adapter for legacy code that expects __MSHARE__.TTS
+    try {
+        g.__MSHARE__ = g.__MSHARE__ || {};
+        if (!g.__MSHARE__.TTS) {
+            g.__MSHARE__.TTS = {
+                speak: function (t, o) { return g.MS_TTS && g.MS_TTS.speak ? g.MS_TTS.speak(t, o || {}) : void 0; },
+                stop: function () { return g.MS_TTS && g.MS_TTS.stop ? g.MS_TTS.stop() : void 0; }
+            };
+        }
+    } catch (_) { }
 })();
