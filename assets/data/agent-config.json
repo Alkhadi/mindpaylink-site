@@ -1,0 +1,9 @@
+{
+    "contactHref": "mailto:info@mindpaylink.com",
+    "subscribeUrl": "",
+    "research": {
+        "ukRefs": true,
+        "preferAcUk": true,
+        "proxyUrl": "/research"
+    }
+}

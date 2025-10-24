@@ -1,0 +1,241 @@
+/* Minimal styles for the AI Agent widget (WCAG-friendly, brand-aware) */
+.mpl-agent {
+    position: fixed;
+    z-index: 9999;
+    left: auto;
+    top: auto;
+    right: 16px;
+    bottom: 16px;
+    width: min(360px, 92vw);
+    color: var(--fg, #111);
+}
+
+.mpl-agent-inner {
+    background: var(--panel, #fff);
+    color: var(--fg, #111);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .18);
+    border-radius: 12px;
+    border: 1px solid var(--b, rgba(0, 0, 0, .12));
+    overflow: hidden;
+}
+
+.mpl-agent-head {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .5rem .5rem;
+    background: linear-gradient(180deg, #3EA9FF, #2F85CA);
+    color: #fff;
+}
+
+.mpl-agent .mpl-title {
+    font-weight: 700;
+    flex: 1;
+}
+
+.mpl-agent .mpl-actions {
+    display: flex;
+    gap: .25rem;
+}
+
+.mpl-agent button {
+    cursor: pointer;
+}
+
+.mpl-agent .mpl-move {
+    border: 0;
+    background: rgba(255, 255, 255, .2);
+    color: #fff;
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+}
+
+.mpl-agent .mpl-close {
+    border: 0;
+    background: rgba(255, 255, 255, .2);
+    color: #fff;
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+}
+
+.mpl-agent .mpl-setup {
+    border: 0;
+    background: rgba(255, 255, 255, .2);
+    color: #fff;
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+}
+
+.mpl-agent .mpl-agent-body {
+    padding: .5rem;
+    background: var(--panel, #fff);
+}
+
+.mpl-agent .mpl-messages {
+    height: 260px;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+    padding: .25rem;
+    border: 1px solid var(--b, rgba(0, 0, 0, .12));
+    border-radius: .5rem;
+    background: #fafafa;
+}
+
+.mpl-agent .mpl-msg {
+    display: flex;
+}
+
+.mpl-agent .mpl-msg.user {
+    justify-content: flex-end;
+}
+
+.mpl-agent .mpl-msg .bubble {
+    max-width: 80%;
+    padding: .45rem .6rem;
+    border-radius: .75rem;
+    border: 1px solid var(--b, rgba(0, 0, 0, .12));
+}
+
+.mpl-agent .mpl-msg.agent .bubble {
+    background: #eef6ff;
+    color: #0b2a4a;
+}
+
+.mpl-agent .mpl-msg.user .bubble {
+    background: #e8e8ef;
+    color: #111;
+}
+
+.mpl-agent .mpl-input {
+    display: flex;
+    gap: .5rem;
+    margin-top: .5rem;
+}
+
+.mpl-agent .mpl-input input {
+    flex: 1;
+    padding: .5rem .6rem;
+    border-radius: .5rem;
+    border: 1px solid var(--b, rgba(0, 0, 0, .12));
+}
+
+.mpl-agent .mpl-input button {
+    padding: .45rem .7rem;
+    border-radius: .5rem;
+    border: 1px solid var(--b, rgba(0, 0, 0, .12));
+    background: #3EA9FF;
+    color: #fff;
+}
+
+.mpl-agent .mpl-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem;
+    margin: .25rem 0 .25rem;
+}
+
+.mpl-agent .mpl-chips button {
+    border: 1px solid var(--b, rgba(0, 0, 0, .12));
+    background: #fff;
+    border-radius: 999px;
+    padding: .25rem .5rem;
+}
+
+.mpl-agent .mpl-cta {
+    display: flex;
+    justify-content: flex-start;
+    margin: .35rem 0 0;
+}
+
+.mpl-agent .mpl-setup-panel {
+    margin-top: .5rem;
+    border-top: 1px dashed var(--b, rgba(0, 0, 0, .12));
+    padding-top: .5rem;
+}
+
+.mpl-agent .mpl-setup-panel textarea {
+    width: 100%;
+    min-height: 160px;
+    font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    background: #0b0b10;
+    color: #f0f3f7;
+    border-radius: .5rem;
+    padding: .5rem;
+}
+
+.mpl-agent .mpl-setup-actions {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+    margin-top: .35rem;
+}
+
+.mpl-agent .mpl-upload {
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+    border: 1px solid var(--b, rgba(0, 0, 0, .12));
+    border-radius: .5rem;
+    padding: .35rem .6rem;
+    cursor: pointer;
+}
+
+/* Settings row */
+.mpl-agent .mpl-settings {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .35rem;
+    margin: .25rem 0 .5rem;
+}
+
+.mpl-agent .mpl-settings input {
+    width: 100%;
+    padding: .35rem .5rem;
+    border: 1px solid var(--b, rgba(0, 0, 0, .12));
+    border-radius: .4rem;
+}
+
+/* Resource lists */
+.mpl-agent .mpl-list-title {
+    font-weight: 600;
+    margin: 0 0 .25rem;
+}
+
+.mpl-agent .mpl-list {
+    list-style: disc inside;
+    margin: 0;
+    padding: 0 0 0 .25rem;
+}
+
+.mpl-agent .mpl-list li {
+    margin: .15rem 0;
+}
+
+.mpl-agent .mpl-list a {
+    text-decoration: none;
+    color: #0b2a4a;
+}
+
+.mpl-agent .mpl-list a:focus {
+    outline: 2px solid #0b2a4a;
+    outline-offset: 2px;
+}
+
+/* Focus visibility */
+.mpl-agent.kbd :focus {
+    outline: 2px solid #111;
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mpl-agent-inner {
+        transition: none !important;
+    }
+}

@@ -1,0 +1,37 @@
+{
+    "blogs": [
+        {
+            "title": "5 quick wins with no‑code AI agents",
+            "url": "https://www.mindpaylink.com/blog/no-code-ai-agent-wins.html",
+            "date": "2025-10-01"
+        },
+        {
+            "title": "How breathing apps inform better UX for chatbots",
+            "url": "https://www.mindpaylink.com/blog/breathing-ux-chatbots.html",
+            "date": "2025-09-20"
+        }
+    ],
+    "stories": [
+        {
+            "title": "Salon boosts bookings by 22% with a simple agent",
+            "url": "https://www.mindpaylink.com/stories/salon-bookings.html",
+            "date": "2025-09-05"
+        }
+    ],
+    "videos": [
+        {
+            "title": "2‑minute tour: Set up your agent",
+            "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+        }
+    ],
+    "help": [
+        {
+            "title": "Create and edit your answers JSON",
+            "url": "https://www.mindpaylink.com/help/answers-json.html"
+        },
+        {
+            "title": "Add the agent to any page",
+            "url": "https://www.mindpaylink.com/help/embed-agent.html"
+        }
+    ]
+}
