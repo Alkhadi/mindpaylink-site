@@ -1,0 +1,29 @@
+/* Aims & Objectives page styles (brand-aligned, lightweight) */
+.aims-hero .subtitle {
+    color: var(--muted, #6b7280);
+    max-width: 68ch;
+}
+
+.stories-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.stories-grid .card {
+    margin: 0;
+}
+
+.story h3 {
+    margin: 0 0 .25rem 0;
+}
+
+.story p {
+    margin: 0;
+}
+
+@media (max-width: 800px) {
+    .stories-grid {
+        grid-template-columns: 1fr;
+    }
+}
