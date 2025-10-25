@@ -13,3 +13,6 @@ tmp/
 
 # Prevent committing HTML/CSS snapshot backups
 *.bak
+server/
+**/.env
+*.bak.*
