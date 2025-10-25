@@ -33,8 +33,7 @@ const JS_CANDIDATES = [
     "assets/js/coach.js",
     "assets/js/voice-coach.js",
     "assets/coach.js",
-    "assets/voice-coach.js",
-];
+    "assets/voice-coach.js"];
 
 const STYLE_ID = "mshare-coach-killswitch-style";
 const SCRIPT_ID = "mshare-coach-killswitch-script";
@@ -119,8 +118,7 @@ const RE_SCRIPTS = [
 const RE_LINKS = [
     /<link\b[^>]*\bhref=["'][^"'<>]*\bvoice[-_]?coach[^"'<>]*\.css[^"'<>]*["'][^>]*>/gi,
     /<link\b[^>]*\bhref=["'][^"'<>]*\bvoicecoach[^"'<>]*\.css[^"'<>]*["'][^>]*>/gi,
-    /<link\b[^>]*\bhref=["'][^"'<>]*\bcoach[^"'<>]*\.css[^"'<>]*["'][^>]*>/gi,
-];
+    /<link\b[^>]*\bhref=["'][^"'<>]*\bcoach[^"'<>]*\.css[^"'<>]*["'][^>]*>/gi];
 
 function injectBeforeClose(html, id, tag, block) {
     if (html.includes(`id="${id}"`)) return html;
