@@ -18,7 +18,8 @@ const SCRIPT_SRC_REMOVE = [
 ];
 const LINK_HREF_REMOVE = [
     /<link\b[^>]*\bhref=["'][^"'<>]*voice[-_]?coach[^"'<>]*\.css[^"'<>]*["'][^>]*>/gi,
-    /<link\b[^>]*\bhref=["'][^"'<>]*voice[-_]?coach[^"'<>]*\.min\.css[^"'<>]*["'][^>]*>/gi];
+    /<link\b[^>]*\bhref=["'][^"'<>]*voice[-_]?coach[^"'<>]*\.min\.css[^"'<>]*["'][^>]*>/gi,
+];
 
 // Inline script blocks that *init* the voice coach (catch both camel & kebab)
 const INLINE_INIT_BLOCK = /<script\b[^>]*>([\s\S]*?)(?:voice[\s_-]?coach|VoiceCoach|MS\.VoiceCoach|mshare[-_]?voicecoach|window\.VoiceCoach)([\s\S]*?)<\/script>/gi;

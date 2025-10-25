@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en-GB">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Academic & Professional Rewrite Assistant – M Share</title>
+    <meta name="description"
+        content="Rewrite text with grammar fixes, British/US variants, academic tone, paraphrasing and plagiarism-risk estimation. For educational guidance only.">
+    <link rel="canonical" href="https://www.mindpaylink.com/rewrite-assistant.html">
+    <meta property="og:title" content="Academic & Professional Rewrite Assistant – M Share">
+    <meta property="og:description"
+        content="Rewrite your text into Plain, Formal, Creative and Paraphrased versions; get readability metrics and citation suggestions.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.mindpaylink.com/rewrite-assistant.html">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assets/css/pages/rewrite-assistant.css">
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="container navbar">
+            <a id="brandLink" class="brand" data-href="index.html" href="index.html">
+                <span class="logo logo-blue">M</span><span class="brand-text">M Share</span>
+            </a>
+            <nav class="main-nav" id="mainNav">
+                <!-- nav as in original -->
+                <!-- ... your existing menu groups ... -->
+            </nav>
+            <button type="button" id="navToggle" class="nav-toggle" aria-label="Menu" aria-expanded="false"
+                aria-controls="mainNav">☰</button>
+        </div>
+    </header>
+
+    <main class="container" style="padding:var(--s,16px)">
+        <section class="hero" aria-labelledby="h1">
+            <h1 id="h1">Academic & Professional English Professor Rewrite Assistant</h1>
+            <p class="muted">Enhanced grammar, clarity, tone, paraphrasing and plagiarism-risk estimation. Educational
+                use only.</p>
+        </section>
+
+        <!-- Rewrite Editor -->
+        <section class="rw-grid" aria-label="Rewrite editor">
+            <div class="panel">
+                <div class="stack">
+                    <label class="sr" for="rwInput">Input text</label>
+                    <textarea id="rwInput" rows="12"
+                        placeholder="Paste your text or use commands like /formal, /plain, /creative, /academic APA, /plagiarism, /feedback…"></textarea>
+
+                    <div class="controls">
+                        <label>English
+                            <select id="rwVariant">
+                                <option value="uk">🇬🇧 British</option>
+                                <option value="us">🇺🇸 American</option>
+                                <option value="int">🌍 International</option>
+                            </select>
+                        </label>
+                        <label>Referencing
+                            <select id="rwStyle">
+                                <option value="harvard">Harvard</option>
+                                <option value="apa">APA</option>
+                                <option value="mla">MLA</option>
+                                <option value="chicago">Chicago</option>
+                                <option value="ieee">IEEE</option>
+                                <option value="oxford">Oxford/Cambridge</option>
+                            </select>
+                        </label>
+                        <label>Tone
+                            <select id="rwTone">
+                                <option value="neutral">Neutral</option>
+                                <option value="formal">Formal</option>
+                                <option value="concise">Clear &amp; Concise</option>
+                                <option value="persuasive">Persuasive</option>
+                                <option value="vibrant">Vibrant</option>
+                            </select>
+                        </label>
+                        <label>Intensity
+                            <select id="rwEnergy">
+                                <option value="calm">Calm</option>
+                                <option value="balanced" selected>Balanced</option>
+                                <option value="vibrant">Vibrant</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div class="actions">
+                        <button id="btnPlain" class="btn" type="button">Plain</button>
+                        <button id="btnFormal" class="btn" type="button">Formal</button>
+                        <button id="btnCreative" class="btn" type="button">Creative</button>
+                        <button id="btnParaphrase" class="btn" type="button">Paraphrase</button>
+                        <button id="btnFeedback" type="button">Feedback</button>
+                        <button id="btnPlag" type="button">Plagiarism check</button>
+                        <button id="btnClear" type="button">Clear</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel outputs">
+                <div class="out-col">
+                    <h3>Plain English</h3>
+                    <textarea id="outPlain" rows="10" readonly></textarea>
+                    <div class="out-actions"><button data-copy="outPlain" type="button">Copy</button></div>
+                </div>
+                <div class="out-col">
+                    <h3>Formal Academic</h3>
+                    <textarea id="outFormal" rows="10" readonly></textarea>
+                    <div class="out-actions"><button data-copy="outFormal" type="button">Copy</button></div>
+                </div>
+                <div class="out-col">
+                    <h3>Creative/Engaging</h3>
+                    <textarea id="outCreative" rows="10" readonly></textarea>
+                    <div class="out-actions"><button data-copy="outCreative" type="button">Copy</button></div>
+                </div>
+                <div class="out-col">
+                    <h3>Paraphrased</h3>
+                    <textarea id="outParaphrase" rows="10" readonly></textarea>
+                    <div class="out-actions"><button data-copy="outParaphrase" type="button">Copy</button></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live academic research section -->
+        <section class="panel research" aria-label="Live academic research">
+            <h2>Live academic research</h2>
+            <p class="small muted">Search peer‑reviewed literature via Crossref and Europe PMC. Results link to
+                publisher or full text when available.</p>
+            <div class="controls" style="margin:.5rem 0 1rem">
+                <label class="sr" for="researchQuery">Search topic</label>
+                <input id="researchQuery" type="search" placeholder="e.g., inclusive education autism UK"
+                    style="flex:1 1 420px; min-height:44px; padding:.55rem .6rem; border-radius:.5rem; border:1px solid rgba(0,0,0,.2)">
+                <button id="btnResearch" class="btn" type="button">Find papers</button>
+            </div>
+            <div id="researchResults" class="results" aria-live="polite"></div>
+            <div class="refs">
+                <h3>References (this session)</h3>
+                <ol id="refsList" class="refs-list"></ol>
+                <div class="actions" style="margin-top:.5rem">
+                    <button id="copyRefs" type="button">Copy references</button>
+                    <button id="copyBib" type="button">Copy BibTeX</button>
+                    <button id="dlRIS" type="button">Download RIS</button>
+                    <button id="dlDOCX" type="button">Download .docx</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Metrics section -->
+        <section class="metrics">
+            <div class="card">
+                <h2>Readability &amp; Quality</h2>
+                <ul id="rwMetrics" class="kv"></ul>
+            </div>
+            <div class="card">
+                <h2>Citations &amp; Sources</h2>
+                <div id="rwCitations"></div>
+            </div>
+            <div class="card">
+                <h2>Academic Integrity</h2>
+                <div id="rwPlag"></div>
+                <p class="muted small">⚠️ This estimate is based on heuristic open-web similarity. For formal
+                    submissions, use your institution’s plagiarism detection system (e.g., Turnitin).</p>
+                <div id="rwWebChecks" class="links"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer-2025" id="footer2025">
+        <!-- your existing footer content -->
+    </footer>
+
+    <!-- Load scripts -->
+    <script src="app.js"></script>
+    <script defer src="assets/js/rewrite-assistant.js"></script>
+</body>
+
+</html>

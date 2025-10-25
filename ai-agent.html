@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <title>AI Agent for Your Business • M Share</title>
+    <meta name="description"
+        content="Build the AI agent you’ve always wanted for your business—fast, easy, and fully under your control, no coding required." />
+
+    <!-- Your CSS bundles -->
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="assets/css/ux-fixes.css" />
+    <link rel="stylesheet" href="assets/css/footer-2025.css" />
+    <link rel="stylesheet" href="assets/css/header-2025.css" />
+    <link rel="stylesheet" href="assets/css/nav-footer-uni.css" />
+    <link rel="stylesheet" href="assets/css/responsive-fixes.css" />
+    <link rel="stylesheet" href="voice-coach-fix.css">
+    <link rel="stylesheet" href="assets/css/agent-widget.css" />
+
+    <!-- SEO -->
+    <link rel="canonical" href="https://www.mindpaylink.com/ai-agent.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="M Share" />
+    <meta property="og:title" content="AI Agent for Your Business • M Share" />
+    <meta property="og:description"
+        content="Build the AI agent you’ve always wanted for your business—fast, easy, and fully under your control, no coding required." />
+    <meta property="og:url" content="https://www.mindpaylink.com/ai-agent.html" />
+    <meta property="og:image" content="https://www.mindpaylink.com/icons/logo-wordmark-800x200.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="AI Agent for Your Business • M Share" />
+    <meta name="twitter:description"
+        content="Build the AI agent you’ve always wanted for your business—fast, easy, and fully under your control, no coding required." />
+    <meta name="twitter:image" content="https://www.mindpaylink.com/icons/logo-wordmark-800x200.png" />
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "M Share AI Agent",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "description": "No-code AI agent for small businesses. Configure answers and flows in minutes.",
+    "publisher": {"@type":"Organization","name":"M Share"},
+    "url": "https://www.mindpaylink.com/ai-agent.html"
+  }
+  </script>
+    <style>
+        /* Minimal, safe widget styles (works with your existing CSS) */
+        .agent-shell {
+            display: flex;
+            flex-direction: column;
+            gap: .75rem;
+            border: 1px solid rgba(0, 0, 0, .12);
+            border-radius: .75rem;
+            padding: 1rem;
+            background: var(--bg, #fff)
+        }
+
+        .agent-row {
+            display: flex;
+            gap: .5rem;
+            flex-wrap: wrap
+        }
+
+        .agent-row>* {
+            flex: 1 1 160px;
+            min-height: 40px
+        }
+
+        .agent-chat {
+            border: 1px solid rgba(0, 0, 0, .12);
+            border-radius: .5rem;
+            padding: .75rem;
+            max-height: 380px;
+            overflow: auto;
+            background: rgba(0, 0, 0, .02)
+        }
+
+        .msg {
+            padding: .5rem .6rem;
+            border-radius: .5rem;
+            margin: .4rem 0;
+            white-space: pre-wrap
+        }
+
+        .msg.user {
+            background: #eef6ff
+        }
+
+        .msg.bot {
+            background: #f8f9fb
+        }
+
+        .agent-actions {
+            display: flex;
+            gap: .5rem;
+            flex-wrap: wrap
+        }
+
+        .agent-actions .btn {
+            min-height: 40px
+        }
+
+        .small-muted {
+            font-size: .875rem;
+            color: rgba(0, 0, 0, .65)
+        }
+
+        .badge {
+            display: inline-block;
+            padding: .15rem .4rem;
+            border-radius: .4rem;
+            border: 1px solid rgba(0, 0, 0, .15);
+            font-size: .75rem
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid rgba(0, 0, 0, .25);
+            border-top-color: transparent;
+            animation: spin .8s linear infinite;
+            vertical-align: -3px;
+            margin-right: .35rem
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        .hidden {
+            display: none !important
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="container navbar">
+            <a id="brandLink" class="brand" data-href="index.html" href="index.html">
+                <span class="logo logo-blue">M</span><span class="brand-text">M Share</span>
+            </a>
+
+            <!-- NAV -->
+            <nav class="main-nav" id="mainNav">
+                <a data-href="index.html" href="index.html">Wellbeing</a>
+
+                <div class="menu-group">
+                    <button class="menu-toggle" aria-expanded="false">Conditions <span class="icon">▾</span></button>
+                    <div class="submenu">
+                        <div class="menu-label">Neurodevelopmental</div>
+                        <a data-href="autism.html" href="autism.html">Autism</a>
+                        <a data-href="autism-parent.html" href="autism-parent.html">Autism Parent</a>
+                        <a data-href="adhd.html" href="adhd.html">ADHD</a>
+                        <a data-href="dyslexia-reading-training.html" href="dyslexia-reading-training.html">Dyslexia</a>
+                        <div class="menu-label">Mental Health</div>
+                        <a data-href="anxiety.html" href="anxiety.html">Anxiety</a>
+                        <a data-href="depression.html" href="depression.html">Depression</a>
+                        <a data-href="stress.html" href="stress.html">Stress</a>
+                        <a data-href="sleep.html" href="sleep.html">Sleep</a>
+                    </div>
+                </div>
+
+                <div class="menu-group">
+                    <button class="menu-toggle" aria-expanded="false">Breathing &amp; Focus <span
+                            class="icon">▾</span></button>
+                    <div class="submenu">
+                        <div class="menu-label">Guides</div>
+                        <a data-href="breath.html" href="breath.html">Breath (how-to)</a>
+                        <a data-href="focus.html" href="focus.html">Focus</a>
+                        <a data-href="mindfulness.html" href="mindfulness.html">Mindfulness</a>
+                        <div class="menu-label">Techniques</div>
+                        <a data-href="sos-60.html" href="sos-60.html">60-second Reset</a>
+                        <a data-href="box-breathing.html" href="box-breathing.html">Box Breathing</a>
+                        <a data-href="4-7-8-breathing.html" href="4-7-8-breathing.html">4-7-8 Breathing</a>
+                        <a data-href="coherent-5-5.html" href="coherent-5-5.html">Coherent 5-5</a>
+                    </div>
+                </div>
+
+                <div class="menu-group">
+                    <button class="menu-toggle" aria-expanded="false">Toolkits <span class="icon">▾</span></button>
+                    <div class="submenu">
+                        <div class="menu-label">General</div>
+                        <a data-href="sleep-tools.html" href="sleep-tools.html">Sleep Tools</a>
+                        <a data-href="breath-tools.html" href="breath-tools.html">Breath Tools</a>
+                        <a data-href="mood-tools.html" href="mood-tools.html">Mood Tools</a>
+                        <div class="menu-label">Condition-specific</div>
+                        <a data-href="adhd-tools.html" href="adhd-tools.html">ADHD Tools</a>
+                        <a data-href="autism-tools.html" href="autism-tools.html">Autism Tools</a>
+                        <a data-href="depression-tools.html" href="depression-tools.html">Depression Tools</a>
+                        <a data-href="anxiety-tools.html" href="anxiety-tools.html">Anxiety Tools</a>
+                        <a data-href="stress-tools.html" href="stress-tools.html">Stress Tools</a>
+                    </div>
+                </div>
+
+                <div class="menu-group">
+                    <button class="menu-toggle" aria-expanded="false">About <span class="icon">▾</span></button>
+                    <div class="submenu">
+                        <a data-href="about.html" href="about.html">About</a>
+                        <a data-href="coffee.html" href="coffee.html">Support Us</a>
+                        <a data-href="contact.html" href="contact.html">Contact</a>
+                    </div>
+                </div>
+            </nav>
+
+            <button type="button" id="navToggle" class="nav-toggle" aria-label="Menu" aria-expanded="false"
+                aria-controls="mainNav">☰</button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="card">
+            <h1>Build the AI agent you’ve always wanted</h1>
+            <p class="muted" style="max-width:62ch">
+                Fast, easy, and fully under your control — no coding required. Drop it on your site, tailor replies in
+                plain English or a simple JSON file, and start helping customers today.
+            </p>
+            <div class="actions">
+                <a class="btn" href="#try-agent">Try the Agent</a>
+                <a class="btn" data-href="contact.html" href="contact.html">Get a Demo</a>
+            </div>
+        </div>
+
+        <div class="grid cols-3">
+            <div class="card">
+                <h3>No-code setup</h3>
+                <p class="muted">Edit answers and flows in a friendly editor. Or upload a small JSON—no developer
+                    needed.</p>
+            </div>
+            <div class="card">
+                <h3>Yours to control</h3>
+                <p class="muted">Everything runs in your browser with your content. Toggle features and branding
+                    instantly.</p>
+            </div>
+            <div class="card">
+                <h3>Clear outcomes</h3>
+                <p class="muted">Guide to contact, booking, or checkout. Capture interest with a simple handoff—no
+                    friction.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Resources</h2>
+            <div class="grid cols-2">
+                <div>
+                    <h3>Blogs</h3>
+                    <p class="muted">Read about the latest trends on growth, chatbots, automation and more.</p>
+                </div>
+                <div>
+                    <h3>Customer Stories</h3>
+                    <p class="muted">Discover the value businesses have seen after using our agent.</p>
+                </div>
+                <div>
+                    <h3>Videos</h3>
+                    <p class="muted">Delve into quick videos to learn more about the product.</p>
+                </div>
+                <div>
+                    <h3>Help Articles</h3>
+                    <p class="muted">Find articles that assist you in building bots on our product.</p>
+                </div>
+            </div>
+            <p class="muted" style="margin-top:.5rem">Tip: Ask the agent “blogs”, “stories”, “videos” or “help” and it
+                will list the latest items for you.</p>
+        </div>
+
+        <div id="try-agent" class="card">
+            <h2>Try it now</h2>
+            <p class="muted">This lightweight demo runs fully in your browser. Ask about setup, pricing, or
+                best-practice configurations. Toggle rigour and style below.</p>
+
+            <!-- Agent Widget -->
+            <div class="agent-shell" id="agentWidget">
+                <div class="agent-row">
+                    <label style="flex:1 1 200px">
+                        <span class="small-muted">English variant</span>
+                        <select id="agentVariant">
+                            <option value="uk" selected>🇬🇧 British</option>
+                            <option value="us">🇺🇸 American</option>
+                            <option value="int">🌍 International</option>
+                        </select>
+                    </label>
+                    <label style="flex:1 1 200px">
+                        <span class="small-muted">Referencing style</span>
+                        <select id="agentRefStyle">
+                            <option value="harvard" selected>Harvard</option>
+                            <option value="apa">APA</option>
+                            <option value="mla">MLA</option>
+                        </select>
+                    </label>
+                    <label style="flex:1 1 200px">
+                        <span class="small-muted">Answer depth</span>
+                        <select id="agentDepth">
+                            <option value="concise">Concise</option>
+                            <option value="standard" selected>Standard</option>
+                            <option value="rigorous">Rigorous</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="agent-row">
+                    <textarea id="agentInput" rows="4"
+                        placeholder="Ask a question (e.g., “Compare APA vs Harvard referencing for a UK university report and show examples”)."></textarea>
+                </div>
+
+                <div class="agent-actions">
+                    <button class="btn" id="agentAskBtn" type="button">Ask</button>
+                    <button class="btn" id="agentClearBtn" type="button">Clear</button>
+                    <button class="btn" id="agentCopyBtn" type="button">Copy answer</button>
+                    <span id="agentStatus" class="small-muted"></span>
+                </div>
+
+                <div class="agent-chat" id="agentChat" aria-live="polite" aria-busy="false">
+                    <div class="msg bot">
+                        <b>Agent</b>: Ask me anything about setup, pricing, deployment, or academic-level writing
+                        standards. I’ll answer in a formal tone and include references.
+                    </div>
+                </div>
+
+                <div class="small-muted">
+                    <span class="badge">Note</span>
+                    Answers are generated with careful prompts to reduce speculation. If a specific source cannot be
+                    verified, the agent will mark it clearly (e.g., “[verification needed]”) rather than fabricate a
+                    citation.
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Subscribe for updates</h2>
+            <p class="muted">Get new blogs, videos, and tips. No spam.</p>
+            <form id="subscribeForm" class="actions" onsubmit="return false;" autocomplete="email">
+                <input id="subscribeEmail" type="email" placeholder="you@example.com" aria-label="Your email" required
+                    style="padding:.5rem .6rem; border:1px solid var(--b, rgba(0,0,0,.12)); border-radius:.4rem;">
+                <button class="btn" type="submit">Subscribe</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>How it works</h2>
+            <ol>
+                <li>Add the widget to any page with a single script tag.</li>
+                <li>Type answers in plain English or paste a small JSON (no code).</li>
+                <li>Optional: enable contact/WhatsApp/email buttons for handoff.</li>
+            </ol>
+            <div class="actions">
+                <a class="btn" data-href="contact.html" href="contact.html">Request setup help</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Your base scripts -->
+    <script src="app.js"></script>
+    <script src="assets/js/core/sound-kit.js"></script>
+    <script defer src="voice-coach-fix.js"></script>
+
+    <!-- Page wiring (menus + agent widget) -->
+    <script>
+        (function () {
+            const $ = (sel, root = document) => root.querySelector(sel);
+            const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+            const ready = (fn) => (document.readyState === 'loading') ? document.addEventListener('DOMContentLoaded', fn, { once: true }) : fn();
+
+            // ---------- NAV & MENUS ----------
+            function wireNav() {
+                const nav = $('#mainNav');
+                const toggle = $('#navToggle');
+                const groups = $$('.menu-group');
+
+                function closeAllMenus() {
+                    groups.forEach(g => {
+                        g.classList.remove('open');
+                        const btn = g.querySelector('.menu-toggle');
+                        if (btn) btn.setAttribute('aria-expanded', 'false');
+                    });
+                }
+
+                if (toggle && nav) {
+                    toggle.addEventListener('click', () => {
+                        const open = nav.classList.toggle('open');
+                        toggle.setAttribute('aria-expanded', String(open));
+                    });
+                }
+
+                groups.forEach(g => {
+                    const btn = g.querySelector('.menu-toggle');
+                    const submenu = g.querySelector('.submenu');
+                    if (!btn || !submenu) return;
+
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const willOpen = !g.classList.contains('open');
+                        closeAllMenus();
+                        g.classList.toggle('open', willOpen);
+                        btn.setAttribute('aria-expanded', String(willOpen));
+                    });
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.menu-group') && !e.target.closest('#mainNav')) {
+                        closeAllMenus();
+                    }
+                });
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') closeAllMenus();
+                });
+            }
+
+            // ---------- SUBSCRIBE ----------
+            function wireSubscribe() {
+                const form = $('#subscribeForm');
+                const input = $('#subscribeEmail');
+                if (!form || !input) return;
+
+                form.addEventListener('submit', () => {
+                    const email = (input.value || '').trim();
+                    if (!email) return;
+                    // Simple mailto fallback; replace with your list endpoint if available.
+                    window.location.href = 'mailto:info@mindpaylink.com?subject=Subscribe&body=Please subscribe ' + encodeURIComponent(email);
+                });
+            }
+
+            // ---------- AGENT WIDGET ----------
+            function buildPrompt({ question, variant, refStyle, depth }) {
+                const rigour = depth === 'rigorous'
+                    ? 'Write a comprehensive, critical, and well-argued response (1000–1400 words). Include theory, empirical evidence, counterarguments, methodological caveats, and a concise conclusion.'
+                    : depth === 'concise'
+                        ? 'Write a precise, well-structured response (250–400 words).'
+                        : 'Write a rigorous, well-structured response (500–900 words).';
+
+                const region = variant === 'us' ? 'American' : (variant === 'int' ? 'International' : 'British');
+
+                // Guardrails to reduce hallucinations in citations.
+                const citationRules = `
+Use ${refStyle.toUpperCase()} style for in-text citations and a formatted reference list.
+Cite only reputable, **verifiable** sources (e.g., peer-reviewed journals, academic presses, official statistics, major policy bodies).
+If you are not confident a specific source is real or you cannot recall exact details, write [verification needed] in place of the citation and provide reliable keywords to search (e.g., via Crossref/Europe PMC).
+Never fabricate DOIs, issue numbers, page ranges, or URLs.
+`;
+
+                return `
+You are an expert academic writer. Use ${region} English, formal register, precise terminology, and clear structure with headings if helpful.
+
+Task:
+${rigour}
+
+Citations:
+${citationRules}
+
+Formatting:
+- Avoid purple prose.
+- Prefer active voice and concrete claims supported by evidence.
+- Where appropriate, include short definitions, examples, and limitations.
+- Close with a short "Key Takeaways" list.
+
+Question:
+"""${question}"""
+`;
+            }
+
+            function agentOrigin() {
+                // If running locally on a static server (or file://), point to localhost:8080.
+                const isLocalHost = ['localhost', '127.0.0.1'].includes(location.hostname);
+                if (isLocalHost) return 'http://localhost:8080';
+                // In production, assume same origin as site (proxy and site are together).
+                return '';
+            }
+
+            async function callRewriteAPI({ text, variant }) {
+                const endpoint = agentOrigin() + '/api/rewrite';
+                const payload = { text, task: 'formal', variant };
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) {
+                    let msg = res.status + ' ' + res.statusText;
+                    try { const j = await res.json(); if (j && j.error) msg = j.error; } catch { }
+                    throw new Error(msg);
+                }
+                const data = await res.json();
+                return (data && data.rewrite) ? data.rewrite : '';
+            }
+
+            function wireAgent() {
+                const chat = $('#agentChat');
+                const input = $('#agentInput');
+                const askBtn = $('#agentAskBtn');
+                const clearBtn = $('#agentClearBtn');
+                const copyBtn = $('#agentCopyBtn');
+                const status = $('#agentStatus');
+                const variantSel = $('#agentVariant');
+                const refSel = $('#agentRefStyle');
+                const depthSel = $('#agentDepth');
+
+                let lastAnswer = '';
+
+                function appendMsg(text, who = 'bot') {
+                    const el = document.createElement('div');
+                    el.className = 'msg ' + (who === 'user' ? 'user' : 'bot');
+                    el.textContent = (who === 'user' ? 'You: ' : 'Agent: ') + text;
+                    chat.appendChild(el);
+                    chat.scrollTop = chat.scrollHeight;
+                }
+
+                function setBusy(b) {
+                    chat.setAttribute('aria-busy', String(b));
+                    askBtn.disabled = b;
+                    clearBtn.disabled = b;
+                    status.innerHTML = b ? ('<span class="spinner"></span>Generating…') : '';
+                }
+
+                async function handleAsk() {
+                    const q = (input.value || '').trim();
+                    if (!q) { input.focus(); return; }
+                    const variant = (variantSel.value || 'uk');
+                    const refStyle = (refSel.value || 'harvard');
+                    const depth = (depthSel.value || 'standard');
+
+                    appendMsg(q, 'user');
+                    setBusy(true);
+                    lastAnswer = '';
+                    try {
+                        const prompt = buildPrompt({ question: q, variant, refStyle, depth }).slice(0, 14000); // safety limit
+                        const answer = await callRewriteAPI({ text: prompt, variant });
+                        lastAnswer = answer || '(No content returned)';
+                        appendMsg(lastAnswer, 'bot');
+                    } catch (err) {
+                        appendMsg('Error: ' + (err && err.message ? err.message : 'Unknown error'), 'bot');
+                    } finally {
+                        setBusy(false);
+                        input.value = '';
+                        input.focus();
+                    }
+                }
+
+                askBtn.addEventListener('click', handleAsk);
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                        handleAsk();
+                    }
+                });
+
+                clearBtn.addEventListener('click', () => {
+                    chat.innerHTML = '<div class="msg bot"><b>Agent</b>: Ask me anything about setup, pricing, deployment, or academic-level writing standards. I’ll answer in a formal tone and include references.</div>';
+                    lastAnswer = '';
+                    status.textContent = '';
+                    input.value = '';
+                    input.focus();
+                });
+
+                copyBtn.addEventListener('click', async () => {
+                    const text = lastAnswer.trim();
+                    if (!text) { status.textContent = 'Nothing to copy yet.'; return; }
+                    try {
+                        await navigator.clipboard.writeText(text);
+                        status.textContent = 'Answer copied.';
+                        setTimeout(() => status.textContent = '', 1500);
+                    } catch {
+                        // Fallback
+                        const ta = document.createElement('textarea');
+                        ta.value = text; document.body.appendChild(ta); ta.select();
+                        document.execCommand('copy'); document.body.removeChild(ta);
+                        status.textContent = 'Answer copied.';
+                        setTimeout(() => status.textContent = '', 1500);
+                    }
+                });
+            }
+
+            ready(() => {
+                wireNav();
+                wireSubscribe();
+                wireAgent();
+                // Smooth-scroll for internal anchors
+                $$('a[href^="#"]').forEach(a => {
+                    a.addEventListener('click', (e) => {
+                        const id = a.getAttribute('href').slice(1);
+                        const target = document.getElementById(id);
+                        if (target) {
+                            e.preventDefault();
+                            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    });
+                });
+            });
+        })();
+    </script>
+
+    <footer class="footer-2025" id="footer2025">
+        <div class="wrap">
+            <div class="grid">
+                <section class="col brand">
+                    <div class="brandline"><span class="logo">M</span>
+                        <div><b>M Share</b>
+                            <div class="muted">Quiet, practical tools for mental health and wellbeing.</div>
+                        </div>
+                    </div>
+                    <div class="theme-controls">
+                        <label>Background <input id="themeColor" type="color" value="#0f172a" title="Input"
+                                placeholder=" "></label>
+                        <label>Brightness <input id="themeBrightness" type="range" min="0.85" max="1.25" step="0.01"
+                                value="1" title="Input" placeholder=" "></label>
+                    </div>
+                    <div class="actions" style="margin-top:8px"><a class="btn" href="#top" id="backToTop">Back to top
+                            ↑</a></div>
+                </section>
+                <section class="col">
+                    <h4>Explore</h4>
+                    <p><a data-href="index.html" href="index.html">Wellbeing</a> • <a data-href="breath.html"
+                            href="breath.html">Breath</a> • <a data-href="focus.html" href="focus.html">Focus</a> • <a
+                            data-href="mindfulness.html" href="mindfulness.html">Mindfulness</a> • <a
+                            data-href="about.html" href="about.html">About</a></p>
+                </section>
+                <section class="col">
+                    <h4>Toolkits</h4>
+                    <p><a data-href="mood-tools.html" href="mood-tools.html">Mood</a> • <a data-href="breath-tools.html"
+                            href="breath-tools.html">Breath Tools</a> • <a data-href="sleep-tools.html"
+                            href="sleep-tools.html">Sleep</a> • <a data-href="anxiety-tools.html"
+                            href="anxiety-tools.html">Anxiety</a> • <a data-href="stress-tools.html"
+                            href="stress-tools.html">Stress</a></p>
+                </section>
+                <section class="col">
+                    <h4>Contact</h4>
+                    <p><a data-href="contact.html" href="contact.html">Contact</a> • <a
+                            href="mailto:info@mindpaylink.com">info@mindpaylink.com</a></p>
+                </section>
+            </div>
+            <div class="bottom">
+                <div>© <span id="yearFooter"></span> MindPayLink · Educational information only; not medical advice.
+                </div>
+                <div class="credit">Designed by <b>Alkhadi M Koroma</b></div>
+            </div>
+        </div>
+        <script>
+            (function () {
+                var y = document.getElementById('yearFooter');
+                if (y) y.textContent = new Date().getFullYear();
+                var up = document.getElementById('backToTop');
+                if (up) up.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    try { (document.getElementById('top') || document.body).scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+                    catch { location.hash = '#top'; }
+                });
+            })();
+        </script>
+    </footer>
+</body>
+
+</html>

@@ -41,6 +41,8 @@
 			<a data-href="sleep-tools.html">Sleep Tools</a>
 			<a data-href="breath-tools.html">Breath Tools</a>
 			<a data-href="mood-tools.html">Mood Tools</a>
+            <a data-href="ai-agent.html">AI Agent</a>
+            <a data-href="rewrite-assistant.html">Rewrite Assistant</a>
 			<div class="menu-label">Condition‑specific</div>
 			<a data-href="adhd-tools.html">ADHD Tools</a>
 			<a data-href="autism-tools.html">Autism Tools</a>
@@ -53,6 +55,8 @@
 		<button class="menu-toggle" aria-expanded="false">About <span class="icon">▾</span></button>
 		<div class="submenu">
 			<a data-href="about.html">About</a>
+            <a data-href="aims-objectives.html">Aims & Stories</a>
+            <a data-href="ai-agent.html">AI Agent</a>
             <a data-href="downloads.html">Downloads</a>
             <a href="/assets/pdfs/parent-quick-pack.zip">Parent Quick Pack (ZIP)</a>
 			<a data-href="coffee.html">Support Us</a>

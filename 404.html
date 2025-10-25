@@ -81,7 +81,8 @@
             <p class="muted">No redirect? <a href="/">Go to the homepage</a>.</p>
         </div>
     </main>
-    <script defer$1/ Also push to home after 10s as JS fallback
+    <script defer>
+        // Also push to home after 10s as JS fallback
         setTimeout(function () { if (location.pathname !== '/') { location.replace('/'); } }, 10000);
     </script>
 </body>

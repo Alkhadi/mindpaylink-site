@@ -446,7 +446,8 @@ const JS = `
       { label: 'Inhale', seconds: 4 },
       { label: 'Hold',   seconds: 4 },
       { label: 'Exhale', seconds: 4 },
-      { label: 'Hold',   seconds: 4 }];
+      { label: 'Hold',   seconds: 4 },
+    ];
   }
 
   function detectBreathingProgram(root) {
@@ -564,6 +565,7 @@ const JS = `
   }
 })();
 `;
+
 
 // ---------- write assets ----------
 const cssPath = path.join(here, 'voice-coach-fix.css');

@@ -20,7 +20,8 @@
   <meta name="theme-color" content="#0f172a" />
   <link rel="stylesheet" href="voice-coach-fix.css">
 
-  <style id="mpl-mobile-nav-style-v4"$1* Ensure [hidden] truly hides dropdowns in any theme */
+  <style id="mpl-mobile-nav-style-v4">
+    /* Ensure [hidden] truly hides dropdowns in any theme */
     nav .menu[hidden],
     nav .submenu[hidden] {
       display: none !important;
@@ -79,7 +80,8 @@
     }
   </style>
 
-  <style id="mpl-desktop-nav-css-v3"$1* Desktop-only navigation helpers (visibility + a11y) */
+  <style id="mpl-desktop-nav-css-v3">
+    /* Desktop-only navigation helpers (visibility + a11y) */
     @media (min-width:1025px) {
       .mpl-nav-toggle {
         display: inline-flex;
@@ -133,7 +135,8 @@
     }
   </style>
 
-  <script id="mpl-desktop-nav-js-v3"$1* Desktop submenu behavior — hover or click, one open, ESC/Outside close, a11y */
+  <script id="mpl-desktop-nav-js-v3">
+    /* Desktop submenu behavior — hover or click, one open, ESC/Outside close, a11y */
     (() => {
       const mq = window.matchMedia('(min-width:1025px)');
       let enabled = false;
@@ -284,7 +287,8 @@
     })();
   </script>
 
-  <style id="mpl-footer-css-v3"$1* Scoped footer styles (safe, minimal) */
+  <style id="mpl-footer-css-v3">
+    /* Scoped footer styles (safe, minimal) */
     #footer2025.mpl-footer-v3 {
       border-top: 1px solid var(--b, rgba(0, 0, 0, .12));
       font: inherit
@@ -464,7 +468,76 @@
 </head>
 
 <body>
-  <!--#include file="partials/global-header.html" -->
+  <header class="site-header">
+    <div class="container navbar">
+      <!-- Added logo-blue class to get the blue background -->
+      <a id="brandLink" class="brand" data-href="index.html" href="index.html">
+        <span class="logo logo-blue">M</span><span class="brand-text">M Share</span>
+      </a>
+
+      <!-- UPDATED NAV (dropdown groups) -->
+      <nav class="main-nav" id="mainNav">
+        <div class="menu-group">
+          <button class="menu-toggle" aria-expanded="false">Conditions <span class="icon">▾</span></button>
+          <div class="submenu">
+            <div class="menu-label">Neurodevelopmental</div>
+            <a data-href="autism.html">Autism</a>
+            <a data-href="autism-parent.html">Autism Parent</a>
+            <a data-href="adhd.html">ADHD</a>
+            <a data-href="dyslexia-reading-training.html">Dyslexia</a>
+            <div class="menu-label">Mental Health</div>
+            <a data-href="anxiety.html">Anxiety</a>
+            <a data-href="depression.html">Depression</a>
+            <a data-href="stress.html">Stress</a>
+            <a data-href="sleep.html">Sleep</a>
+          </div>
+        </div>
+        <div class="menu-group">
+          <button class="menu-toggle" aria-expanded="false">Breathing &amp; Focus <span class="icon">▾</span></button>
+          <div class="submenu">
+            <div class="menu-label">Guides</div>
+            <a data-href="breath.html">Breath (how‑to)</a>
+            <a data-href="focus.html">Focus</a>
+            <a data-href="mindfulness.html">Mindfulness</a>
+            <div class="menu-label">Techniques</div>
+            <a data-href="sos-60.html">60‑second Reset</a>
+            <a data-href="box-breathing.html">Box Breathing</a>
+            <a data-href="4-7-8-breathing.html">4‑7‑8 Breathing</a>
+            <a data-href="coherent-5-5.html">Coherent 5‑5</a>
+          </div>
+        </div>
+        <div class="menu-group">
+          <button class="menu-toggle" aria-expanded="false">Toolkits <span class="icon">▾</span></button>
+          <div class="submenu">
+            <div class="menu-label">General</div>
+            <a data-href="sleep-tools.html">Sleep Tools</a>
+            <a data-href="breath-tools.html">Breath Tools</a>
+            <a data-href="mood-tools.html">Mood Tools</a>
+            <div class="menu-label">Condition‑specific</div>
+            <a data-href="adhd-tools.html">ADHD Tools</a>
+            <a data-href="autism-tools.html">Autism Tools</a>
+            <a data-href="depression-tools.html">Depression Tools</a>
+            <a data-href="anxiety-tools.html">Anxiety Tools</a>
+            <a data-href="stress-tools.html">Stress Tools</a>
+          </div>
+        </div>
+        <div class="menu-group">
+          <button class="menu-toggle" aria-expanded="false">About <span class="icon">▾</span></button>
+          <div class="submenu">
+            <a data-href="about.html">About</a>
+            <a data-href="coffee.html">Support Us</a>
+            <a data-href="contact.html">Contact</a>
+          </div>
+        </div>
+      </nav>
+
+      <button type="button" id="navToggle" class="nav-toggle" aria-label="Menu" aria-expanded="false"
+        aria-controls="mainNav">☰</button>
+    </div>
+  </header>
+
+
+
 
   <a id="top" style="position:absolute;top:0;left:0;width:0;height:0;overflow:hidden"> </a>
 
@@ -727,7 +800,7 @@
         <li>[Clinicians] NICE CG142 — Autism spectrum disorder in adults: diagnosis and management. UK clinical
           guidance. URL: https://www.nice.org.uk/guidance/cg142</li>
         <li>[Parents][Teachers] NHS — Autism overview. Clear NHS information and support routes. URL:
-          https://www.nhs.uk/conditions/autism </li>
+          https://www.nhs.uk/conditions/autism/</li>
         <li>[Teachers][Policy] DfE/DoH SEND Code of Practice (0–25). Statutory guidance for education settings. URL:
           https://www.gov.uk/government/publications/send-code-of-practice-0-to-25</li>
         <li>[Parents][Teachers] National Autistic Society — Guides and reasonable adjustments. Practical advice and
@@ -736,14 +809,14 @@
           Evidence‑informed strategies. URL:
           https://educationendowmentfoundation.org.uk/education-evidence/guidance-reports/send</li>
         <li>[Teachers][Policy] Council for Disabled Children — SEND resources and practice. URL:
-          https://councilfordisabledchildren.org.uk </li>
+          https://councilfordisabledchildren.org.uk/</li>
         <li>[Clinicians][Parents] Cochrane Library — Melatonin for sleep problems in children with ASD (review summary).
           Evidence on benefits/considerations. URL:
           https://www.cochranelibrary.com/cdsr/doi/10.1002/14651858.CD010696.pub2/full</li>
         <li>[Adults][Policy] Access to Work — workplace support for disabled people. Practical adjustments and funding.
           URL: https://www.gov.uk/access-to-work</li>
         <li>[Parents][Teachers] AET (Autism Education Trust) — Teacher frameworks and CPD. URL:
-          https://www.autismeducationtrust.org.uk </li>
+          https://www.autismeducationtrust.org.uk/</li>
       </ul>
 
       <h3>Practical, evidence‑informed techniques</h3>
@@ -779,13 +852,13 @@
       <h3>Recommended CPD/training providers</h3>
       <ul>
         <li>Autism Education Trust (AET) — school‑focused frameworks and accredited training.
-          https://www.autismeducationtrust.org.uk </li>
+          https://www.autismeducationtrust.org.uk/</li>
         <li>National Autistic Society — professional practice modules and autism‑specific training.
           https://www.autism.org.uk/what-we-do/professional-development</li>
         <li>Ambitious about Autism — resources and training for education and employment.
           https://www.ambitiousaboutautism.org.uk/professionals</li>
         <li>NHS e‑Learning for Healthcare (Autism) — clinician‑oriented modules.
-          https://www.e-lfh.org.uk/programmes/autism </li>
+          https://www.e-lfh.org.uk/programmes/autism/</li>
       </ul>
 
       <h3>SEND policy: school‑level checklist (SENCOs)</h3>
@@ -990,7 +1063,9 @@
         setTimeout(function () { el.remove(); }, type === 'error' ? 6000 : 3000);
         if (window.__MSHARE__ && window.__MSHARE__.toast) { window.__MSHARE__.toast(msg); }
       }
-      // Nav is managed by the global header scripts included in <head$1/ Downloads & analytics bindings (PDF/ZIP/JSON)
+      // Nav is managed by the global header scripts included in <head>
+
+      // Downloads & analytics bindings (PDF/ZIP/JSON)
       document.addEventListener('click', function (e) {
         var a = e.target.closest('a,button');
         if (!a) return;
@@ -1346,6 +1421,7 @@
     })();
   </script>
 
+
   <script src="app.js"></script>
   <script src="coach.js"></script>
   <script src="assets/js/ux-fixes.js"></script>
@@ -1534,7 +1610,51 @@
     })();
   </script>
 
-  <!--#include file="partials/global-footer.html" -->
+
+
+
+  <footer class="footer-2025" id="footer2025">
+    <div class="wrap">
+      <div class="grid">
+        <section class="col brand">
+          <div class="brandline"><span class="logo">M</span>
+            <div><b>M Share</b>
+              <div class="muted">Quiet, practical tools for mental health and wellbeing.</div>
+            </div>
+          </div>
+          <div class="theme-controls"> <label>Background<input id="themeColor" type="color" value="#0f172a"
+                title="Input" placeholder=" "></label> <label>Brightness<input id="themeBrightness" type="range"
+                min="0.85" max="1.25" step="0.01" value="1" title="Input" placeholder=" "></label> </div>
+          <div class="actions" style="margin-top:8px"><a class="btn" href="#top" id="backToTop">Back to top ↑</a></div>
+        </section>
+        <section class="col">
+          <h4>Explore</h4>
+          <p><a data-href="index.html" href="index.html">Wellbeing</a> • <a data-href="breath.html"
+              href="breath.html">Breath</a> • <a data-href="focus.html" href="focus.html">Focus</a> • <a
+              data-href="mindfulness.html" href="mindfulness.html">Mindfulness</a> • <a data-href="about.html"
+              href="about.html">About</a></p>
+        </section>
+        <section class="col">
+          <h4>Toolkits</h4>
+          <p><a data-href="mood-tools.html" href="mood-tools.html">Mood</a> • <a data-href="breath-tools.html"
+              href="breath-tools.html">Breath Tools</a> • <a data-href="sleep-tools.html"
+              href="sleep-tools.html">Sleep</a> • <a data-href="anxiety-tools.html"
+              href="anxiety-tools.html">Anxiety</a> • <a data-href="stress-tools.html"
+              href="stress-tools.html">Stress</a></p>
+        </section>
+        <section class="col">
+          <h4>Contact</h4>
+          <p><a data-href="contact.html" href="contact.html">Contact</a> • <a
+              href="mailto:info@mindpaylink.com">info@mindpaylink.com</a></p>
+        </section>
+      </div>
+      <div class="bottom">
+        <div>© <span id="yearFooter"></span> MindPayLink · Educational information only; not medical advice.</div>
+        <div class="credit">Designed by <b>Alkhadi M Koroma</b></div>
+      </div>
+    </div>
+    <script>document.getElementById('yearFooter') && (document.getElementById('yearFooter').textContent = (new Date).getFullYear()); document.getElementById('backToTop') && document.getElementById('backToTop').addEventListener('click', function (e) { e.preventDefault(); try { (document.getElementById('top') || document.body).scrollIntoView({ behavior: 'smooth', block: 'start' }) } catch { location.hash = '#top' } })</script>
+  </footer>
   <script defer src="assets/js/contrast-fix.js"></script>
 </body>
 
