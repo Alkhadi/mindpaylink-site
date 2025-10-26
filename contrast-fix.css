@@ -1,0 +1,4 @@
+body{--mpl-bg1:#F2F2FF;--mpl-bg2:#A8A9C6;--mpl-bg3:#F7F7FB;}
+@media(prefers-color-scheme:dark){body{background:var(--mpl-bg1);}}
+@media(prefers-color-scheme:light){body{background:var(--mpl-bg3);}}
+button,section,article,div{transition:color .3s,background .3s;}

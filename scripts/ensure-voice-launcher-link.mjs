@@ -1,14 +1,14 @@
-import fs from "fs"; import path from "path";
-const ROOT = process.cwd();
-const files = fs.readdirSync(ROOT).filter(f => f.endsWith(".html"));
+import fs from "fs";
 const TAG = `<script src="js/voicebot-launcher.js" defer></script>`;
-for (const f of files){
-  const p = path.join(ROOT, f);
-  let html = fs.readFileSync(p, "utf8");
-  if (!html.includes(TAG)){
-    if (/<\\/body>/i.test(html)) html = html.replace(/<\\/body>/i, `  ${TAG}\n</body>`);
-    else html += `\\n${TAG}\\n`;
-    fs.writeFileSync(p, html, "utf8");
-  }
+const CLOSE = /<\/body>/i;
+const files = fs.readdirSync(".").filter(f=>f.endsWith(".html"));
+let changed=[];
+for(const f of files){
+ let h=fs.readFileSync(f,"utf8");
+ if(!h.includes('js/voicebot-launcher.js')){
+   h=h.replace(CLOSE,`${TAG}\n</body>`);
+   fs.writeFileSync(f,h,"utf8");
+   changed.push(f);
+ }
 }
-console.log("Injected voicebot-launcher.js into", files.length, "pages (where needed).");
+console.log(JSON.stringify({insertedInto:changed},null,2));

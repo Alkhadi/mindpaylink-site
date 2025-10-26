@@ -1,106 +1,73 @@
-(function(){
-  "use strict";
-  var D=document, W=window;
-  var PANEL_ID="mshare-voicebot";
-  var LAUNCH_ID="mshare-voice-launcher";
-  var HIDDEN_KEY="mshare_voice_hidden_v1";
+(() => {
+  const LS_HIDDEN = 'mshare_voicebot_hidden_v1';
+  const LS_POS = 'mshare_voicebot_pos_v1';
+  const PANEL_SEL = '.voice-assistant, #voiceAssistant, [data-role="voice-assistant"]';
+  const BTN_HIDE_ID = 'mshareVoiceHideBtn';
+  const BTN_LAUNCH_ID = 'mshareVoiceLauncher';
+  let panel, launcher, offset = {x:0,y:0}, drag = false, pos={x:40,y:40};
 
-  function lsRead(key, def){ try{ var v=localStorage.getItem(key); return v==null?def:JSON.parse(v); }catch(e){ return def; } }
-  function lsWrite(key,val){ try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){} }
-
-  function ensureLauncher(){
-    var b = D.getElementById(LAUNCH_ID);
-    if (b) return b;
-    b = D.createElement("button");
-    b.id = LAUNCH_ID;
-    b.type = "button";
-    b.setAttribute("aria-label","Open Voice Assistant");
-    b.innerHTML = "Voice";
-    b.style.display = "none";             // default hidden until needed
-    b.addEventListener("click", function(){
-      showPanel(true);
-    });
-    D.body.appendChild(b);
-    return b;
-  }
-
-  function getPanel(){ return D.getElementById(PANEL_ID); }
-
-  function showPanel(focusAfter){
-    var p = getPanel();
-    var l = ensureLauncher();
-    if (p){ p.style.display=""; lsWrite(HIDDEN_KEY, false); if (focusAfter){ try{ p.querySelector(".mshare-voicebot__handle").focus(); }catch(e){} } }
-    if (l){ l.style.display="none"; }
-  }
-
-  function hidePanel(){
-    var p = getPanel();
-    var l = ensureLauncher();
-    if (p){ p.style.display="none"; }
-    if (l){ l.style.display="inline-flex"; }
-    lsWrite(HIDDEN_KEY, true);
-  }
-
-  function addHideButton(panel){
+  const restore = () => {
+    const st = localStorage.getItem(LS_HIDDEN);
+    const ps = localStorage.getItem(LS_POS);
+    if (ps) { try{pos=JSON.parse(ps);}catch{} }
+    panel = document.querySelector(PANEL_SEL);
     if (!panel) return;
-    if (panel.querySelector("[data-voice-action=\"hide\"]")) return;
-    var handle = panel.querySelector(".mshare-voicebot__handle");
-    if (!handle) return;
-    var btn = D.createElement("button");
-    btn.type = "button";
-    btn.className = "mshare-voicebot__btn mshare-voicebot__btn--ghost";
-    btn.setAttribute("data-voice-action","hide");
-    btn.title = "Hide panel";
-    btn.textContent = "Hide";
-    btn.addEventListener("click", function(e){ e.preventDefault(); hidePanel(); });
-    handle.appendChild(btn);
-  }
-
-  function applyInitialState(){
-    var hidden = !!lsRead(HIDDEN_KEY, false);
-    var p = getPanel();
-    var l = ensureLauncher();
-    if (hidden){
-      if (p) p.style.display="none";
-      if (l) l.style.display="inline-flex";
-    }else{
-      if (p) p.style.display="";
-      if (l) l.style.display="none";
-    }
-  }
-
-  // Observe for the panel if it is created after load
-  function watchForPanel(){
-    var p = getPanel();
-    if (p){
-      addHideButton(p);
-      applyInitialState();
-      return;
-    }
-    var mo = new MutationObserver(function(){
-      var px = getPanel();
-      if (px){
-        try{ mo.disconnect(); }catch(e){}
-        addHideButton(px);
-        applyInitialState();
-      }
+    Object.assign(panel.style,{
+      position:'fixed', top:pos.y+'px', left:pos.x+'px', zIndex:9999, touchAction:'none'
     });
-    mo.observe(D.body, { childList:true, subtree:true });
-  }
+    makeDraggable(panel);
+    if (st==='1') hidePanel(); else showPanel();
+  };
 
-  function init(){
-    ensureLauncher();
-    watchForPanel();
-    // Keyboard shortcut: Alt+V to toggle (optional but handy)
-    W.addEventListener("keydown", function(e){
-      if ((e.altKey || e.metaKey) && !e.shiftKey && !e.ctrlKey && (e.key.toLowerCase()==="v")){
-        e.preventDefault();
-        var hidden = !!lsRead(HIDDEN_KEY, false);
-        if (hidden) showPanel(true); else hidePanel();
-      }
+  const hidePanel = () => {
+    if (!panel) return;
+    panel.style.display='none';
+    if (!launcher){
+      launcher=document.createElement('button');
+      launcher.id=BTN_LAUNCH_ID;
+      launcher.textContent='🎤 Voice';
+      Object.assign(launcher.style,{
+        position:'fixed', bottom:'1rem', right:'1rem', zIndex:9999,
+        borderRadius:'50%', padding:'0.8rem', background:'#115E84', color:'#fff',
+        border:'none', cursor:'pointer'
+      });
+      launcher.addEventListener('click', ()=>{ localStorage.setItem(LS_HIDDEN,'0'); showPanel(); });
+      document.body.appendChild(launcher);
+    }
+    localStorage.setItem(LS_HIDDEN,'1');
+  };
+
+  const showPanel = () => {
+    if (panel) panel.style.display='block';
+    if (launcher) launcher.remove();
+    localStorage.setItem(LS_HIDDEN,'0');
+  };
+
+  const makeDraggable = el => {
+    el.addEventListener('pointerdown', e => {
+      drag = true; offset.x = e.clientX - el.offsetLeft; offset.y = e.clientY - el.offsetTop;
+      el.setPointerCapture(e.pointerId);
     });
-  }
+    el.addEventListener('pointermove', e => {
+      if (!drag) return;
+      let x = e.clientX - offset.x, y = e.clientY - offset.y;
+      x = Math.max(0, Math.min(window.innerWidth - el.offsetWidth, x));
+      y = Math.max(0, Math.min(window.innerHeight - el.offsetHeight, y));
+      el.style.left = x + 'px'; el.style.top = y + 'px';
+    });
+    el.addEventListener('pointerup', e => {
+      drag=false; el.releasePointerCapture(e.pointerId);
+      pos={x:parseInt(el.style.left),y:parseInt(el.style.top)};
+      localStorage.setItem(LS_POS, JSON.stringify(pos));
+    });
+  };
 
-  if (D.readyState==="loading") D.addEventListener("DOMContentLoaded", init, {once:true});
-  else init();
+  window.addEventListener('DOMContentLoaded', ()=>{
+    restore();
+    const btn = document.createElement('button');
+    btn.id = BTN_HIDE_ID; btn.textContent='Hide';
+    Object.assign(btn.style,{marginLeft:'0.5rem',background:'#A8A9C6',color:'#111'});
+    btn.addEventListener('click', hidePanel);
+    if (panel) panel.appendChild(btn);
+  });
 })();
