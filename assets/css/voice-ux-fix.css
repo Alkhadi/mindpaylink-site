@@ -1,0 +1,32 @@
+/* __mshare_voice_uxfix__ */
+#mshare-voicebot, .mshare-voicebot{
+  -webkit-font-smoothing:antialiased; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;
+  color:#0b1221; z-index:9998 !important;
+}
+#mshare-voicebot .mshare-voicebot__title{color:#fff; font-weight:700}
+#mshare-voicebot .mshare-voicebot__btn{
+  background:#fff; color:#0b1221 !important; border:1px solid #cbd5e1; border-radius:12px;
+  padding:10px 14px; font-weight:600; line-height:1; cursor:pointer;
+}
+#mshare-voicebot .mshare-voicebot__btn:hover{filter:brightness(.98)}
+#mshare-voicebot [data-voice-action="start"]{background:#2563eb; color:#fff !important; border-color:transparent}
+#mshare-voicebot .mshare-voicebot__select,
+#mshare-voicebot .mshare-voicebot__cmd{
+  background:#fff; color:#0b1221 !important; border:1px solid #cbd5e1; border-radius:12px; padding:10px 12px;
+}
+#mshare-voicebot .mshare-voicebot__cmd::placeholder{color:#6b7280; opacity:1}
+#mshare-voicebot .mshare-voicebot__range{accent-color:#2563eb}
+
+/* ensure our panel is fixed and visible even if other CSS sets inset/opacity */
+#mshare-voicebot{position:fixed !important; opacity:1 !important; visibility:visible !important}
+
+/* Mobile default docking (safe area) */
+@media (max-width:900px){
+  #mshare-voicebot{left:auto !important; right:16px !important; top:auto !important; bottom:calc(16px + env(safe-area-inset-bottom)) !important; max-width:min(520px,94vw)}
+}
+
+/* Floating launcher */
+#vaToggle{
+  position:fixed; right:16px; bottom:calc(18px + env(safe-area-inset-bottom));
+  z-index:9999; background:#fff; color:#0b1221 !important; border:1px solid #cbd5e1; border-radius:12px; padding:10px 12px; font-weight:700; box-shadow:0 6px 28px rgba(0,0,0,.25)
+}
