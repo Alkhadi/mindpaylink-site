@@ -1,42 +1,110 @@
-(()=>{"use strict";
-const W=window,D=document,EVT_STATE="mshare-voice:state",allowed=/^en-(GB|US)\b/i;let state="idle";
-if("speechSynthesis"in W){const o=W.speechSynthesis.getVoices?.bind(W.speechSynthesis);if(o && !W.speechSynthesis.__wrap){W.speechSynthesis.getVoices=function(){return (o()||[]).filter(v=>allowed.test(v.lang||""));};W.speechSynthesis.__wrap=true;}}
-function setState(s){if(state===s)return;state=s;D.documentElement.dataset.voiceState=s;D.dispatchEvent(new CustomEvent(EVT_STATE,{detail:s}));
-  const sr=D.getElementById("mshare-voice-meta"); if(sr) sr.textContent=s==="speaking"?"Speaking…":(s==="paused"?"Paused":"Ready");
-  D.querySelectorAll('[data-voice-action="start"],[data-voice="start"]').forEach(b=>b.disabled=(s==="speaking"));
-  D.querySelectorAll('[data-voice-action="stop"],[data-voice="stop"]').forEach(b=>b.disabled=(s!=="speaking"&&s!=="paused"));
-  D.querySelectorAll('[data-voice-action="resume"],[data-voice="resume"]').forEach(b=>b.disabled=(s!=="paused"));
-  D.querySelectorAll('[data-voice-action="pause"],[data-voice="pause"]').forEach(b=>b.disabled=(s!=="speaking"));
+(()=>{ "use strict";
+const W=window, D=document;
+const EVT='mshare-voice:state';
+const SELS={ start:'[data-voice="start"]', stop:'[data-voice="stop"]', pause:'[data-voice="pause"]', resume:'[data-voice="resume"]', toggle:'[data-voice="toggle"]' };
+const PANEL_BTNS={ start:'[data-voice-action="start"]', stop:'[data-voice-action="stop"]', pause:'[data-voice-action="pause"]', resume:'[data-voice-action="resume"]' };
+const ALLOWED=['en-GB','en-US'];
+let state='idle', lastClick=0;
+
+function debounceOK(){ const now=Date.now(); if(now-lastClick<120) return false; lastClick=now; return true; }
+function dispatch(s){ state=s; D.dispatchEvent(new CustomEvent(EVT,{detail:s})); }
+
+function listVoices(){ try{ return (W.speechSynthesis && W.speechSynthesis.getVoices())||[]; }catch{ return []; } }
+function pickVoice(){
+  const vs=listVoices().filter(v=> ALLOWED.includes((v.lang||'').trim()));
+  if(!vs.length) return null;
+  const gb=vs.find(v=>/^en-GB/i.test(v.lang||'')); return gb||vs[0];
 }
-function isMedia(){return [...D.querySelectorAll("audio,video")].some(a=>{try{return !a.paused && !a.ended && a.currentTime>0;}catch{return false;}});}
-function sel(){const s=W.getSelection&&W.getSelection();return s&&s.rangeCount?(s.toString()||"").trim():"";}
-function visible(){const r=D.querySelector("main")||D.body, bs=[...r.querySelectorAll("h1,h2,h3,p,li,blockquote,figure figcaption,article section,.content,.card,.section")];const parts=[];
-  bs.forEach(el=>{const cs=getComputedStyle(el);if(cs.display==="none"||cs.visibility==="hidden")return;if(!el.offsetParent&&cs.position!=="fixed")return;if(el.closest("nav,header,footer,[aria-hidden='true'],.modal,[role='dialog']"))return;
-    const t=(el.innerText||el.textContent||"").trim();if(t)parts.push(t);});return parts.join("\n\n").trim();}
-function vpick(){try{const vs=(W.speechSynthesis&&W.speechSynthesis.getVoices&&W.speechSynthesis.getVoices())||[];return vs.find(v=>/en-GB/i.test(v.lang||""))||vs.find(v=>/en-US/i.test(v.lang||""))||vs[0]||null;}catch{return null;}}
-function MSV(){return (W.__MSHARE__&&W.__MSHARE__.Voice)||null;}
-function speakViaPanel(t){const m=MSV(); if(!m||!m.speak) return false; setState("speaking"); m.speak(String(t||"").trim()||sel()||visible()); return true;}
-function stopViaPanel(){const m=MSV(); if(m&&m.stop){m.stop();setState("idle");return true;}return false;}
-function pauseViaPanel(){const m=MSV(); if(m&&m.pause){m.pause();setState("paused");return true;}return false;}
-function resumeViaPanel(){const m=MSV(); if(m&&m.resume){m.resume();setState("speaking");return true;}return false;}
-let cur=null;
-function speakFallback(t){if(!("speechSynthesis"in W))return false;const c=String(t||"").trim()||sel()||visible();if(!c)return false;const u=new SpeechSynthesisUtterance(c);const v=vpick();if(v)u.voice=v;u.lang=(v&&v.lang)?v.lang:"en-GB";
-  u.onstart=()=>setState("speaking");u.onend=()=>{cur=null;setState("idle");};u.onerror=()=>{cur=null;setState("idle");};cur=u;try{W.speechSynthesis.cancel();}catch{}W.speechSynthesis.speak(u);return true;}
-function stopFallback(){try{W.speechSynthesis&&W.speechSynthesis.cancel();}catch{}cur=null;setState("idle");}
-function pauseFallback(){try{W.speechSynthesis&&W.speechSynthesis.pause();}catch{}setState("paused");}
-function resumeFallback(){try{W.speechSynthesis&&W.speechSynthesis.resume();}catch{}setState("speaking");}
-function startSpeak(t){if(isMedia())return;if(!speakViaPanel(t))speakFallback(t);}
-function stopSpeak(){if(!stopViaPanel())stopFallback();}
-function pauseSpeak(){if(!pauseViaPanel())pauseFallback();}
-function resumeSpeak(){if(!resumeViaPanel())resumeFallback();}
-function tfrom(el){return el.getAttribute("data-voice-text")||el.getAttribute("aria-label")||"";}
-function bind(ctx){const root=ctx||D;
-  root.querySelectorAll('[data-voice="start"]').forEach(b=>{if(b.__b)return;b.__b=1;b.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();startSpeak(tfrom(b));});});
-  root.querySelectorAll('[data-voice="stop"]').forEach (b=>{if(b.__b)return;b.__b=1;b.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();stopSpeak();});});
-  root.querySelectorAll('[data-voice="pause"]').forEach(b=>{if(b.__b)return;b.__b=1;b.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();pauseSpeak();});});
-  root.querySelectorAll('[data-voice="resume"]').forEach(b=>{if(b.__b)return;b.__b=1;b.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();resumeSpeak();});});
+
+function visibleText(){
+  const root=D.querySelector('main')||D.body; const parts=[];
+  root.querySelectorAll('h1,h2,h3,h4,h5,p,li,blockquote,figure figcaption,article section,.content,.card,.section').forEach(el=>{
+    const cs=getComputedStyle(el);
+    if(cs.display==='none'||cs.visibility==='hidden') return;
+    if(!el.offsetParent && cs.position!=='fixed') return;
+    if(el.closest('nav,header,footer,[aria-hidden="true"],.modal,[role="dialog"]')) return;
+    const t=(el.innerText||el.textContent||'').trim(); if(t) parts.push(t);
+  });
+  return parts.join('\n\n').trim() || (D.querySelector('main')?.innerText || D.body.innerText || '').trim();
 }
-function init(){bind();const mo=new MutationObserver(ms=>ms.forEach(m=>Array.from(m.addedNodes||[]).forEach(n=>{if(n.nodeType===1)bind(n);})));try{mo.observe(D.body,{subtree:true,childList:true});}catch{}
-  setState(("speechSynthesis"in W && W.speechSynthesis.speaking)?"speaking":"idle");}
-if(D.readyState==="loading")D.addEventListener("DOMContentLoaded",init,{once:true});else init();
+
+function cancelAll(){ try{ if(W.speechSynthesis){ W.speechSynthesis.cancel(); } }catch{} }
+function speakFallback(text){
+  const v=pickVoice(); if(!v){ alert('No English voice found (en-GB/en-US).'); return; }
+  const t = String(text||'').trim() || visibleText();
+  if(!t) return;
+  const u=new SpeechSynthesisUtterance(t);
+  u.voice=v; u.rate=1; u.pitch=1; u.lang=v.lang;
+  u.onstart=()=>dispatch('speaking');
+  u.onend=()=>dispatch('idle');
+  u.onerror=()=>dispatch('idle');
+  // Immediate no-latency: cancel then speak
+  cancelAll();
+  setTimeout(()=>{ try{ W.speechSynthesis.speak(u); }catch{} },0);
+}
+
+function start(text){
+  if(!debounceOK()) return;
+  if(W.__MSHARE__ && W.__MSHARE__.Voice && W.__MSHARE__.Voice.speak){
+    try{ cancelAll(); W.__MSHARE__.Voice.speak(text||''); return; }catch{}
+  }
+  speakFallback(text);
+}
+function stop(){
+  if(!debounceOK()) return;
+  if(W.__MSHARE__ && W.__MSHARE__.Voice && W.__MSHARE__.Voice.stop){
+    try{ W.__MSHARE__.Voice.stop(); dispatch('idle'); return; }catch{}
+  }
+  cancelAll(); dispatch('idle');
+}
+function pause(){
+  if(!debounceOK()) return;
+  try{ if(W.speechSynthesis) W.speechSynthesis.pause(); }catch{}
+  dispatch('paused');
+}
+function resume(){
+  if(!debounceOK()) return;
+  try{ if(W.speechSynthesis) W.speechSynthesis.resume(); }catch{}
+  dispatch('speaking');
+}
+
+function textFrom(el){ const t=el?.getAttribute('data-voice-text')||''; return t.trim(); }
+
+function bind(root=D){
+  root.querySelectorAll(SELS.start).forEach(el=>{
+    el.addEventListener('click', e=>{ e.preventDefault(); e.stopPropagation(); start(textFrom(el)); }, {passive:false});
+  });
+  root.querySelectorAll(SELS.stop).forEach(el=>{
+    el.addEventListener('click', e=>{ e.preventDefault(); e.stopPropagation(); stop(); }, {passive:false});
+  });
+  root.querySelectorAll(SELS.pause).forEach(el=>{
+    el.addEventListener('click', e=>{ e.preventDefault(); e.stopPropagation(); pause(); }, {passive:false});
+  });
+  root.querySelectorAll(SELS.resume).forEach(el=>{
+    el.addEventListener('click', e=>{ e.preventDefault(); e.stopPropagation(); resume(); }, {passive:false});
+  });
+  root.querySelectorAll(SELS.toggle).forEach(el=>{
+    el.addEventListener('click', e=>{
+      e.preventDefault(); e.stopPropagation();
+      if(state==='speaking') pause(); else if(state==='paused') resume(); else start(textFrom(el));
+    }, {passive:false});
+  });
+
+  // Panel buttons
+  const panel=document.querySelector('#mshare-voicebot, .mshare-voicebot');
+  if(panel){
+    const b=(sel,fn)=>{ const x=panel.querySelector(sel); if(x) x.addEventListener('click', e=>{ e.preventDefault(); e.stopPropagation(); fn(); }, {passive:false}); };
+    b(PANEL_BTNS.start, ()=>start());
+    b(PANEL_BTNS.stop,  ()=>stop());
+    b(PANEL_BTNS.pause, ()=>pause());
+    b(PANEL_BTNS.resume,()=>resume());
+  }
+}
+
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', ()=>{ bind(); }, {once:true}); else bind();
+// Rebind on DOM growth
+try{
+  const mo=new MutationObserver(muts=>{ for(const m of muts){ for(const n of m.addedNodes){ if(n.nodeType===1) bind(n); } }});
+  mo.observe(D.body,{subtree:true,childList:true});
+}catch{}
 })();

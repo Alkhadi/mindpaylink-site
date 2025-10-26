@@ -1,2 +1,9 @@
-:root{--ms-fg-dark:#111827;--ms-fg-light:#FFFFFF;}
-main,section,article,.card,.panel,.content,button,.btn,.button,.cta{transition:color .2s ease, background-color .2s ease;}
+:root{ --mpl-bg1:#F2F2FF; --mpl-bg2:#A8A9C6; --mpl-bg3:#F7F7FB; }
+@media (prefers-color-scheme:dark){ body{ background:var(--mpl-bg1); } }
+@media (prefers-color-scheme:light){ body{ background:var(--mpl-bg3); } }
+button,section,article,div,.card{ transition: color .25s ease, background-color .25s ease; }
+
+/* Footer home link – minimal, scoped, unobtrusive */
+footer .footer-home-link{ display:inline-flex; align-items:center; justify-content:center; gap:.5rem; padding:.25rem .5rem; border-radius:.5rem; text-decoration:none; border:0; }
+footer .footer-home-link img{ width:28px; height:28px; display:block; }
+@media (hover:hover){ footer .footer-home-link:hover{ filter:brightness(1.05); } }

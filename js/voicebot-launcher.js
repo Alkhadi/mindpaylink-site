@@ -1,107 +1,149 @@
-(()=>{"use strict";
-const LS_HIDDEN="mshare_voicebot_hidden_v1";
-const LS_POS="mshare_voicebot_pos_v1";
-const PANEL_ID="mshare-voicebot";
-const SEL_PANEL="#"+PANEL_ID+", .mshare-voicebot, .voice-assistant, #voiceAssistant, [data-role='voice-assistant']";
-const LAUNCH_ID="mshareVoiceLauncherBtn";
-const HIDE_BTN_ID="mshareVoiceHideBtn";
-const NAV_QUERY="header, .site-header, nav";
-const HAMBURGER_QUERY=".hamburger, .menu-toggle, button[aria-label*=menu i], [aria-controls*=nav i]";
+(()=>{ "use strict";
+const LS_HIDDEN='mshare_voicebot_hidden_v1';
+const LS_POS='mshare_voicebot_pos_v1';
+const PANEL_SEL='#mshare-voicebot, .mshare-voicebot';
+const HANDLE_SEL='.mshare-voicebot__handle';
+const BTN_HIDE_ID='mshareVoiceHideBtn';
+const BTN_LAUNCH_ID='mshareVoiceLauncher';
+const Z=2147483000;
+const SAFE_TOP=96; // keep away from header/hamburger area
 
-let panel=null, launcher=null, dragging=false, dx=0, dy=0;
+let panel, handle, launcher, dragging=false, offX=0, offY=0;
 
-function clamp(v,min,max){return Math.min(max,Math.max(min,v));}
-function savePos(el){const l=parseInt(el.style.left||"16",10)||16;const t=parseInt(el.style.top||"16",10)||16;localStorage.setItem(LS_POS, JSON.stringify({left:l, top:t}));}
-function loadPos(){try{return JSON.parse(localStorage.getItem(LS_POS)||"");}catch{return null;}}
+function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+function savePos(l,t){ localStorage.setItem(LS_POS, JSON.stringify({left:l, top:t})); }
+function readPos(){ try{ return JSON.parse(localStorage.getItem(LS_POS)||''); }catch{ return null; } }
 
-function bounds(el){const w=window.innerWidth,h=window.innerHeight,r=el.getBoundingClientRect();return{minL:4,minT:4,maxL:Math.max(4,w-r.width-4),maxT:Math.max(4,h-r.height-4)};}
-function position(el,l,t){const b=bounds(el);el.style.left=clamp(l,b.minL,b.maxL)+"px";el.style.top=clamp(t,b.minT,b.maxT)+"px";el.style.right="auto";el.style.bottom="auto";savePos(el);}
+function ensureLauncher(){
+  if(launcher && document.body.contains(launcher)) return launcher;
+  launcher = document.createElement('button');
+  launcher.id=BTN_LAUNCH_ID;
+  launcher.type='button';
+  launcher.textContent='🎤 Voice';
+  Object.assign(launcher.style,{
+    position:'fixed',right:'16px',bottom:'16px',zIndex:Z, border:'none',
+    borderRadius:'999px', padding:'10px 14px', fontWeight:'700',
+    boxShadow:'0 6px 16px rgba(0,0,0,.2)', cursor:'pointer',
+    background:'#115E84', color:'#fff'
+  });
+  launcher.addEventListener('click', ()=>{ localStorage.setItem(LS_HIDDEN,'0'); showPanel(); });
+  document.body.appendChild(launcher);
+  return launcher;
+}
+function removeLauncher(){ if(launcher){ try{ launcher.remove(); }catch{} } }
 
-function overlaps(a,b){ if(!a||!b) return false; return !(a.right<=b.left||a.left>=b.right||a.bottom<=b.top||a.top>=b.bottom); }
-function avoidNav(el){
-  const r=el.getBoundingClientRect();
-  const nav=document.querySelector(NAV_QUERY)?.getBoundingClientRect()||null;
-  const ham=document.querySelector(HAMBURGER_QUERY)?.getBoundingClientRect()||null;
-  let needs=false;
-
-  // avoid header band
-  if(nav && r.top < (nav.bottom+8)) needs=true;
-  // avoid hamburger zone (usually top-right)
-  if(ham && overlaps(r, ham)) needs=true;
-
-  // avoid top-right corner generally on phones
-  if(window.innerWidth<=768 && r.top<96 && r.right>(window.innerWidth-120)) needs=true;
-
-  if(needs){
-    const x=window.innerWidth - el.offsetWidth  - 16;
-    const y=window.innerHeight- el.offsetHeight - 16;
-    position(el, x, y);
+function placeDefault(panelEl){
+  const r = panelEl.getBoundingClientRect();
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const left = clamp(vw - (r.width||320) - 16, 8, Math.max(8, vw- (r.width||320) - 8));
+  const top  = clamp(vh - (r.height||220) - 16, SAFE_TOP, Math.max(SAFE_TOP, vh- (r.height||220) - 16));
+  panelEl.style.left = left+'px';
+  panelEl.style.top  = top+'px';
+  savePos(left, top);
+}
+function applySaved(panelEl){
+  const pos = readPos();
+  if(pos && Number.isFinite(pos.left) && Number.isFinite(pos.top)){
+    const vw=innerWidth,vh=innerHeight;
+    const r = panelEl.getBoundingClientRect();
+    const left = clamp(pos.left, 8, Math.max(8, vw-(r.width||320)-8));
+    const top  = clamp(pos.top,  SAFE_TOP, Math.max(SAFE_TOP, vh-(r.height||220)-8));
+    panelEl.style.left = left+'px';
+    panelEl.style.top  = top+'px';
+    savePos(left, top);
+  } else {
+    placeDefault(panelEl);
   }
 }
 
-function enableDrag(el){
-  const handle=el.querySelector(".mshare-voicebot__handle")||el; // handle-only to prevent accidental grabs
-  handle.style.touchAction="none";
-  handle.addEventListener("pointerdown",(e)=>{dragging=true;handle.setPointerCapture?.(e.pointerId);
-    const r=el.getBoundingClientRect();dx=e.clientX-r.left;dy=e.clientY-r.top;});
-  handle.addEventListener("pointermove",(e)=>{if(!dragging)return;position(el,e.clientX-dx,e.clientY-dy);});
-  const stop=()=>{dragging=false;}; handle.addEventListener("pointerup",stop); handle.addEventListener("pointercancel",stop);
-  window.addEventListener("resize",()=>{const l=parseInt(el.style.left||"16",10)||16;const t=parseInt(el.style.top||"16",10)||16;position(el,l,t); avoidNav(el);});
-}
-
-function showLauncher(){ if(launcher) return; const btn=document.createElement("button");
-  btn.id=LAUNCH_ID; btn.type="button"; btn.textContent="🎤 Voice"; btn.setAttribute("aria-label","Open Voice Assistant");
-  Object.assign(btn.style,{position:"fixed",right:"16px",bottom:"16px",zIndex:2147483000,borderRadius:"9999px",padding:"10px 14px",
-    border:"1px solid #374151",background:"#111827",color:"#fff",boxShadow:"0 6px 18px rgba(0,0,0,.2)",cursor:"pointer",
-    font:"600 14px/1 system-ui,-apple-system,Segoe UI,Roboto"});
-  btn.addEventListener("click",()=>{localStorage.setItem(LS_HIDDEN,"0");hideLauncher();showPanel();});
-  document.body.appendChild(btn); launcher=btn;
-}
-function hideLauncher(){ if(launcher){launcher.remove(); launcher=null;} }
-
-function hidePanel(){ if(!panel) return; panel.style.display="none"; localStorage.setItem(LS_HIDDEN,"1"); showLauncher(); }
-function showPanel(){ if(!panel) return; panel.style.display=""; localStorage.setItem(LS_HIDDEN,"0"); hideLauncher(); avoidNav(panel); }
-
-function ensureHideButton(){
+function showPanel(){
   if(!panel) return;
-  if(panel.querySelector("#"+HIDE_BTN_ID)) return;
-  const where=panel.querySelector(".mshare-voicebot__handle")||panel;
-  const btn=document.createElement("button");
-  btn.id=HIDE_BTN_ID; btn.type="button"; btn.textContent="Hide"; btn.setAttribute("aria-label","Hide Voice Assistant");
-  Object.assign(btn.style,{marginLeft:"auto",padding:"6px 10px",borderRadius:"8px",border:"1px solid #e5e7eb",
-    background:"#A8A9C6",color:"#111827",font:"600 12px/1 system-ui,-apple-system,Segoe UI,Roboto",cursor:"pointer",flex:"0 0 auto"});
-  btn.addEventListener("click",hidePanel);
-  // Make sure handle acts as a single-line flex row so Hide is visible
-  try{ where.style.display="flex"; where.style.alignItems="center"; where.style.gap="8px"; }catch{}
-  where.appendChild(btn);
+  panel.style.display='block';
+  removeLauncher();
+  localStorage.setItem(LS_HIDDEN,'0');
+}
+function hidePanel(){
+  if(!panel) return;
+  panel.style.display='none';
+  ensureLauncher();
+  localStorage.setItem(LS_HIDDEN,'1');
+}
+
+function addHideButton(){
+  if(!handle) return;
+  if(document.getElementById(BTN_HIDE_ID)) return;
+  const btn=document.createElement('button');
+  btn.id=BTN_HIDE_ID;
+  btn.type='button';
+  btn.textContent='Hide';
+  btn.setAttribute('aria-label','Hide voice assistant panel');
+  Object.assign(btn.style,{ marginLeft:'auto', background:'#A8A9C6', color:'#111', border:'1px solid #e5e7eb', borderRadius:'10px', padding:'6px 10px', fontWeight:'600', cursor:'pointer' });
+  btn.addEventListener('click', hidePanel);
+  handle.appendChild(btn);
+}
+
+function onPointerDown(e){
+  if(!panel) return;
+  dragging=true;
+  const r = panel.getBoundingClientRect();
+  offX = e.clientX - r.left;
+  offY = e.clientY - r.top;
+  try{ e.target.setPointerCapture(e.pointerId); }catch{}
+  e.preventDefault();
+}
+function onPointerMove(e){
+  if(!dragging || !panel) return;
+  const w=innerWidth,h=innerHeight, r = panel.getBoundingClientRect();
+  let x = clamp(e.clientX - offX, 8, Math.max(8, w - r.width - 8));
+  let y = clamp(e.clientY - offY, SAFE_TOP, Math.max(SAFE_TOP, h - r.height - 8));
+  panel.style.left = x+'px';
+  panel.style.top  = y+'px';
+}
+function onPointerUp(e){
+  if(!dragging) return;
+  dragging=false;
+  if(panel){
+    const l=parseInt(panel.style.left||'0',10), t=parseInt(panel.style.top||'0',10);
+    savePos(l,t);
+  }
+  try{ e.target.releasePointerCapture(e.pointerId); }catch{}
 }
 
 function init(){
-  panel=document.querySelector(SEL_PANEL);
+  panel = document.querySelector(PANEL_SEL);
   if(!panel) return;
-  panel.style.position="fixed";
-  panel.style.zIndex=2147483000;
 
-  // default safe spot on phones; otherwise restore last
-  const saved=loadPos();
-  if(window.innerWidth<=768 && !saved){
-    const x=window.innerWidth - (panel.offsetWidth||320) - 16;
-    const y=window.innerHeight- (panel.offsetHeight||220) - 16;
-    position(panel, Math.max(16,x), Math.max(96,y)); // keep away from header
-  }else{
-    position(panel, saved?.left??16, saved?.top??96);
+  // Base styles & stacking
+  panel.style.position='fixed';
+  panel.style.zIndex=String(Z);
+  panel.style.right='auto'; panel.style.bottom='auto';
+  panel.style.touchAction='none'; // allow pointer drag on handle
+
+  handle = panel.querySelector(HANDLE_SEL) || panel.firstElementChild || panel;
+  if(handle){ handle.style.cursor='grab'; }
+
+  // Ensure positioned safely
+  applySaved(panel);
+  window.addEventListener('resize', ()=>applySaved(panel));
+
+  // Handle-only drag (avoid grabbing hamburger)
+  if(handle){
+    handle.addEventListener('pointerdown', onPointerDown);
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
+    window.addEventListener('pointercancel', onPointerUp);
   }
 
-  enableDrag(panel);
-  ensureHideButton();
+  addHideButton();
 
-  const hidden=localStorage.getItem(LS_HIDDEN)==="1";
+  // Restore hidden/visible
+  const hidden = localStorage.getItem(LS_HIDDEN)==='1';
   if(hidden) hidePanel(); else showPanel();
 }
 
-if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", init, {once:true});
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init, {once:true});
 else init();
 
-// If the panel is injected after load, allow re-init
-window.addEventListener("mshare-voice:panel-ready", init);
+// If panel injected later:
+window.addEventListener('mshare-voice:panel-ready', init);
 })();
