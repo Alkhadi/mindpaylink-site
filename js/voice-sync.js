@@ -1,171 +1,31 @@
-(()=>{
-  'use strict';
-  if (window.__VA_SYNC_READY__) return; window.__VA_SYNC_READY__ = true;
-
-  const D=document, W=window;
-  const EVT='mshare-voice:state';
-  const SEL = {
-    start:'[data-voice="start"]',
-    stop:'[data-voice="stop"]',
-    pause:'[data-voice="pause"]',
-    resume:'[data-voice="resume"]',
-    toggle:'[data-voice="toggle"]',
-    panelStart:'#mshare-voicebot [data-voice-action="start"], .mshare-voicebot [data-voice-action="start"]',
-    panelStop:'#mshare-voicebot [data-voice-action="stop"], .mshare-voicebot [data-voice-action="stop"]',
-    panelPause:'#mshare-voicebot [data-voice-action="pause"], .mshare-voicebot [data-voice-action="pause"]',
-    panelResume:'#mshare-voicebot [data-voice-action="resume"], .mshare-voicebot [data-voice-action="resume"]'
-  };
-
-  const allowedLangs = ['en-GB','en-US'];
-  const state = { mode:'idle', lastClick:0, currentUtter:null };
-
-  function dispatch(mode){ state.mode = mode; D.dispatchEvent(new CustomEvent(EVT,{ detail: mode })); }
-
-  function debounceOk(){
-    const now = Date.now();
-    if (now - state.lastClick < 120) return false;
-    state.lastClick = now;
-    return true;
-  }
-
-  function listVoices(){
-    try { return (W.speechSynthesis && W.speechSynthesis.getVoices && W.speechSynthesis.getVoices()) || []; }
-    catch { return []; }
-  }
-
-  function pickVoice(){
-    const vs = listVoices().filter(v => allowedLangs.includes((v.lang||'').trim()));
-    if (!vs.length) return null;
-    const gb = vs.find(v => (v.lang||'').toLowerCase().startsWith('en-gb'));
-    return gb || vs[0];
-  }
-
-  function anyMediaActive(){
-    try{
-      const els = Array.from(D.querySelectorAll('audio,video'));
-      return els.some(el=>{
-        try { return !el.paused && !el.ended && el.currentTime>0; } catch { return false; }
-      });
-    }catch{ return false; }
-  }
-
-  function collectText(){
-    const sel = W.getSelection && String(W.getSelection()).trim();
-    if (sel) return sel;
-    const main = D.querySelector('main');
-    const t = (main?.innerText || D.body.innerText || '').trim();
-    return t;
-  }
-
-  function stopImmediate(){
-    try {
-      if (W.speechSynthesis){
-        W.speechSynthesis.cancel(); // hard stop, prevents overlap
-      }
-    } catch {}
-    state.currentUtter = null;
-    dispatch('idle');
-  }
-
-  async function speakNow(text){
-    // fallback to VA speech only if no page media is active
-    if (anyMediaActive()) { dispatch('speaking'); return; }
-
-    stopImmediate(); // ensure no overlap
-    if (!('speechSynthesis' in W)) return;
-    const voice = pickVoice();
-    const t = String(text || collectText() || '').trim();
-    if (!t) return;
-
-    const parts = t.match(/[^.!?]+[.!?]|\S+$/g) || [t];
-    dispatch('speaking');
-
-    for (let i=0;i<parts.length;i++){
-      const seg = parts[i].trim(); if (!seg) continue;
-      const u = new SpeechSynthesisUtterance(seg);
-      state.currentUtter = u;
-      if (voice) u.voice = voice;
-      u.lang = (voice && voice.lang) || 'en-GB';
-      u.rate = 1.0; u.pitch = 1.0; u.volume = 1.0;
-
-      const done = new Promise((resolve)=>{ u.onend = u.onerror = ()=> resolve(true); });
-      try { W.speechSynthesis.speak(u); } catch { break; }
-      await done;
-
-      if (state.mode !== 'speaking') break;
-    }
-
-    if (state.mode === 'speaking') dispatch('idle');
-  }
-
-  function bindWithin(root){
-    const SEEN = '__va_bound__';
-    const tag = (el)=>{ if (el[SEEN]) return false; try{ el[SEEN]=true; return true; }catch{ return false; } };
-
-    // Page buttons
-    root.querySelectorAll(SEL.start).forEach(el=>{
-      if (!tag(el)) return;
-      el.addEventListener('click',(e)=>{ if(!debounceOk()) return; e.stopPropagation(); speakNow(); });
-    });
-    root.querySelectorAll(SEL.stop).forEach(el=>{
-      if (!tag(el)) return;
-      el.addEventListener('click',(e)=>{ if(!debounceOk()) return; e.stopPropagation(); stopImmediate(); });
-    });
-    root.querySelectorAll(SEL.pause).forEach(el=>{
-      if (!tag(el)) return;
-      el.addEventListener('click',(e)=>{ if(!debounceOk()) return; e.stopPropagation(); try{ W.speechSynthesis.pause(); }catch{} dispatch('paused'); });
-    });
-    root.querySelectorAll(SEL.resume).forEach(el=>{
-      if (!tag(el)) return;
-      el.addEventListener('click',(e)=>{ if(!debounceOk()) return; e.stopPropagation(); try{ W.speechSynthesis.resume(); }catch{} dispatch('speaking'); });
-    });
-    root.querySelectorAll(SEL.toggle).forEach(el=>{
-      if (!tag(el)) return;
-      el.addEventListener('click',(e)=>{ if(!debounceOk()) return; e.stopPropagation();
-        if (state.mode==='speaking'){ stopImmediate(); }
-        else if (state.mode==='paused'){ try{ W.speechSynthesis.resume(); }catch{} dispatch('speaking'); }
-        else { speakNow(); }
-      });
-    });
-
-    // Panel buttons (if present)
-    root.querySelectorAll(SEL.panelStart).forEach(el=>{
-      if (!tag(el)) return;
-      el.addEventListener('click',(e)=>{ if(!debounceOk()) return; e.stopPropagation(); speakNow(); });
-    });
-    root.querySelectorAll(SEL.panelStop).forEach(el=>{
-      if (!tag(el)) return;
-      el.addEventListener('click',(e)=>{ if(!debounceOk()) return; e.stopPropagation(); stopImmediate(); });
-    });
-    root.querySelectorAll(SEL.panelPause).forEach(el=>{
-      if (!tag(el)) return;
-      el.addEventListener('click',(e)=>{ if(!debounceOk()) return; e.stopPropagation(); try{ W.speechSynthesis.pause(); }catch{} dispatch('paused'); });
-    });
-    root.querySelectorAll(SEL.panelResume).forEach(el=>{
-      if (!tag(el)) return;
-      el.addEventListener('click',(e)=>{ if(!debounceOk()) return; e.stopPropagation(); try{ W.speechSynthesis.resume(); }catch{} dispatch('speaking'); });
-    });
-  }
-
-  function init(){
-    bindWithin(D);
-    try{
-      const mo = new MutationObserver(muts=>{
-        for (const m of muts){
-          for (const n of m.addedNodes) if (n && n.nodeType===1) bindWithin(n);
-        }
-      });
-      mo.observe(D.body, { childList:true, subtree:true });
-    }catch{}
-  }
-
-  if (D.readyState==='loading') D.addEventListener('DOMContentLoaded', init, {once:true});
-  else init();
-
-  // Expose minimal API (optional)
-  W.MShareVoiceSync = {
-    speak: (t)=> speakNow(String(t||'').trim()),
-    stop: ()=> stopImmediate(),
-    state: ()=> state.mode
-  };
+(()=>{'use strict';
+const D=document,W=window,SS=W.speechSynthesis; let state='idle', last=0, current=null;
+const EVT='mshare-voice:state', allowed=['en-GB','en-US'];
+function voices(){try{return (SS?.getVoices()||[]).filter(v=>allowed.includes(v.lang))}catch{return[]}}
+function pickVoice(){const v=voices();return v.find(x=>x.lang==='en-GB')||v.find(x=>x.lang==='en-US')||v[0]||null}
+function setState(s){state=s; try{D.dispatchEvent(new CustomEvent(EVT,{detail:s}))}catch{}}
+function textToRead(){const sel=W.getSelection?.().toString().trim(); if(sel) return sel; const main=D.querySelector('main'); return (main?.innerText||D.body.innerText||'').trim().slice(0,2000)}
+function cancelAll(){try{SS?.cancel()}catch{}}
+function speak(txt){cancelAll(); const v=pickVoice(); const t=(txt&&String(txt).trim())||textToRead(); if(!t){setState('idle');return}
+  const u=new SpeechSynthesisUtterance(t); if(v) u.voice=v; u.lang=v?.lang||'en-GB'; u.rate=1; u.pitch=1; u.volume=1;
+  u.onstart=()=>{current=u; setState('speaking')}; u.onend=()=>{current=null; setState('idle')}; u.onerror=()=>{current=null; setState('idle')};
+  try{SS?.speak(u)}catch{setState('idle')}
+}
+function pause(){try{SS?.pause(); setState('paused')}catch{}} function resume(){try{SS?.resume(); setState('speaking')}catch{}} function stop(){cancelAll(); current=null; setState('idle')}
+function deb(fn){return e=>{const n=Date.now(); if(n-last<120) return; last=n; fn(e)}}
+function bindControls(root=D){const Q=s=>Array.from(root.querySelectorAll(s));
+  Q('[data-voice="start"]').forEach(el=>el.__vaStart||(el.addEventListener('click',deb(()=>speak())),el.__vaStart=1));
+  Q('[data-voice="stop"]').forEach(el=>el.__vaStop||(el.addEventListener('click',deb(()=>stop())),el.__vaStop=1));
+  Q('[data-voice="pause"]').forEach(el=>el.__vaPause||(el.addEventListener('click',deb(()=>pause())),el.__vaPause=1));
+  Q('[data-voice="resume"]').forEach(el=>el.__vaResume||(el.addEventListener('click',deb(()=>resume())),el.__vaResume=1));
+  Q('[data-voice="toggle"]').forEach(el=>el.__vaTog||(el.addEventListener('click',deb(()=>{if(state==='speaking')pause(); else if(state==='paused')resume(); else speak();})),el.__vaTog=1));
+}
+function bindPanel(){const p=D.getElementById('mshare-voicebot')||D.querySelector('.mshare-voicebot'); if(!p) return;
+  const by=a=>p.querySelector(`[data-voice-action="${a}"]`); const on=(a,fn)=>{const b=by(a); if(b&&!b.__va){b.addEventListener('click',deb(fn)); b.__va=1}}
+  on('start',()=>speak()); on('stop',()=>stop()); on('pause',()=>pause()); on('resume',()=>resume()); on('repeat',()=>speak());
+}
+D.addEventListener('DOMContentLoaded',()=>{bindControls(); bindPanel();
+  try{new MutationObserver(ms=>ms.forEach(m=>m.addedNodes&&m.addedNodes.forEach(n=>{if(n.nodeType===1){bindControls(n); bindPanel();}}))).observe(D.body,{subtree:true,childList:true})}catch{}
+  try{SS?.addEventListener?.('voiceschanged',()=>{})}catch{} setState(SS?.speaking?'speaking':'idle');
+});
 })();

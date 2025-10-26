@@ -1,202 +1,108 @@
-(()=>{
-  'use strict';
-  if (window.__VA_LAUNCHER_READY__) return; window.__VA_LAUNCHER_READY__ = true;
+(()=>{'use strict';
+const D=document,W=window;
+const PANEL_ID='mshare-voicebot';
+const LAUNCH_ID='mshareVoiceLauncher';
+const STYLE_ID='mshare-va-launcher-inline';
+const LS_HIDDEN='mshare_voicebot_hidden_v1';
+const LS_POS='mshare_voicebot_pos_v1';
+const MIN_TOP=96, PAD=16, Z=2147483000;
 
-  const D=document, W=window;
-  const PANEL_SEL = '#mshare-voicebot, .mshare-voicebot, .voice-assistant, #voiceAssistant, [data-role="voice-assistant"]';
-  const HANDLE_SEL = '.mshare-voicebot__handle, [data-va-handle]';
-  const HIDE_BTN_ID = 'mshareVoiceHideBtn';
-  const LAUNCHER_ID = 'mshareVoiceLauncher';
-  const ZTOP = 2147483000;
-  const KEYS = {
-    HIDDEN: 'mshare_voicebot_hidden_v1',
-    POS: 'mshare_voicebot_pos_v1'
-  };
+function $(sel,ctx=D){return ctx.querySelector(sel)}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
 
-  const ui = { panel: null, handle: null, launcher: null };
-  const state = { dragging:false, offsetX:0, offsetY:0 };
-
-  const isSmall = ()=> W.innerWidth <= 768;
-  const now = ()=> Date.now();
-  let lastLaunchClick = 0;
-
-  function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
-  function readJSON(k, def){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def; }catch{ return def; } }
-  function writeJSON(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch{} }
-
-  function bounds(panel){
-    const r = panel.getBoundingClientRect();
-    return {
-      minLeft: 8,
-      minTop: isSmall() ? 96 : 16, // keep clear of header/hamburger on phones
-      maxLeft: Math.max(8, W.innerWidth - r.width - 8),
-      maxTop:  Math.max(isSmall()?96:16, W.innerHeight - r.height - 8)
-    };
+function ensureStyles(){
+  if(D.getElementById(STYLE_ID)) return;
+  const s=D.createElement('style'); s.id=STYLE_ID;
+  s.textContent=`
+  #${PANEL_ID}{position:fixed!important; z-index:2147483000!important; touch-action:none}
+  #${PANEL_ID} .mshare-voicebot__handle{cursor:move}
+  #${PANEL_ID} .mshare-voicebot__btn{color:#111827!important; font-weight:600}
+  #${PANEL_ID} .mshare-voicebot__btn[data-voice-action="start"]{color:#fff!important}
+  #${PANEL_ID} [data-voice-action="hide"]{
+    margin-left:.5rem; background:#A8A9C6; color:#111; border:1px solid rgba(0,0,0,.12);
+    padding:.4rem .6rem; border-radius:10px
   }
+  #${LAUNCH_ID}{
+    position:fixed; right:${PAD}px; bottom:${PAD}px; z-index:2147483000;
+    border:none; border-radius:999px; padding:.7rem .9rem;
+    font:600 14px/1 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+    background:#115E84; color:#fff; box-shadow:0 6px 24px rgba(0,0,0,.18); cursor:pointer
+  }`;
+  D.head.appendChild(s);
+}
 
-  function position(panel, left, top){
-    const b = bounds(panel);
-    const L = clamp(left, b.minLeft, b.maxLeft);
-    const T = clamp(top,  b.minTop,  b.maxTop);
-    panel.style.left = L + 'px';
-    panel.style.top  = T + 'px';
-    panel.style.right = 'auto';
-    panel.style.bottom = 'auto';
-    writeJSON(KEYS.POS, { left: L, top: T });
+function panelEl(){return D.getElementById(PANEL_ID) || D.querySelector('.mshare-voicebot')}
+function savePos(L,T){try{localStorage.setItem(LS_POS,JSON.stringify({left:L,top:T}))}catch{}}
+
+function position(panel,left,top){
+  const r=panel.getBoundingClientRect();
+  const maxL=W.innerWidth - r.width - PAD;
+  const maxT=W.innerHeight - r.height - PAD;
+  const L=clamp(left, PAD, Math.max(PAD,maxL));
+  const T=clamp(top , MIN_TOP, Math.max(MIN_TOP,maxT));
+  panel.style.left=L+'px'; panel.style.top=T+'px';
+  panel.style.right='auto'; panel.style.bottom='auto';
+  savePos(L,T);
+}
+
+function initialDock(panel){
+  let saved=null; try{saved=JSON.parse(localStorage.getItem(LS_POS)||'null')}catch{}
+  if(saved && Number.isFinite(saved.left) && Number.isFinite(saved.top)){ position(panel,saved.left,saved.top); return; }
+  const r=panel.getBoundingClientRect();
+  const x=W.innerWidth - (r.width||320) - PAD;
+  const y=W.innerHeight - (r.height||220) - PAD;
+  if (W.matchMedia('(max-width: 768px)').matches){
+    position(panel, Math.max(PAD,x), Math.max(MIN_TOP,y));
+  } else {
+    position(panel, PAD, Math.max(MIN_TOP, PAD*6));
   }
+}
 
-  function ensureHideButton(){
-    if (!ui.panel) return;
-    if (D.getElementById(HIDE_BTN_ID)) return;
+function makeHandleDrag(panel){
+  const handle=panel.querySelector('.mshare-voicebot__handle')||panel.firstElementChild||panel;
+  let dragging=false,sx=0,sy=0,sl=0,st=0;
+  handle.addEventListener('pointerdown',e=>{
+    dragging=true; handle.setPointerCapture?.(e.pointerId);
+    const rr=panel.getBoundingClientRect(); sx=e.clientX; sy=e.clientY; sl=rr.left; st=rr.top; e.preventDefault();
+  });
+  W.addEventListener('pointermove',e=>{ if(!dragging) return; position(panel, sl+(e.clientX-sx), st+(e.clientY-sy)); });
+  W.addEventListener('pointerup',e=>{ if(!dragging) return; dragging=false; try{handle.releasePointerCapture?.(e.pointerId)}catch{} });
+}
 
-    const btn = D.createElement('button');
-    btn.id = HIDE_BTN_ID;
-    btn.type = 'button';
-    btn.textContent = 'Hide';
-    Object.assign(btn.style, {
-      marginLeft: 'auto',
-      padding: '6px 10px',
-      border: '1px solid rgba(0,0,0,.12)',
-      borderRadius: '10px',
-      background: '#e5e7eb',
-      color: '#111827',
-      cursor: 'pointer'
-    });
-
-    const handle = ui.handle || ui.panel.querySelector(HANDLE_SEL) || ui.panel;
-    handle.appendChild(btn);
-    btn.addEventListener('click', hidePanel);
+function ensureHideShow(panel){
+  if(!panel.querySelector('[data-voice-action="hide"]')){
+    const b=D.createElement('button'); b.type='button'; b.className='mshare-voicebot__btn'; b.textContent='Hide';
+    b.setAttribute('data-voice-action','hide');
+    (panel.querySelector('.mshare-voicebot__handle')||panel.firstElementChild||panel).appendChild(b);
+    b.addEventListener('click', hidePanel);
   }
-
-  function ensureLauncher(){
-    let l = D.getElementById(LAUNCHER_ID);
-    if (l){ ui.launcher = l; return; }
-    l = D.createElement('button');
-    l.id = LAUNCHER_ID;
-    l.type = 'button';
-    l.textContent = '🎤 Voice';
-    Object.assign(l.style, {
-      position: 'fixed',
-      right: '16px',
-      bottom: '16px',
-      zIndex: String(ZTOP),
-      border: 'none',
-      borderRadius: '9999px',
-      padding: '10px 12px',
-      background: '#115E84',
-      color: '#fff',
-      boxShadow: '0 8px 20px rgba(0,0,0,.25)',
-      cursor: 'pointer'
-    });
-    l.addEventListener('click', ()=>{
-      // tiny debounce
-      if (now() - lastLaunchClick < 150) return;
-      lastLaunchClick = now();
-      showPanel();
-    });
-    D.body.appendChild(l);
-    ui.launcher = l;
+  if(!D.getElementById(LAUNCH_ID)){
+    const l=D.createElement('button'); l.id=LAUNCH_ID; l.type='button'; l.textContent='🎤 Voice'; l.style.display='none';
+    l.addEventListener('click', showPanel); D.body.appendChild(l);
   }
+}
 
-  function hidePanel(){
-    if (!ui.panel) return;
-    ui.panel.style.display = 'none';
-    ensureLauncher(); ui.launcher.style.display = 'inline-flex';
-    localStorage.setItem(KEYS.HIDDEN, '1');
-  }
+function hidePanel(){
+  const p=panelEl(); if(!p) return; p.style.display='none';
+  const l=D.getElementById(LAUNCH_ID); if(l) l.style.display='inline-block';
+  try{localStorage.setItem(LS_HIDDEN,'1')}catch{}
+}
+function showPanel(){
+  const p=panelEl(); if(!p) return; initialDock(p); p.style.display='block';
+  const l=D.getElementById(LAUNCH_ID); if(l) l.style.display='none';
+  try{localStorage.setItem(LS_HIDDEN,'0')}catch{}
+}
 
-  function showPanel(){
-    if (!ui.panel) return;
-    ui.panel.style.display = 'block';
-    if (ui.launcher) ui.launcher.style.display = 'none';
-    localStorage.setItem(KEYS.HIDDEN, '0');
-
-    // If no saved pos, dock bottom-right away from header
-    const pos = readJSON(KEYS.POS, null);
-    if (!pos){
-      const w = ui.panel.offsetWidth || 340;
-      const h = ui.panel.offsetHeight || 220;
-      let x = W.innerWidth - w - 16;
-      let y = W.innerHeight - h - 16;
-      if (isSmall()) y = Math.max(96, y);
-      position(ui.panel, x, y);
-    }
-  }
-
-  function attachDrag(){
-    if (!ui.panel) return;
-    ui.handle = ui.panel.querySelector(HANDLE_SEL) || ui.panel;
-
-    // Handle-only: capture pointer on handle
-    ui.handle.style.touchAction = 'none';
-    ui.handle.style.cursor = 'move';
-
-    ui.handle.addEventListener('pointerdown', (e)=>{
-      try{ ui.handle.setPointerCapture(e.pointerId); }catch{}
-      state.dragging = true;
-      state.offsetX = e.clientX - ui.panel.offsetLeft;
-      state.offsetY = e.clientY - ui.panel.offsetTop;
-      e.preventDefault();
-      e.stopPropagation();
-    });
-
-    W.addEventListener('pointermove', (e)=>{
-      if (!state.dragging) return;
-      const b = bounds(ui.panel);
-      let x = e.clientX - state.offsetX;
-      let y = e.clientY - state.offsetY;
-      x = clamp(x, b.minLeft, b.maxLeft);
-      y = clamp(y, b.minTop,  b.maxTop);
-      ui.panel.style.left = x + 'px';
-      ui.panel.style.top  = y + 'px';
-    }, { passive:false });
-
-    W.addEventListener('pointerup', (e)=>{
-      if (!state.dragging) return;
-      state.dragging = false;
-      try{ ui.handle.releasePointerCapture(e.pointerId); }catch{}
-      writeJSON(KEYS.POS, { left: parseInt(ui.panel.style.left||'16'), top: parseInt(ui.panel.style.top||'96') });
-    });
-
-    W.addEventListener('resize', ()=>{
-      const pos = readJSON(KEYS.POS, null);
-      if (pos) position(ui.panel, pos.left, pos.top);
-    });
-  }
-
-  function init(){
-    ui.panel = D.querySelector(PANEL_SEL);
-    if (!ui.panel) return;
-
-    Object.assign(ui.panel.style, {
-      position: 'fixed',
-      zIndex: String(ZTOP)
-    });
-
-    const saved = readJSON(KEYS.POS, null);
-    if (saved) {
-      position(ui.panel, saved.left, saved.top);
-    } else {
-      // Default docking: bottom-right; keep away from header on small screens
-      const w = ui.panel.offsetWidth || 340;
-      const h = ui.panel.offsetHeight || 220;
-      let x = W.innerWidth - w - 16;
-      let y = W.innerHeight - h - 16;
-      if (isSmall()) y = Math.max(96, y);
-      position(ui.panel, x, y);
-    }
-
-    attachDrag();
-    ensureHideButton();
-
-    // Restore hidden state
-    const hidden = localStorage.getItem(KEYS.HIDDEN) === '1';
-    if (hidden) { hidePanel(); } else { showPanel(); }
-  }
-
-  if (D.readyState === 'loading') D.addEventListener('DOMContentLoaded', init, { once:true });
-  else init();
-
-  // If panel is injected later by the app, allow re-init
-  W.addEventListener('mshare-voice:panel-ready', init);
+function init(){
+  ensureStyles();
+  const p=panelEl(); if(!p) return;
+  p.style.position='fixed'; p.style.zIndex='2147483000';
+  if(!p.style.top || !p.style.left) initialDock(p);
+  makeHandleDrag(p); ensureHideShow(p);
+  const hidden = (localStorage.getItem(LS_HIDDEN)==='1'); hidden?hidePanel():showPanel();
+  W.addEventListener('resize',()=>{const x=panelEl(); if(!x) return; const r=x.getBoundingClientRect(); position(x,r.left,r.top);});
+  try{W.dispatchEvent(new CustomEvent('mshare-voice:panel-ready'))}catch{}
+}
+if(D.readyState==='loading'){D.addEventListener('DOMContentLoaded',init,{once:true})} else {init()}
+W.addEventListener('mshare-voice:reinit', init);
 })();
