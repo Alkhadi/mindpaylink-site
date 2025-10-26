@@ -1,0 +1,18 @@
+/* __mshare_va_v3_1__ */
+:root{--va-fg:#0b1221;--va-bg:#fff;--va-bd:#cbd5e1;--va-ac:#2563eb;--va-z:9998}
+/* floating Voice button */
+#vaToggle{position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:calc(var(--va-z)+1);background:var(--va-bg);color:var(--va-fg)!important;border:1px solid var(--va-bd);border-radius:12px;padding:10px 12px;font-weight:700;box-shadow:0 6px 28px rgba(0,0,0,.25)}
+/* panel shell */
+#mshare-voicebot,.mshare-voicebot,#voiceAssistant,#voice-coach,.voice-assistant,.voice-coach,.voice-coach-pro{position:fixed!important;z-index:var(--va-z)!important;max-width:min(520px,94vw);border-radius:12px;background:var(--va-bg);color:var(--va-fg);-webkit-font-smoothing:antialiased;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif}
+.mshare-voicebot__handle{cursor:grab;user-select:none;touch-action:none}
+.mshare-voicebot__handle:active{cursor:grabbing}
+/* high-contrast controls */
+.mshare-voicebot__btn,.va-btn{background:var(--va-bg);color:var(--va-fg)!important;border:1px solid var(--va-bd);border-radius:12px;padding:10px 14px;font-weight:600;line-height:1}
+.mshare-voicebot__btn:focus,.va-btn:focus{outline:2px solid var(--va-ac);outline-offset:1px}
+[data-voice-action="start"],.va-btn.primary{background:var(--va-ac);color:#fff!important;border-color:transparent}
+.mshare-voicebot__select,.mshare-voicebot__cmd{background:var(--va-bg);color:var(--va-fg)!important;border:1px solid var(--va-bd);border-radius:12px;padding:10px 12px;min-height:40px}
+.mshare-voicebot__cmd::placeholder{color:#6b7280;opacity:1}
+.mshare-voicebot__range{accent-color:var(--va-ac)}
+[data-voice-action="start"]{display:inline-flex!important}
+/* dock-at-button on mobile by default */
+@media (max-width:900px){.va-docked{left:auto!important;right:16px!important;top:auto!important;bottom:calc(16px + env(safe-area-inset-bottom))!important}}
