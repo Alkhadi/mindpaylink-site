@@ -1,0 +1,41 @@
+/* __mshare_va_hotfix__  */
+:root{
+  --va-z: 9999;
+  --va-gap: 10px;
+  --va-radius: 12px;
+  --va-shadow: 0 6px 28px rgba(0,0,0,.25);
+  --va-panel-bg: #ffffff;
+  --va-panel-fg: #0b1221;
+  --va-btn-bg: #ffffff;
+  --va-btn-fg: #0b1221;
+  --va-btn-bd: #cbd5e1;
+  --va-accent: #2563eb;
+}
+.va-panel{position:fixed; top:96px; right:16px; z-index:var(--va-z);
+  background:var(--va-panel-bg); color:var(--va-panel-fg);
+  border:1px solid #e2e8f0; border-radius:var(--va-radius); box-shadow:var(--va-shadow);
+  max-width:min(520px,94vw); width:auto; min-width:320px;
+}
+.va-panel[hidden]{display:none !important;}
+.va-panel .va-toolbar{display:flex; flex-wrap:wrap; gap:8px; padding:8px 10px;}
+.va-panel .va-titlebar{display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 10px; border-bottom:1px solid #eef2f7;}
+.va-btn, .va-toggle, .va-handle{
+  -webkit-font-smoothing:antialiased; font-weight:600; font-size:13px; line-height:1;
+  padding:10px 12px; border-radius:10px; border:1px solid var(--va-btn-bd);
+  background:var(--va-btn-bg); color:var(--va-btn-fg) !important; cursor:pointer;
+}
+.va-btn:hover, .va-toggle:hover{filter:brightness(0.98);}
+.va-btn:active, .va-toggle:active{transform:translateY(1px);}
+.va-btn.primary{background:var(--va-accent); color:#fff !important; border-color:transparent;}
+.va-handle{user-select:none; cursor:grab;}
+.va-handle:active{cursor:grabbing;}
+/* global toggle */
+#vaToggle{
+  position:fixed; right:16px; bottom:18px; z-index:var(--va-z);
+  box-shadow:var(--va-shadow);
+}
+/* ensure any existing dark/inverted styles don’t hide text */
+.va-panel button, .va-panel [role="button"]{color:var(--va-btn-fg) !important;}
+/* make sure Start is rendered visibly even if a previous stylesheet hid it */
+.va-panel .va-start{display:inline-flex !important;}
+
