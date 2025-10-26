@@ -7,7 +7,7 @@ function restore(){const st=localStorage.getItem(LS_H);const ps=localStorage.get
  Object.assign(panel.style,{position:'fixed',top:pos.y+'px',left:pos.x+'px',zIndex:9999,touchAction:'none'});
  makeDraggable(panel); st==='1'?hide():show();}
 function hide(){if(!panel)return;panel.style.display='none';
- if(!launcher){launcher=document.createElement('button');launcher.textContent='🎤 Voice';
+ if(!launcher){launcher=document.createElement('button');launcher.textContent='�� Voice';
  Object.assign(launcher.style,{position:'fixed',bottom:'1rem',right:'1rem',zIndex:9999,borderRadius:'50%',padding:'0.8rem',background:'#115E84',color:'#fff',border:'none',cursor:'pointer'});
  launcher.onclick=()=>{localStorage.setItem(LS_H,'0');show();};document.body.appendChild(launcher);}
  localStorage.setItem(LS_H,'1');}
