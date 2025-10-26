@@ -1,144 +1,128 @@
-/* __mshare_va_hotfix__ */
+/* __mshare_va_hotfix__ nav-safe */
 (function(){
-  const LS = {
-    hidden: 'va_hidden',
-    pos: 'va_pos_v2'
-  };
-  const q = (s,c=document)=>c.querySelector(s);
-  const qq = (s,c=document)=>Array.from(c.querySelectorAll(s));
-  function detectPanel(){
-    return q('#voiceAssistant') || q('#voice-coach') || q('.voice-assistant') ||
-           q('.voice-coach') || q('.voice-coach-pro') || q('[data-voice-coach]') ||
-           q('#mplVoiceAssistant');
-  }
-  function ensureStart(panel){
-    const hasStart = qq('button', panel).some(b => /\bstart\b/i.test(b.textContent||''));
-    if (hasStart) return;
-    const bar = q('.va-toolbar', panel) || panel;
-    const btn = document.createElement('button');
-    btn.className = 'va-btn primary va-start';
-    btn.type = 'button';
-    btn.textContent = 'Start';
-    btn.title = 'Start voice assistant';
-    btn.addEventListener('click', () => {
-      const VC = window.__voiceCoach || window.voiceCoach || window.mplVoice || window.VoiceCoach || {};
-      for (const name of ['start','resume','play','speak']) {
-        if (typeof VC[name] === 'function') { try { VC[name](); } catch{} return; }
-      }
+  const q=(s,c=document)=>c.querySelector(s), qq=(s,c=document)=>Array.from(c.querySelectorAll(s));
+  const LS={hidden:'va_hidden', pos:'va_pos_v2'};
+  const MIN_TOP_DESKTOP = 96;
+
+  const getHeader = () => q('header, .site-header, #header2025, #mainNav, nav[role="navigation"]');
+  const getBurger = () => q('#navToggle, .nav-toggle, [data-nav-toggle], button[aria-controls*="nav"], #menuToggle, .hamburger, .menu-btn, .nav-button');
+
+  const rect = el => el ? el.getBoundingClientRect() : null;
+  const overlap = (a,b)=> a && b && !(a.right<=b.left || a.left>=b.right || a.bottom<=b.top || a.top>=b.bottom);
+
+  function ensureStart(p){
+    if (qq('button',p).some(b=>/\bstart\b/i.test((b.textContent||'').trim()))) return;
+    const bar=q('.va-toolbar',p)||p;
+    const btn=document.createElement('button');
+    btn.className='va-btn primary va-start'; btn.type='button'; btn.textContent='Start';
+    btn.addEventListener('click',()=>{
+      const VC=window.__voiceCoach||window.voiceCoach||window.mplVoice||window.VoiceCoach||{};
+      for(const k of ['start','resume','play','speak']) if(typeof VC[k]==='function'){ try{VC[k]();}catch{} return; }
       document.dispatchEvent(new CustomEvent('va-start',{bubbles:true}));
     });
-    if (bar.firstChild) bar.insertBefore(btn, bar.firstChild); else bar.appendChild(btn);
+    bar.firstChild?bar.insertBefore(btn,bar.firstChild):bar.appendChild(btn);
   }
-  function ensureTitlebar(panel){
-    let tb = q('.va-titlebar', panel);
-    if (!tb){
-      tb = document.createElement('div');
-      tb.className = 'va-titlebar';
-      const h = document.createElement('strong');
-      h.textContent = 'Voice Assistant';
-      tb.appendChild(h);
-      panel.insertBefore(tb, panel.firstChild);
+
+  function ensureBars(p){
+    let tb=q('.va-titlebar',p);
+    if(!tb){ tb=document.createElement('div'); tb.className='va-titlebar';
+      const h=document.createElement('strong'); h.textContent='Voice Assistant'; tb.appendChild(h);
+      p.insertBefore(tb,p.firstChild);
     }
+    let tool=q('.va-toolbar',p); if(!tool){ tool=document.createElement('div'); tool.className='va-toolbar'; p.appendChild(tool); }
     return tb;
   }
-  function ensureToolbar(panel){
-    let bar = q('.va-toolbar', panel);
-    if (!bar){
-      bar = document.createElement('div'); bar.className = 'va-toolbar';
-      panel.appendChild(bar);
-    }
-    return bar;
-  }
-  function ensureHandle(panel, titlebar){
-    if (q('.va-handle', titlebar)) return;
-    const btn = document.createElement('button');
-    btn.type='button'; btn.className='va-handle'; btn.textContent='Move';
-    titlebar.appendChild(btn);
-    // drag logic (saves absolute top/left)
+
+  function drag(p, handle){
     let sx=0, sy=0, ox=0, oy=0, dragging=false;
-    const onDown = (e)=>{
-      dragging=true; btn.style.cursor='grabbing';
-      const r = panel.getBoundingClientRect();
-      ox = r.left; oy = r.top;
-      sx = (e.touches? e.touches[0].clientX : e.clientX);
-      sy = (e.touches? e.touches[0].clientY : e.clientY);
-      document.addEventListener('mousemove', onMove);
-      document.addEventListener('touchmove', onMove, {passive:false});
-      document.addEventListener('mouseup', onUp);
-      document.addEventListener('touchend', onUp);
-    };
-    const onMove = (e)=>{
-      if (!dragging) return;
-      const cx = (e.touches? e.touches[0].clientX : e.clientX);
-      const cy = (e.touches? e.touches[0].clientY : e.clientY);
-      const nx = ox + (cx - sx);
-      const ny = oy + (cy - sy);
-      Object.assign(panel.style, {left: nx+'px', top: ny+'px', right:'auto', bottom:'auto'});
-      try { localStorage.setItem(LS.pos, JSON.stringify({left:nx, top:ny})); } catch {}
+    const down=e=>{dragging=true; const r=p.getBoundingClientRect(); ox=r.left; oy=r.top;
+      sx=(e.touches?e.touches[0].clientX:e.clientX); sy=(e.touches?e.touches[0].clientY:e.clientY);
+      document.addEventListener('mousemove',move); document.addEventListener('touchmove',move,{passive:false});
+      document.addEventListener('mouseup',up); document.addEventListener('touchend',up);};
+    const move=e=>{
+      if(!dragging) return;
+      const cx=(e.touches?e.touches[0].clientX:e.clientX), cy=(e.touches?e.touches[0].clientY:e.clientY);
+      const nx=ox+(cx-sx), ny=oy+(cy-sy);
+      Object.assign(p.style,{left:nx+'px', top:ny+'px', right:'auto', bottom:'auto'});
+      try{localStorage.setItem(LS.pos, JSON.stringify({left:nx, top:ny}));}catch{}
       e.preventDefault?.();
     };
-    const onUp = ()=>{
-      dragging=false; btn.style.cursor='grab';
-      document.removeEventListener('mousemove', onMove);
-      document.removeEventListener('touchmove', onMove);
-      document.removeEventListener('mouseup', onUp);
-      document.removeEventListener('touchend', onUp);
+    const up=()=>{dragging=false;
+      document.removeEventListener('mousemove',move); document.removeEventListener('touchmove',move);
+      document.removeEventListener('mouseup',up); document.removeEventListener('touchend',up);
+      // snap if user drags into header/hamburger
+      navSafeDock(p, {respectSaved:true});
     };
-    btn.addEventListener('mousedown', onDown);
-    btn.addEventListener('touchstart', onDown, {passive:true});
+    handle.addEventListener('mousedown',down); handle.addEventListener('touchstart',down,{passive:true});
   }
-  function ensureToggle(panel){
-    let t = document.getElementById('vaToggle');
-    if (!t){
-      t = document.createElement('button');
-      t.id = 'vaToggle'; t.className='va-toggle'; t.type='button';
-      t.setAttribute('aria-pressed','false');
-      t.title = 'Show/Hide Voice Assistant';
-      t.textContent = 'Voice';
-      document.body.appendChild(t);
+
+  function clampOnScreen(p){
+    const r=p.getBoundingClientRect(), vw=window.innerWidth, vh=window.innerHeight;
+    const nx=Math.min(Math.max(8, r.left), vw - r.width - 8);
+    const ny=Math.min(Math.max(8, r.top),  vh - r.height - 16);
+    Object.assign(p.style,{left:nx+'px', top:ny+'px'});
+  }
+
+  function navSafeDock(p, opts={}){
+    const vw=window.innerWidth, mobile = vw <= 900;
+    const header = getHeader();
+    const burger = getBurger();
+    const headerBottom = header ? rect(header).bottom + window.scrollY : MIN_TOP_DESKTOP;
+    const topMin = Math.max(MIN_TOP_DESKTOP, headerBottom - window.scrollY + 8);
+
+    let saved=null; try{ saved = JSON.parse(localStorage.getItem(LS.pos) || 'null'); }catch{}
+
+    // 1) Base dock
+    if (mobile){
+      Object.assign(p.style,{left:'auto', right:'16px', top:'auto', bottom:'calc(16px + env(safe-area-inset-bottom))'});
+    } else {
+      Object.assign(p.style,{left:'auto', right:'16px', top: topMin+'px', bottom:'auto'});
     }
-    const apply = (hidden)=>{
-      panel.hidden = !!hidden;
-      t.setAttribute('aria-pressed', hidden ? 'true' : 'false');
-      try { localStorage.setItem(LS.hidden, hidden ? '1' : '0'); } catch {}
-    };
-    t.addEventListener('click', ()=> apply(!panel.hidden));
-    // restore saved state
-    try { apply(localStorage.getItem(LS.hidden) === '1'); } catch { apply(false); }
-  }
-  function applyDefaultPosition(panel){
-    // default top-right
-    Object.assign(panel.style, {top:'96px', right:'16px', left:'auto', bottom:'auto'});
-    try {
-      const s = localStorage.getItem(LS.pos);
-      if (s){
-        const p = JSON.parse(s);
-        if (Number.isFinite(p.left) && Number.isFinite(p.top)){
-          Object.assign(panel.style, {left:p.left+'px', top:p.top+'px', right:'auto', bottom:'auto'});
-        }
+
+    // 2) Restore saved if allowed and safe
+    if (opts.respectSaved && saved && Number.isFinite(saved.left) && Number.isFinite(saved.top)){
+      Object.assign(p.style,{left:saved.left+'px', top:saved.top+'px', right:'auto', bottom:'auto'});
+    }
+
+    // 3) If overlapping header or hamburger, force bottom-right (mobile) or below header (desktop)
+    const pr = rect(p), br = rect(burger), hr = rect(header);
+    if (overlap(pr, hr) || overlap(pr, br)){
+      if (mobile){
+        Object.assign(p.style,{left:'auto', right:'16px', top:'auto', bottom:'calc(16px + env(safe-area-inset-bottom))'});
+        try{ localStorage.removeItem(LS.pos); }catch{}
+      } else {
+        Object.assign(p.style,{left:'auto', right:'16px', top: topMin+'px', bottom:'auto'});
       }
-    } catch {}
+    }
+
+    // 4) Finally clamp to viewport
+    requestAnimationFrame(()=>clampOnScreen(p));
   }
-  function ensureClasses(panel){
-    // make sure panel has .va-panel wrapper class for CSS targeting
-    if (!panel.classList.contains('va-panel')) panel.classList.add('va-panel');
+
+  function ensureToggle(p){
+    let t=document.getElementById('vaToggle');
+    if(!t){ t=document.createElement('button'); t.id='vaToggle'; t.className='va-toggle'; t.type='button'; t.textContent='Voice'; document.body.appendChild(t); }
+    const apply=h=>{ p.hidden=!!h; try{localStorage.setItem(LS.hidden, h?'1':'0');}catch{} };
+    t.addEventListener('click',()=>apply(!p.hidden));
+    try{ apply(localStorage.getItem(LS.hidden)==='1'); }catch{ apply(false); }
   }
 
   function init(){
-    const panel = detectPanel();
-    if (!panel) return;
-    ensureClasses(panel);
-    const tb = ensureTitlebar(panel);
-    ensureToolbar(panel);
-    ensureStart(panel);
-    ensureHandle(panel, tb);
-    ensureToggle(panel);
-    applyDefaultPosition(panel);
+    const p = q('#voiceAssistant, #voice-coach, .voice-assistant, .voice-coach, .voice-coach-pro, [data-voice-coach], #mplVoiceAssistant');
+    if(!p) return;
+    p.classList.add('va-panel');
+    const tb = ensureBars(p); ensureStart(p);
+    let handle = tb.querySelector('.va-handle');
+    if(!handle){ handle=document.createElement('button'); handle.type='button'; handle.className='va-handle'; handle.textContent='Move'; tb.appendChild(handle); }
+    drag(p, handle); ensureToggle(p);
+    navSafeDock(p, {respectSaved:true});
+
+    let roTimer=null;
+    const onRO = ()=>{ clearTimeout(roTimer); roTimer=setTimeout(()=>navSafeDock(p,{respectSaved:true}),120); };
+    window.addEventListener('resize', onRO);
+    window.addEventListener('orientationchange', onRO);
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init, {once:true}); else init();
+  window.addEventListener('mshare-voice:panel-ready', init);
 })();
