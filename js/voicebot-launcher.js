@@ -17,9 +17,10 @@
   const state = { dragging:false, offsetX:0, offsetY:0 };
 
   const isSmall = ()=> W.innerWidth <= 768;
+  const now = ()=> Date.now();
+  let lastLaunchClick = 0;
 
   function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
-
   function readJSON(k, def){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def; }catch{ return def; } }
   function writeJSON(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch{} }
 
@@ -28,15 +29,15 @@
     return {
       minLeft: 8,
       minTop: isSmall() ? 96 : 16, // keep clear of header/hamburger on phones
-      maxLeft: W.innerWidth - r.width - 8,
-      maxTop: W.innerHeight - r.height - 8
+      maxLeft: Math.max(8, W.innerWidth - r.width - 8),
+      maxTop:  Math.max(isSmall()?96:16, W.innerHeight - r.height - 8)
     };
   }
 
   function position(panel, left, top){
     const b = bounds(panel);
-    const L = clamp(left, b.minLeft, Math.max(b.minLeft, b.maxLeft));
-    const T = clamp(top,  b.minTop,  Math.max(b.minTop,  b.maxTop));
+    const L = clamp(left, b.minLeft, b.maxLeft);
+    const T = clamp(top,  b.minTop,  b.maxTop);
     panel.style.left = L + 'px';
     panel.style.top  = T + 'px';
     panel.style.right = 'auto';
@@ -87,7 +88,12 @@
       boxShadow: '0 8px 20px rgba(0,0,0,.25)',
       cursor: 'pointer'
     });
-    l.addEventListener('click', showPanel);
+    l.addEventListener('click', ()=>{
+      // tiny debounce
+      if (now() - lastLaunchClick < 150) return;
+      lastLaunchClick = now();
+      showPanel();
+    });
     D.body.appendChild(l);
     ui.launcher = l;
   }
@@ -104,6 +110,17 @@
     ui.panel.style.display = 'block';
     if (ui.launcher) ui.launcher.style.display = 'none';
     localStorage.setItem(KEYS.HIDDEN, '0');
+
+    // If no saved pos, dock bottom-right away from header
+    const pos = readJSON(KEYS.POS, null);
+    if (!pos){
+      const w = ui.panel.offsetWidth || 340;
+      const h = ui.panel.offsetHeight || 220;
+      let x = W.innerWidth - w - 16;
+      let y = W.innerHeight - h - 16;
+      if (isSmall()) y = Math.max(96, y);
+      position(ui.panel, x, y);
+    }
   }
 
   function attachDrag(){
@@ -153,8 +170,7 @@
 
     Object.assign(ui.panel.style, {
       position: 'fixed',
-      zIndex: String(ZTOP),
-      left: 'auto', top: 'auto'
+      zIndex: String(ZTOP)
     });
 
     const saved = readJSON(KEYS.POS, null);
@@ -162,13 +178,11 @@
       position(ui.panel, saved.left, saved.top);
     } else {
       // Default docking: bottom-right; keep away from header on small screens
-      // Temporarily set size to compute bounds
       const w = ui.panel.offsetWidth || 340;
       const h = ui.panel.offsetHeight || 220;
-      const btm = 16, rgt = 16;
-      let x = W.innerWidth - w - rgt;
-      let y = W.innerHeight - h - btm;
-      if (isSmall()) y = Math.max(96, y); // avoid header/hamburger
+      let x = W.innerWidth - w - 16;
+      let y = W.innerHeight - h - 16;
+      if (isSmall()) y = Math.max(96, y);
       position(ui.panel, x, y);
     }
 

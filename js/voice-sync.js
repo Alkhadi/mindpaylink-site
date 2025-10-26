@@ -40,8 +40,16 @@
     return gb || vs[0];
   }
 
+  function anyMediaActive(){
+    try{
+      const els = Array.from(D.querySelectorAll('audio,video'));
+      return els.some(el=>{
+        try { return !el.paused && !el.ended && el.currentTime>0; } catch { return false; }
+      });
+    }catch{ return false; }
+  }
+
   function collectText(){
-    // Prefer selection; else main content; else body text.
     const sel = W.getSelection && String(W.getSelection()).trim();
     if (sel) return sel;
     const main = D.querySelector('main');
@@ -60,15 +68,16 @@
   }
 
   async function speakNow(text){
+    // fallback to VA speech only if no page media is active
+    if (anyMediaActive()) { dispatch('speaking'); return; }
+
     stopImmediate(); // ensure no overlap
     if (!('speechSynthesis' in W)) return;
     const voice = pickVoice();
     const t = String(text || collectText() || '').trim();
     if (!t) return;
 
-    // chunk basic: split by sentence-ish
     const parts = t.match(/[^.!?]+[.!?]|\S+$/g) || [t];
-
     dispatch('speaking');
 
     for (let i=0;i<parts.length;i++){
@@ -76,57 +85,42 @@
       const u = new SpeechSynthesisUtterance(seg);
       state.currentUtter = u;
       if (voice) u.voice = voice;
-      // conservative defaults; respect system language
       u.lang = (voice && voice.lang) || 'en-GB';
       u.rate = 1.0; u.pitch = 1.0; u.volume = 1.0;
 
-      const done = new Promise((resolve)=>{
-        u.onend = ()=> resolve(true);
-        u.onerror = ()=> resolve(true);
-      });
-
+      const done = new Promise((resolve)=>{ u.onend = u.onerror = ()=> resolve(true); });
       try { W.speechSynthesis.speak(u); } catch { break; }
       await done;
 
-      if (state.mode !== 'speaking') break; // stop/pause toggled during play
+      if (state.mode !== 'speaking') break;
     }
 
     if (state.mode === 'speaking') dispatch('idle');
   }
 
-  // Button bindings (page + panel), idempotent per node
   function bindWithin(root){
-    const seenKey = '__va_bound__';
-    const mark = (el)=>{ try{ if (el[seenKey]) return false; el[seenKey]=true; return true; }catch{ return false; } };
+    const SEEN = '__va_bound__';
+    const tag = (el)=>{ if (el[SEEN]) return false; try{ el[SEEN]=true; return true; }catch{ return false; } };
 
+    // Page buttons
     root.querySelectorAll(SEL.start).forEach(el=>{
-      if (!mark(el)) return;
+      if (!tag(el)) return;
       el.addEventListener('click',(e)=>{ if(!debounceOk()) return; e.stopPropagation(); speakNow(); });
     });
-
     root.querySelectorAll(SEL.stop).forEach(el=>{
-      if (!mark(el)) return;
+      if (!tag(el)) return;
       el.addEventListener('click',(e)=>{ if(!debounceOk()) return; e.stopPropagation(); stopImmediate(); });
     });
-
     root.querySelectorAll(SEL.pause).forEach(el=>{
-      if (!mark(el)) return;
-      el.addEventListener('click',(e)=>{ if(!debounceOk()) return; e.stopPropagation();
-        try{ W.speechSynthesis && W.speechSynthesis.pause(); }catch{}
-        dispatch('paused');
-      });
+      if (!tag(el)) return;
+      el.addEventListener('click',(e)=>{ if(!debounceOk()) return; e.stopPropagation(); try{ W.speechSynthesis.pause(); }catch{} dispatch('paused'); });
     });
-
     root.querySelectorAll(SEL.resume).forEach(el=>{
-      if (!mark(el)) return;
-      el.addEventListener('click',(e)=>{ if(!debounceOk()) return; e.stopPropagation();
-        try{ W.speechSynthesis && W.speechSynthesis.resume(); }catch{}
-        dispatch('speaking');
-      });
+      if (!tag(el)) return;
+      el.addEventListener('click',(e)=>{ if(!debounceOk()) return; e.stopPropagation(); try{ W.speechSynthesis.resume(); }catch{} dispatch('speaking'); });
     });
-
     root.querySelectorAll(SEL.toggle).forEach(el=>{
-      if (!mark(el)) return;
+      if (!tag(el)) return;
       el.addEventListener('click',(e)=>{ if(!debounceOk()) return; e.stopPropagation();
         if (state.mode==='speaking'){ stopImmediate(); }
         else if (state.mode==='paused'){ try{ W.speechSynthesis.resume(); }catch{} dispatch('speaking'); }
@@ -134,28 +128,27 @@
       });
     });
 
-    // Panel buttons (if the VA panel provides them)
+    // Panel buttons (if present)
     root.querySelectorAll(SEL.panelStart).forEach(el=>{
-      if (!mark(el)) return;
+      if (!tag(el)) return;
       el.addEventListener('click',(e)=>{ if(!debounceOk()) return; e.stopPropagation(); speakNow(); });
     });
     root.querySelectorAll(SEL.panelStop).forEach(el=>{
-      if (!mark(el)) return;
+      if (!tag(el)) return;
       el.addEventListener('click',(e)=>{ if(!debounceOk()) return; e.stopPropagation(); stopImmediate(); });
     });
     root.querySelectorAll(SEL.panelPause).forEach(el=>{
-      if (!mark(el)) return;
+      if (!tag(el)) return;
       el.addEventListener('click',(e)=>{ if(!debounceOk()) return; e.stopPropagation(); try{ W.speechSynthesis.pause(); }catch{} dispatch('paused'); });
     });
     root.querySelectorAll(SEL.panelResume).forEach(el=>{
-      if (!mark(el)) return;
+      if (!tag(el)) return;
       el.addEventListener('click',(e)=>{ if(!debounceOk()) return; e.stopPropagation(); try{ W.speechSynthesis.resume(); }catch{} dispatch('speaking'); });
     });
   }
 
   function init(){
     bindWithin(D);
-    // Observe future DOM
     try{
       const mo = new MutationObserver(muts=>{
         for (const m of muts){
@@ -169,7 +162,7 @@
   if (D.readyState==='loading') D.addEventListener('DOMContentLoaded', init, {once:true});
   else init();
 
-  // Expose minimal API for debugging/optional external use
+  // Expose minimal API (optional)
   W.MShareVoiceSync = {
     speak: (t)=> speakNow(String(t||'').trim()),
     stop: ()=> stopImmediate(),
