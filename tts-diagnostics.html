@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>TTS Diagnostics • M Share</title>
+<style>
+  body{font:14px/1.4 system-ui,-apple-system,Segoe UI,Roboto; background:#0b1220; color:#e5e7eb; padding:24px;}
+  .card{background:#111827; border:1px solid #1f2937; border-radius:12px; padding:16px; max-width:880px;}
+  button{padding:8px 12px; border-radius:8px; border:1px solid #334155; background:#1f2937; color:#e5e7eb; cursor:pointer; margin-right:8px;}
+  table{width:100%; border-collapse:collapse; margin-top:12px;}
+  th,td{border-bottom:1px solid #1f2937; padding:6px 8px; font-size:13px;}
+  .ok{color:#34d399} .warn{color:#fbbf24} .bad{color:#f87171}
+</style>
+</head><body>
+<div class="card">
+  <h1>TTS Diagnostics</h1>
+  <p>Status: <span id="st">loading…</span></p>
+  <div style="margin:8px 0 12px">
+    <button id="unlock">Unlock Audio</button>
+    <button id="list">List Voices</button>
+    <button id="test">Speak “Hello from Daniel”</button>
+    <button id="stop">Stop</button>
+  </div>
+  <div id="out"></div>
+  <table id="tbl" style="display:none">
+    <thead><tr><th>#</th><th>Name</th><th>Lang</th><th>Default</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</div>
+<script src="assets/js/tts-crossbrowser-shim.js?v=202510272102-tts-shim"></script>
+<script>
+const st=document.getElementById('st'), tbl=document.getElementById('tbl'), tb=tbl.querySelector('tbody'), out=document.getElementById('out');
+function log(html){ out.innerHTML = html; }
+document.getElementById('unlock').onclick=()=>{ window.MShareTTS && window.MShareTTS.ready().then(()=>log('<span class="ok">Audio unlocked / voices loaded (if available).</span>')); };
+document.getElementById('list').onclick=async()=>{
+  await (window.MShareTTS && MShareTTS.ready());
+  const vs = (window.MShareTTS && MShareTTS.list()) || [];
+  st.textContent = vs.length ? 'voices available' : 'no voices detected';
+  tb.innerHTML = vs.map((v,i)=>`<tr><td>${i+1}</td><td>${v.name}</td><td>${v.lang}</td><td>${v.default?'yes':''}</td></tr>`).join('');
+  tbl.style.display='table';
+};
+document.getElementById('test').onclick=async()=>{
+  await (window.MShareTTS && MShareTTS.ready());
+  const v = window.MShareTTS && MShareTTS.pickVoice();
+  log(v ? `Using: <b>${v.name}</b> (${v.lang})` : '<span class="warn">No preferred voice; using browser default.</span>');
+  window.MShareTTS && MShareTTS.speak('Hello from Daniel. This is a cross browser speech test for M Share.');
+};
+document.getElementById('stop').onclick=()=>{ window.MShareTTS && MShareTTS.stop(); };
+(async()=>{ await (window.MShareTTS && MShareTTS.ready()); const vs=MShareTTS.list(); st.textContent = vs.length? 'voices available' : 'no voices detected'; })();
+</script>
+  <script src="./assets/js/tts-crossbrowser-shim.js?v=202510272102-tts-shim" defer></script>
+</body></html>
