@@ -1,7 +1,0 @@
-/* __mshare_voicebot_navsafe__ */
-#mshare-voicebot{position:fixed !important; z-index:9998 !important; max-width:min(520px,94vw); border-radius:12px}
-@media (max-width:900px){
-  /* always dock bottom-right on phones unless a saved pos is valid & safe */
-  #mshare-voicebot{left:auto !important; right:16px !important; top:auto !important; bottom:calc(16px + env(safe-area-inset-bottom)) !important}
-}
-#vaToggle{position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:9999}

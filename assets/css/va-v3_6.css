@@ -1,4 +1,4 @@
-/* __mshare_va_v3_5__ */
+/* __mshare_va_v3_6__ */
 :root{--va-z:9998;--va-fg:#f8fafc;--va-bg:#0f172a;--va-bd:#334155;--va-ac:#2563eb}
 #vaToggle{position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:calc(var(--va-z)+1);background:#111827;color:#f8fafc!important;border:1px solid #1f2937;border-radius:12px;padding:10px 12px;font-weight:700;box-shadow:0 6px 28px rgba(0,0,0,.35)}
 #mshare-voicebot,.mshare-voicebot,#voiceAssistant,#voice-coach,.voice-assistant,.voice-coach,.voice-coach-pro{position:fixed!important;z-index:var(--va-z)!important;max-width:min(520px,94vw);border-radius:16px;background:var(--va-bg);color:var(--va-fg);box-shadow:0 12px 40px rgba(0,0,0,.45)}
