@@ -62,7 +62,8 @@
             opacity: .8
         }
     </style>
-                  <link rel="stylesheet" href="./assets/css/va-v3_6.css?v=202510271936-va-v3_6" />
+                    <style>/* kill any stray VA */[id="mshare-voicebot"],.mshare-voicebot,.voice-assistant,.voice-coach-pro{display:none!important;}</style>
+  <link rel="stylesheet" href="./assets/css/voicecoach-defaults.css?v=202510272041-remove-VA-progress-v2" />
 </head>
 
 <body>
@@ -86,9 +87,8 @@
         // Also push to home after 10s as JS fallback
         setTimeout(function () { if (location.pathname !== '/') { location.replace('/'); } }, 10000);
     </script>
-  <script src="js/voicebot-launcher.js" defer></script>
-  <script src="js/voice-sync.js" defer></script>
-                  <script src="./assets/js/va-v3_6.js?v=202510271936-va-v3_6" defer></script>
+    <script src="./assets/js/voicecoach-defaults-v2.js?v=202510272041-remove-VA-progress-v2" defer></script>
+  <script src="./assets/js/progress-tracker-v2.js?v=202510272041-remove-VA-progress-v2" defer></script>
 </body>
 
 </html>
