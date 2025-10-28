@@ -1,0 +1,4 @@
+/* Centers orb and action buttons on the live session screens */
+#session .btn-row { justify-content: center; }
+.orb-wrap { margin-left: auto; margin-right: auto; }
+#session h2 { text-align: center; }
