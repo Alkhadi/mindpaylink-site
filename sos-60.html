@@ -616,7 +616,6 @@
 
   <!-- Core scripts (single instances) -->
   <script src="assets/js/core/tts-helper.js"></script>
-  <script src="assets/js/core/breath-cues.js"></script>
   <script>
     (function () {
       'use strict';
@@ -789,6 +788,7 @@ try{if(!unlocked){const AC=window.AudioContext||window.webkitAudioContext;if(AC)
 A.src=el.getAttribute('data-say-asset');await A.play();}catch(err){console.error('asset-audio play failed',err);}});})();
 </script>
   <script>window.MS_TTS && MS_TTS.waitAndDefaultToBritish();</script>
+  <script src="assets/js/core/breath-voice-cues.js"></script>
 </body>
 
 </html>
