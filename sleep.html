@@ -848,6 +848,13 @@
     <script src="./assets/js/voicecoach-defaults-v2.js?v=202510272041-remove-VA-progress-v2" defer></script>
   <script src="./assets/js/progress-tracker-v2.js?v=202510272041-remove-VA-progress-v2" defer></script>
   <script src="./assets/js/tts-crossbrowser-shim.js?v=202510272102-tts-shim" defer></script>
+<!-- __mshare_asset_audio_player__ -->
+<script>
+(()=>{const A=new Audio();A.preload='auto';A.setAttribute('playsinline','');
+let unlocked=false;document.addEventListener('click',async(e)=>{const el=e.target.closest('[data-say-asset]');if(!el)return;
+try{if(!unlocked){const AC=window.AudioContext||window.webkitAudioContext;if(AC){const ac=new AC();const b=ac.createBuffer(1,1,22050);const s=ac.createBufferSource();s.buffer=b;s.connect(ac.destination);s.start(0);await ac.resume();}unlocked=true;}
+A.src=el.getAttribute('data-say-asset');await A.play();}catch(err){console.error('asset-audio play failed',err);}});})();
+</script>
 </body>
 
 </html>
