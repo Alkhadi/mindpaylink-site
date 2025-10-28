@@ -18,8 +18,6 @@
   <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png" />
   <link rel="manifest" href="manifest.webmanifest" />
   <meta name="theme-color" content="#0f172a" />
-  <link rel="stylesheet" href="voice-coach-fix.css" />
-
   <!-- Mobile/desktop nav helpers (kept as-is) -->
   <style id="mpl-mobile-nav-style-v4">
     nav .menu[hidden],
@@ -404,7 +402,6 @@
     type="application/ld+json">{ "@context": "https://schema.org", "@type": "WebSite", "name": "M Share", "url": "https://www.mindpaylink.com/" }</script>
   <!-- mshare-seo-end -->
                     <style>/* kill any stray VA */[id="mshare-voicebot"],.mshare-voicebot,.voice-assistant,.voice-coach-pro{display:none!important;}</style>
-  <link rel="stylesheet" href="./assets/css/voicecoach-defaults.css?v=202510272041-remove-VA-progress-v2" />
   <link rel="stylesheet" href="assets/css/breathing-layout-fix.css" />
   <link rel="stylesheet" href="assets/css/audio-unlock.css" />
 </head>
@@ -696,7 +693,6 @@
   <script src="assets/js/core/sound-kit.js"></script>
   <script src="assets/header/header.js"></script>
   <script src="assets/footer/footer.js"></script>
-  <script defer src="voice-coach-fix.js"></script>
   <script id="mpl-theme-auto-js-v3">
     (() => {
       const KEY = 'mpl.theme.v2'; const DAY_START = 7, DAY_END = 19; const state = (() => { try { return Object.assign({ auto: true, color: null, brightness: 1 }, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch { return { auto: true, color: null, brightness: 1 }; } })();
@@ -778,8 +774,7 @@
     </div>
     <script>document.getElementById('yearFooter') && (document.getElementById('yearFooter').textContent = (new Date).getFullYear()); document.getElementById('backToTop') && document.getElementById('backToTop').addEventListener('click', function (e) { e.preventDefault(); try { (document.getElementById('top') || document.body).scrollIntoView({ behavior: 'smooth', block: 'start' }) } catch { location.hash = '#top' } })</script>
   </footer>
-    <script src="./assets/js/voicecoach-defaults-v2.js?v=202510272041-remove-VA-progress-v2" defer></script>
-  <script src="./assets/js/progress-tracker-v2.js?v=202510272041-remove-VA-progress-v2" defer></script>
+    <script src="./assets/js/progress-tracker-v2.js?v=202510272041-remove-VA-progress-v2" defer></script>
   <script src="./assets/js/tts-crossbrowser-shim.js?v=202510272102-tts-shim" defer></script>
 <!-- __mshare_asset_audio_player__ -->
 <script>

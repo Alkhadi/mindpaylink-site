@@ -1,0 +1,30 @@
+<!doctype html><meta charset="utf-8"><title>Audio Diagnostics • M Share</title>
+<style>body{font:16px/1.5 system-ui,Segoe UI,Roboto,Arial;padding:20px} button{margin:6px 0}</style>
+<h1>Audio Diagnostics</h1>
+<p>Tap “Enable sound” first. Then test files and TTS.</p>
+<link rel="stylesheet" href="assets/css/audio-unlock.css">
+<script src="assets/js/core/audio-unlock.js"></script>
+<script src="assets/js/core/breath-voice-cues.js"></script>
+<div>
+  <button onclick="__AUDIO_UNLOCK__.unlock()">Enable sound</button>
+  <button onclick="MS_VOICE_CUES.preloadWA()">Preload (WebAudio)</button>
+  <button onclick="MS_VOICE_CUES.play('inhale')">Play Inhale</button>
+  <button onclick="MS_VOICE_CUES.play('hold')">Play Hold</button>
+  <button onclick="MS_VOICE_CUES.play('exhale')">Play Exhale</button>
+</div>
+<hr>
+<div id="out"></div>
+<script>
+  (async ()=>{
+    const out=document.getElementById('out');
+    function line(s){ out.insertAdjacentHTML('beforeend','<div>'+s+'</div>'); }
+    line('Files present?');
+    const names=['inhale.mp3','hold.mp3','exhale.mp3','inhale.wav','hold.wav','exhale.wav'];
+    for(const n of names){
+      try{
+        const r=await fetch('assets/audio/voice/'+n,{cache:'no-store'});
+        line(n+': '+(r.ok?'OK':'MISSING ('+r.status+')'));
+      }catch(e){ line(n+': ERROR '+e.message); }
+    }
+  })();
+</script>
