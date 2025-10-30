@@ -541,6 +541,93 @@
 
 
   <main class="container">
+<!-- mpl-condition-card-start:stress -->
+<section id="mpl-stress-quick-card" class="card" style="margin-bottom:1.25rem">
+  <h2>Quick Starter: Stress</h2>
+  <p class="muted" style="margin-top:-.25rem">Educational information only — not a diagnosis or medical advice.</p>
+
+  <div class="grid cols-2" style="gap:1rem">
+    <div>
+      <h3>What it is</h3>
+      <p>The body’s response to pressure or demands. Short bursts can be normal; ongoing stress can affect wellbeing.</p>
+
+      <h3>Possible signs</h3>
+      <ul><li>Irritability or feeling overwhelmed</li><li>Headaches, muscle tension or stomach upset</li><li>Racing thoughts; sleep difficulties</li><li>Withdrawing or increased use of quick “coping” habits</li></ul>
+
+      <h3>Trusted resources</h3>
+      <ul><li><a href="https://www.nhs.uk/every-mind-matters/mental-wellbeing-tips/breathing-exercises-for-stress/" rel="noopener">NHS – Breathing exercises for stress</a></li></ul>
+    </div>
+
+    <div>
+      <h3>Use this site for Stress</h3>
+      <ul><li>Do a 60-second reset whenever you notice tension building.</li><li>Use Box Breathing during transitions (before meetings, after driving).</li><li>Save a PDF card and pin it where you’ll see it.</li></ul><div class="actions" style="margin-top:.5rem">
+      <a class="btn" href="box-breathing.html" rel="noopener">🟩 Box Breathing</a>
+      <a class="btn" href="4-7-8-breathing.html" rel="noopener">🟦 4-7-8 Breathing</a>
+      <a class="btn" href="coherent-5-5.html" rel="noopener">🟪 Coherent 5-5</a>
+      <a class="btn btn-danger" href="sos-60.html" rel="noopener">🆘 60-second SOS</a>
+    </div>
+
+      <h3 style="margin-top:.75rem">Progress (local only)</h3>
+      <div class="badge">Sessions: <span id="mpl-stress-sess">0</span></div>
+      <div class="badge">Minutes:  <span id="mpl-stress-mins">0</span></div>
+      <div class="badge">Last used: <span id="mpl-stress-last">—</span></div>
+      <div class="actions" style="margin-top:.5rem">
+        <button type="button" class="btn" id="mpl-stress-start">Start session</button>
+        <button type="button" class="btn" id="mpl-stress-stop" disabled>Stop &amp; save</button>
+        <span class="muted" id="mpl-stress-timer" style="margin-left:.5rem">00:00</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function(){
+    const key = 'mpl.progress.stress';
+    const el = {
+      s: document.getElementById('mpl-stress-sess'),
+      m: document.getElementById('mpl-stress-mins'),
+      l: document.getElementById('mpl-stress-last'),
+      start: document.getElementById('mpl-stress-start'),
+      stop:  document.getElementById('mpl-stress-stop'),
+      t: document.getElementById('mpl-stress-timer'),
+    };
+    function load(){ try { return Object.assign({sessions:0, minutes:0, last:null, startedAt:null}, JSON.parse(localStorage.getItem(key)||'{}')); } catch(e){ return {sessions:0, minutes:0, last:null, startedAt:null}; } }
+    function save(v){ try { localStorage.setItem(key, JSON.stringify(v)); } catch(e){} }
+    function fmtMin(n){ return Math.max(0, Math.round(n)); }
+    function fmtTime(ms){ const s = Math.floor(ms/1000); const mm = String(Math.floor(s/60)).padStart(2,'0'); const ss = String(s%60).padStart(2,'0'); return mm+':'+ss; }
+
+    let state = load(), tickId = null;
+    function reflect(){
+      el.s && (el.s.textContent = String(state.sessions));
+      el.m && (el.m.textContent = String(fmtMin(state.minutes)));
+      el.l && (el.l.textContent = state.last ? new Date(state.last).toLocaleString() : '—');
+      el.start && (el.start.disabled = !!state.startedAt);
+      el.stop  && (el.stop.disabled  = !state.startedAt);
+    }
+    function start(){
+      if (state.startedAt) return;
+      state.startedAt = Date.now();
+      save(state); reflect();
+      tickId = setInterval(()=>{ el.t && (el.t.textContent = fmtTime(Date.now() - state.startedAt)); }, 1000);
+    }
+    function stop(){
+      if (!state.startedAt) return;
+      const durMin = (Date.now() - state.startedAt) / 60000;
+      state.minutes = Math.max(0, (state.minutes||0) + durMin);
+      state.sessions = (state.sessions||0) + 1;
+      state.last = new Date().toISOString();
+      state.startedAt = null;
+      save(state); reflect();
+      if (tickId){ clearInterval(tickId); tickId = null; }
+      el.t && (el.t.textContent = '00:00');
+    }
+    el.start && el.start.addEventListener('click', start);
+    el.stop  && el.stop.addEventListener('click', stop);
+    reflect();
+  })();
+  </script>
+</section>
+<!-- mpl-condition-card-end -->
+
 
     <h1>Stress — Reset & Prioritise</h1>
     <div class="card">
