@@ -7,6 +7,8 @@
   <title>Wellbeing • M Share</title>
   <meta name="description"
     content="Measured Breathing. Measurable Relief. Free, evidence-based techniques with sharing, QR, and PDF." />
+
+  <!-- Core styles -->
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="assets/css/ux-fixes.css" />
   <link rel="stylesheet" href="assets/css/footer-2025.css" />
@@ -18,6 +20,10 @@
   <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png" />
   <link rel="manifest" href="manifest.webmanifest" />
   <meta name="theme-color" content="#0f172a" />
+  <!-- Pure CSS only; JS for this panel was removed—no auto TTS on home -->
+  <link rel="stylesheet" href="voice-coach-fix.css">
+
+  <!-- Mobile nav CSS helpers -->
   <style id="mpl-mobile-nav-style-v4">
     /* Ensure [hidden] truly hides dropdowns in any theme */
     nav .menu[hidden],
@@ -56,7 +62,7 @@
         touch-action: manipulation;
       }
 
-      /* A11y focus rings on triggers (avoid hover outlines) */
+      /* A11y focus rings on triggers */
       .nav-group>a:focus-visible,
       .nav-group>button:focus-visible,
       .nav-group>.menu-toggle:focus-visible,
@@ -78,8 +84,8 @@
     }
   </style>
 
+  <!-- Desktop submenu helpers -->
   <style id="mpl-desktop-nav-css-v3">
-    /* Desktop-only navigation helpers (visibility + a11y) */
     @media (min-width:1025px) {
       .mpl-nav-toggle {
         display: inline-flex;
@@ -133,160 +139,87 @@
     }
   </style>
 
+  <!-- Desktop submenu behavior (kept intact) -->
   <script id="mpl-desktop-nav-js-v3">
-    /* Desktop submenu behavior — hover or click, one open, ESC/Outside close, a11y */
     (() => {
       const mq = window.matchMedia('(min-width:1025px)');
-      let enabled = false;
-      let cleanups = [];
+      let enabled = false, cleanups = [];
       const q = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
 
-      function findSubmenu(el) {
-        return el.querySelector(':scope > .submenu, :scope > [role="menu"], :scope > ul, :scope > .dropdown-menu, :scope > ol');
-      }
-
+      function findSubmenu(el) { return el.querySelector(':scope > .submenu, :scope > [role="menu"], :scope > ul, :scope > .dropdown-menu, :scope > ol'); }
       function findTopNavGroups() {
         const navs = q('header nav, nav[role="navigation"], nav.primary, .navbar nav, nav');
         const groups = new Set();
         navs.forEach(nav => {
-          const topChildren = [];
           const ul = nav.querySelector(':scope > ul');
-          if (ul) topChildren.push(...Array.from(ul.children));
-          else topChildren.push(...Array.from(nav.children));
-          topChildren.forEach(node => {
-            const sub = findSubmenu(node);
-            if (sub) groups.add(node);
-          });
+          const kids = ul ? Array.from(ul.children) : Array.from(nav.children);
+          kids.forEach(node => { const sub = findSubmenu(node); if (sub) groups.add(node); });
         });
         return Array.from(groups);
       }
-
       function closeAll(except) {
         q('[data-mpl-open="true"]').forEach(g => {
           if (except && g === except) return;
           g.setAttribute('data-mpl-open', 'false');
-          const t = g.querySelector(':scope > .mpl-nav-toggle');
-          if (t) t.setAttribute('aria-expanded', 'false');
+          const t = g.querySelector(':scope > .mpl-nav-toggle'); if (t) t.setAttribute('aria-expanded', 'false');
         });
       }
 
       function enhance() {
-        if (enabled) return;
-        enabled = true;
-
-        const groups = findTopNavGroups();
-        if (!groups.length) return;
+        if (enabled) return; enabled = true;
+        const groups = findTopNavGroups(); if (!groups.length) return;
 
         groups.forEach(group => {
-          const submenu = findSubmenu(group);
-          if (!submenu) return;
+          const submenu = findSubmenu(group); if (!submenu) return;
           submenu.setAttribute('data-mpl-submenu', 'true');
           group.setAttribute('data-mpl-nav-group', 'true');
           if (!group.hasAttribute('data-mpl-open')) group.setAttribute('data-mpl-open', 'false');
 
-          // Label is the first focusable/control on the group (but outside submenu)
           let label = group.querySelector(':scope > a, :scope > button, :scope > [role="button"], :scope > .label, :scope > .menu-label');
           if (!label) label = group.firstElementChild;
 
-          // Toggle button (desktop-only)
           let toggle = group.querySelector(':scope > .mpl-nav-toggle');
           if (!toggle) {
             toggle = document.createElement('button');
-            toggle.type = 'button';
-            toggle.className = 'mpl-nav-toggle';
-            toggle.setAttribute('aria-haspopup', 'menu');
-            toggle.setAttribute('aria-expanded', 'false');
+            toggle.type = 'button'; toggle.className = 'mpl-nav-toggle';
+            toggle.setAttribute('aria-haspopup', 'menu'); toggle.setAttribute('aria-expanded', 'false');
             toggle.setAttribute('title', 'Toggle submenu');
             toggle.innerHTML = '<span class="mpl-chevron" aria-hidden="true">▾</span><span class="mpl-sr-only">Toggle submenu</span>';
-            if (label && label.nextSibling) group.insertBefore(toggle, label.nextSibling);
-            else group.appendChild(toggle);
+            if (label && label.nextSibling) group.insertBefore(toggle, label.nextSibling); else group.appendChild(toggle);
           }
 
-          const open = () => {
-            if (!mq.matches) return;
-            closeAll(group);
-            group.setAttribute('data-mpl-open', 'true');
-            toggle.setAttribute('aria-expanded', 'true');
-          };
-          const close = () => {
-            if (!mq.matches) return;
-            group.setAttribute('data-mpl-open', 'false');
-            toggle.setAttribute('aria-expanded', 'false');
-          };
+          const open = () => { if (!mq.matches) return; closeAll(group); group.setAttribute('data-mpl-open', 'true'); toggle.setAttribute('aria-expanded', 'true'); };
+          const close = () => { if (!mq.matches) return; group.setAttribute('data-mpl-open', 'false'); toggle.setAttribute('aria-expanded', 'false'); };
 
           const onEnter = () => open();
-          const onLeave = (e) => {
-            // close only when leaving group entirely
-            const rel = e.relatedTarget;
-            if (rel && group.contains(rel)) return;
-            close();
-          };
-          const onToggle = (e) => {
-            if (!mq.matches) return;
-            e.preventDefault();
-            const isOpen = group.getAttribute('data-mpl-open') === 'true';
-            if (isOpen) close(); else open();
-          };
-          const onKeys = (e) => {
-            if (!mq.matches) return;
-            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(e); }
-            else if (e.key === 'Escape') { e.preventDefault(); close(); toggle.focus(); }
-          };
+          const onLeave = (e) => { const rel = e.relatedTarget; if (rel && group.contains(rel)) return; close(); };
+          const onToggle = (e) => { if (!mq.matches) return; e.preventDefault(); const isOpen = group.getAttribute('data-mpl-open') === 'true'; isOpen ? close() : open(); };
+          const onKeys = (e) => { if (!mq.matches) return; if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(e); } else if (e.key === 'Escape') { e.preventDefault(); close(); toggle.focus(); } };
 
           group.addEventListener('mouseenter', onEnter);
           group.addEventListener('mouseleave', onLeave);
           toggle.addEventListener('click', onToggle);
           toggle.addEventListener('keydown', onKeys);
 
-          cleanups.push(() => {
-            group.removeEventListener('mouseenter', onEnter);
-            group.removeEventListener('mouseleave', onLeave);
-            toggle.removeEventListener('click', onToggle);
-            toggle.removeEventListener('keydown', onKeys);
-          });
+          cleanups.push(() => { group.removeEventListener('mouseenter', onEnter); group.removeEventListener('mouseleave', onLeave); toggle.removeEventListener('click', onToggle); toggle.removeEventListener('keydown', onKeys); });
         });
 
-        const onDocClick = (e) => {
-          if (!mq.matches) return;
-          const openEl = document.querySelector('[data-mpl-open="true"]');
-          if (!openEl) return;
-          if (openEl.contains(e.target)) return;
-          openEl.setAttribute('data-mpl-open', 'false');
-          const t = openEl.querySelector(':scope > .mpl-nav-toggle');
-          if (t) t.setAttribute('aria-expanded', 'false');
-        };
-        const onDocEsc = (e) => {
-          if (!mq.matches) return;
-          if (e.key === 'Escape') {
-            const openEl = document.querySelector('[data-mpl-open="true"]');
-            if (!openEl) return;
-            openEl.setAttribute('data-mpl-open', 'false');
-            const t = openEl.querySelector(':scope > .mpl-nav-toggle');
-            if (t) { t.setAttribute('aria-expanded', 'false'); t.focus(); }
-          }
-        };
+        const onDocClick = (e) => { if (!mq.matches) return; const openEl = document.querySelector('[data-mpl-open="true"]'); if (!openEl) return; if (openEl.contains(e.target)) return; openEl.setAttribute('data-mpl-open', 'false'); const t = openEl.querySelector(':scope > .mpl-nav-toggle'); if (t) t.setAttribute('aria-expanded', 'false'); };
+        const onDocEsc = (e) => { if (!mq.matches) return; if (e.key === 'Escape') { const openEl = document.querySelector('[data-mpl-open="true"]'); if (!openEl) return; openEl.setAttribute('data-mpl-open', 'false'); const t = openEl.querySelector(':scope > .mpl-nav-toggle'); if (t) { t.setAttribute('aria-expanded', 'false'); t.focus(); } } };
         document.addEventListener('click', onDocClick);
         document.addEventListener('keydown', onDocEsc);
         cleanups.push(() => { document.removeEventListener('click', onDocClick); document.removeEventListener('keydown', onDocEsc); });
       }
 
-      function teardown() {
-        if (!enabled) return;
-        closeAll();
-        cleanups.forEach(fn => { try { fn(); } catch (_) { } });
-        cleanups = [];
-        enabled = false;
-      }
-
+      function teardown() { if (!enabled) return; closeAll(); cleanups.forEach(fn => { try { fn(); } catch { } }); cleanups = []; enabled = false; }
       const react = () => { mq.matches ? enhance() : teardown(); };
-      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', react);
-      else react();
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', react, { once: true }); else react();
       mq.addEventListener('change', react);
     })();
   </script>
 
+  <!-- Footer styles -->
   <style id="mpl-footer-css-v3">
-    /* Scoped footer styles (safe, minimal) */
     #footer2025.mpl-footer-v3 {
       border-top: 1px solid var(--b, rgba(0, 0, 0, .12));
       font: inherit
@@ -420,6 +353,8 @@
       }
     }
   </style>
+
+  <!-- Theme variables -->
   <style id="mpl-theme-vars-css-v3">
     :root {
       --bg: #B0B0CD;
@@ -437,9 +372,10 @@
     }
 
     body {
-      background: transparent
+      background: transparent;
     }
   </style>
+
   <!-- mshare-seo-start -->
   <link rel="canonical" href="https://www.mindpaylink.com/" />
   <meta property="og:type" content="website" />
@@ -455,21 +391,14 @@
     content="Measured Breathing. Measurable Relief. Free, evidence-based techniques with sharing, QR, and PDF." />
   <meta name="twitter:image" content="https://www.mindpaylink.com/icons/logo-wordmark-800x200.png" />
   <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "M Share",
-      "url": "https://www.mindpaylink.com/"
-    }
+    {"@context":"https://schema.org","@type":"WebSite","name":"M Share","url":"https://www.mindpaylink.com/"}
   </script>
   <!-- mshare-seo-end -->
-                    <style>/* kill any stray VA */[id="mshare-voicebot"],.mshare-voicebot,.voice-assistant,.voice-coach-pro{display:none!important;}</style>
-  </head>
+</head>
 
 <body>
   <header class="site-header">
     <div class="container navbar">
-      <!-- Added logo-blue class to get the blue background -->
       <a id="brandLink" class="brand" data-href="index.html" href="index.html">
         <span class="logo logo-blue">M</span><span class="brand-text">M Share</span>
       </a>
@@ -495,14 +424,14 @@
           <button class="menu-toggle" aria-expanded="false">Breathing &amp; Focus <span class="icon">▾</span></button>
           <div class="submenu">
             <div class="menu-label">Guides</div>
-            <a data-href="breath.html">Breath (how‑to)</a>
+            <a data-href="breath.html">Breath (how-to)</a>
             <a data-href="focus.html">Focus</a>
             <a data-href="mindfulness.html">Mindfulness</a>
             <div class="menu-label">Techniques</div>
-            <a data-href="sos-60.html">60‑second Reset</a>
+            <a data-href="sos-60.html">60-second Reset</a>
             <a data-href="box-breathing.html">Box Breathing</a>
-            <a data-href="4-7-8-breathing.html">4‑7‑8 Breathing</a>
-            <a data-href="coherent-5-5.html">Coherent 5‑5</a>
+            <a data-href="4-7-8-breathing.html">4-7-8 Breathing</a>
+            <a data-href="coherent-5-5.html">Coherent 5-5</a>
           </div>
         </div>
         <div class="menu-group">
@@ -512,7 +441,7 @@
             <a data-href="sleep-tools.html">Sleep Tools</a>
             <a data-href="breath-tools.html">Breath Tools</a>
             <a data-href="mood-tools.html">Mood Tools</a>
-            <div class="menu-label">Condition‑specific</div>
+            <div class="menu-label">Condition-specific</div>
             <a data-href="adhd-tools.html">ADHD Tools</a>
             <a data-href="autism-tools.html">Autism Tools</a>
             <a data-href="depression-tools.html">Depression Tools</a>
@@ -539,6 +468,32 @@
   <a id="top" style="position:absolute;top:0;left:0;width:0;height:0;overflow:hidden"></a>
 
   <main class="container">
+    <!-- Voice Coach panel: kept visual only; no auto audio on home -->
+    <section id="mshare-voicebot" class="card" style="margin-bottom:2%">
+      <h2>Voice Coach</h2>
+      <div class="mshare-voicebot__content">
+        <p class="muted">Guided breathing and focus with system voice. Move, reset, or hide the panel as needed.</p>
+        <div class="actions">
+          <button type="button" class="mshare-voicebot__btn" data-voice-action="reset-pos"
+            title="Reset position">Reset</button>
+          <button type="button" class="mshare-voicebot__btn" data-voice-action="toggle-visibility"
+            title="Hide or Show">Hide</button>
+        </div>
+      </div>
+      <script>
+        (() => {
+          const section = document.getElementById('mshare-voicebot');
+          const toggleBtn = section?.querySelector('[data-voice-action="toggle-visibility"]');
+          const content = section?.querySelector('.mshare-voicebot__content');
+          toggleBtn?.addEventListener('click', () => {
+            const hidden = content.style.display === 'none';
+            content.style.display = hidden ? 'block' : 'none';
+            toggleBtn.textContent = hidden ? 'Hide' : 'Show';
+          });
+        })();
+      </script>
+    </section>
+
     <div class="card">
       <h1>Measured Breathing. Measurable Relief.</h1>
       <p class="muted">
@@ -632,12 +587,13 @@
     </div>
   </div>
 
+  <!-- Page logic (kept) -->
   <script>
     (function () {
       const MS = window.__MSHARE__ || {};
       const { Stats, drawWeeklyChart } = MS;
 
-      // Year (legacy footer)
+      // Year (legacy footer, if present)
       const y = document.getElementById('year'); if (y) y.textContent = new Date().getFullYear();
 
       // VCF + Profile PDF (wire both 'downloadPdf' buttons)
@@ -676,108 +632,41 @@
       }
     })();
   </script>
-  <script src="app.js"></script>
-  <script src="coach.js"></script>
-  <script src="assets/js/ux-fixes.js"></script>
-  <script src="assets/js/paylinks.js"></script>
-  <script src="assets/js/site-core.js"></script>
-  <script src="assets/js/a11y-fix.js"></script>
-  <script src="assets/js/start-fix.js"></script>
-  <!-- Trimmed legacy helpers; unified header/footer handle nav. Keep one sound kit only. -->
-  <script src="assets/js/core/sound-kit.js"></script>
-  <script src="assets/header/header.js"></script>
-  <script src="assets/footer/footer.js"></script>
-  <script defer src="assets/js/contrast-fix.js"></script>
 
+  <!-- Site/core scripts -->
+  <script src="app.js" defer></script>
+  <script src="coach.js" defer></script>
+  <script src="assets/js/ux-fixes.js" defer></script>
+  <script src="assets/js/paylinks.js" defer></script>
+  <script src="assets/js/site-core.js" defer></script>
+  <script src="assets/js/a11y-fix.js" defer></script>
+  <script src="assets/js/start-fix.js" defer></script>
+  <!-- IMPORTANT: removed 'assets/js/core/sound-kit.js' and 'voice-coach-fix.js' on the HOME page to avoid auto-TTS -->
+
+  <!-- Header/footer component loaders -->
+  <script src="assets/header/header.js" defer></script>
+  <script src="assets/footer/footer.js" defer></script>
+  <script src="assets/js/contrast-fix.js" defer></script>
+
+  <!-- Theme / footer helpers (kept) -->
   <script id="mpl-theme-auto-js-v3">
     (() => {
-      const KEY = 'mpl.theme.v2';
-      const DAY_START = 7, DAY_END = 19; // local time
+      const KEY = 'mpl.theme.v2'; const DAY_START = 7, DAY_END = 19;
       const state = (() => { try { return Object.assign({ auto: true, color: null, brightness: 1 }, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch { return { auto: true, color: null, brightness: 1 }; } })();
-
       function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { } }
       function hexToRgb(hex) { if (!hex) return { r: 255, g: 255, b: 255 }; const s = hex.replace('#', ''); const v = s.length === 3 ? s.split('').map(c => c + c).join('') : s; const n = parseInt(v, 16); return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 }; }
       function luminance({ r, g, b }) { const toL = c => { c /= 255; return c <= .03928 ? c / 12.92 : Math.pow((c + .055) / 1.055, 2.4) }; const [R, G, B] = [toL(r), toL(g), toL(b)]; return .2126 * R + .7152 * G + .0722 * B; }
       function derivePalette(baseHex) { const rgb = hexToRgb(baseHex); const L = luminance(rgb); const fg = (1 - L) > 0.45 ? '#ffffff' : '#111111'; const muted = (L > 0.5) ? '#6b7280' : '#9ca3af'; const border = (L > 0.5) ? 'rgba(0,0,0,.12)' : 'rgba(255,255,255,.18)'; return { bg: baseHex, fg, muted, b: border }; }
-      function isDay() { const h = new Date().getHours(); return (h >= DAY_START && h < DAY_END); }
-
-      function applyTheme() {
-        const root = document.documentElement;
-        let bg, fg, muted, b; let brightness = Number(state.brightness || 1) || 1;
-        if (state.auto) {
-          const base = isDay() ? '#B0B0CD' : '#0b0b10';
-          const pal = derivePalette(base); ({ bg, fg, muted, b } = pal);
-          root.dataset.mplTheme = isDay() ? 'day-auto' : 'night-auto';
-        } else {
-          const base = state.color || '#B0B0CD'; const pal = derivePalette(base); ({ bg, fg, muted, b } = pal); delete root.dataset.mplTheme;
-        }
-        root.style.setProperty('--bg', bg);
-        root.style.setProperty('--fg', fg);
-        root.style.setProperty('--muted', muted);
-        root.style.setProperty('--b', b);
-        root.style.setProperty('--brightness', String(brightness));
-      }
-
-      function ensureUI() {
-        // Prefer dedicated slot inside the new footer
-        let slot = document.getElementById('mpl-theme-slot');
-        if (!slot) {
-          // Create minimal host inside footer if missing
-          let footer = document.getElementById('footer2025') || document.querySelector('.footer-2025') || document.querySelector('footer');
-          if (!footer) { footer = document.createElement('footer'); document.body.appendChild(footer); }
-          slot = document.createElement('div'); slot.id = 'mpl-theme-slot'; footer.appendChild(slot);
-        }
-        // Build controls only once
-        if (slot.querySelector('.mpl-theme-host')) return;
-        const host = document.createElement('div'); host.className = 'mpl-theme-host';
-        const details = document.createElement('details'); details.open = false;
-        const summary = document.createElement('summary'); summary.textContent = 'Theme';
-        details.appendChild(summary);
-        const wrap = document.createElement('div');
-
-        // Auto
-        const autoId = 'mpl-theme-auto'; const autoL = document.createElement('label'); autoL.setAttribute('for', autoId); autoL.textContent = 'Auto';
-        const auto = document.createElement('input'); auto.type = 'checkbox'; auto.id = autoId;
-
-        // Color
-        const colorId = 'mpl-theme-color'; const colorL = document.createElement('label'); colorL.setAttribute('for', colorId); colorL.textContent = 'Color';
-        const color = document.createElement('input'); color.type = 'color'; color.id = colorId; color.value = state.color || '#f7f7fb';
-
-        // Brightness
-        const brId = 'mpl-theme-brightness'; const brL = document.createElement('label'); brL.setAttribute('for', brId); brL.textContent = 'Brightness';
-        const br = document.createElement('input'); br.type = 'range'; br.min = '0.85'; br.max = '1.25'; br.step = '0.01'; br.id = brId; br.value = String(state.brightness || 1);
-
-        const reset = document.createElement('button'); reset.type = 'button'; reset.textContent = 'Reset';
-
-        function reflect() {
-          auto.checked = !!state.auto;
-          color.disabled = !!state.auto; br.disabled = !!state.auto;
-          if (!state.color) color.value = '#f7f7fb';
-        }
-
-        wrap.append(autoL, auto, colorL, color, brL, br, reset);
-        details.appendChild(wrap); host.appendChild(details); slot.appendChild(host);
-
-        reflect();
-
-        auto.addEventListener('change', () => { state.auto = auto.checked; save(); applyTheme(); reflect(); });
-        color.addEventListener('input', () => { if (state.auto) return; state.color = color.value; save(); applyTheme(); });
-        br.addEventListener('input', () => { if (state.auto) return; state.brightness = Number(br.value) || 1; save(); applyTheme(); });
-        reset.addEventListener('click', () => { state.auto = true; state.color = null; state.brightness = 1; save(); applyTheme(); reflect(); });
-      }
-
-      function scheduleMinuteTicks() {
-        if (!state.auto) return;
-        const now = new Date();
-        const ms = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
-        setTimeout(() => { applyTheme(); setInterval(() => { if (state.auto) applyTheme(); }, 60000); }, Math.max(0, ms));
-      }
-
+      function isDay() { const h = new Date().getHours(); return h >= DAY_START && h < DAY_END; }
+      function applyTheme() { const root = document.documentElement; let bg, fg, muted, b; let brightness = Number(state.brightness || 1) || 1; if (state.auto) { const base = isDay() ? '#B0B0CD' : '#0b0b10'; ({ bg, fg, muted, b } = derivePalette(base)); root.dataset.mplTheme = isDay() ? 'day-auto' : 'night-auto'; } else { const base = state.color || '#B0B0CD'; ({ bg, fg, muted, b } = derivePalette(base)); delete root.dataset.mplTheme; } root.style.setProperty('--bg', bg); root.style.setProperty('--fg', fg); root.style.setProperty('--muted', muted); root.style.setProperty('--b', b); root.style.setProperty('--brightness', String(brightness)); }
+      function ensureUI() { let slot = document.getElementById('mpl-theme-slot'); if (!slot) { let footer = document.getElementById('footer2025') || document.querySelector('.footer-2025') || document.querySelector('footer'); if (!footer) { footer = document.createElement('footer'); document.body.appendChild(footer); } slot = document.createElement('div'); slot.id = 'mpl-theme-slot'; footer.appendChild(slot); } if (slot.querySelector('.mpl-theme-host')) return; const host = document.createElement('div'); host.className = 'mpl-theme-host'; const details = document.createElement('details'); details.open = false; const summary = document.createElement('summary'); summary.textContent = 'Theme'; details.appendChild(summary); const wrap = document.createElement('div'); const autoId = 'mpl-theme-auto'; const autoL = document.createElement('label'); autoL.setAttribute('for', autoId); autoL.textContent = 'Auto'; const auto = document.createElement('input'); auto.type = 'checkbox'; auto.id = autoId; const colorId = 'mpl-theme-color'; const colorL = document.createElement('label'); colorL.setAttribute('for', colorId); colorL.textContent = 'Color'; const color = document.createElement('input'); color.type = 'color'; color.id = colorId; color.value = state.color || '#f7f7fb'; const brId = 'mpl-theme-brightness'; const brL = document.createElement('label'); brL.setAttribute('for', brId); brL.textContent = 'Brightness'; const br = document.createElement('input'); br.type = 'range'; br.min = '0.85'; br.max = '1.25'; br.step = '0.01'; br.id = brId; br.value = String(state.brightness || 1); const reset = document.createElement('button'); reset.type = 'button'; reset.textContent = 'Reset'; function reflect() { auto.checked = !!state.auto; color.disabled = !!state.auto; br.disabled = !!state.auto; if (!state.color) color.value = '#f7f7fb'; } wrap.append(autoL, auto, colorL, color, brL, br, reset); details.appendChild(wrap); host.appendChild(details); slot.appendChild(host); reflect(); auto.addEventListener('change', () => { state.auto = auto.checked; save(); applyTheme(); reflect(); }); color.addEventListener('input', () => { if (state.auto) return; state.color = color.value; save(); applyTheme(); }); br.addEventListener('input', () => { if (state.auto) return; state.brightness = Number(br.value) || 1; save(); applyTheme(); }); reset.addEventListener('click', () => { state.auto = true; state.color = null; state.brightness = 1; save(); applyTheme(); reflect(); }); }
+      function scheduleMinuteTicks() { if (!state.auto) return; const now = new Date(); const ms = (60 - now.getSeconds()) * 1000 - now.getMilliseconds(); setTimeout(() => { applyTheme(); setInterval(() => { if (state.auto) applyTheme(); }, 60000); }, Math.max(0, ms)); }
       function init() { applyTheme(); ensureUI(); scheduleMinuteTicks(); }
       if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true }); else init();
-
     })();
   </script>
+
+  <!-- Footer Explore builder (kept) -->
   <script id="mpl-footer-menu-js-v3">
     (() => {
       const q = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
@@ -785,81 +674,74 @@
       function topNavGroups() {
         const navs = q('header nav, nav[role="navigation"], nav.primary, .navbar nav, nav');
         const groups = new Set();
-        navs.forEach(nav => {
-          const ul = nav.querySelector(':scope > ul');
-          const kids = ul ? Array.from(ul.children) : Array.from(nav.children);
-          kids.forEach(node => { const sub = findSubmenu(node); if (sub) groups.add(node); });
-        });
+        navs.forEach(nav => { const ul = nav.querySelector(':scope > ul'); const kids = ul ? Array.from(ul.children) : Array.from(nav.children); kids.forEach(node => { const sub = findSubmenu(node); if (sub) groups.add(node); }); });
         return Array.from(groups);
       }
       function container() {
-        // Prefer explicit mount point inside new footer
-        const slot = document.getElementById('mpl-footer-explore');
-        if (slot) return slot;
+        const slot = document.getElementById('mpl-footer-explore'); if (slot) return slot;
         const footer = document.getElementById('footer2025') || document.querySelector('.footer-2025') || document.querySelector('footer');
         let mount = footer && footer.querySelector('.mpl-footer-explore');
         if (!mount && footer) { mount = document.createElement('nav'); mount.className = 'mpl-footer-explore'; footer.appendChild(mount); }
         return mount || document.body;
       }
-
       function build() {
-        const mount = container();
-        if (!mount) return;
-        // Avoid duplicating if already built
+        const mount = container(); if (!mount) return;
         if (mount.__mpl_built) return; mount.__mpl_built = true;
         mount.innerHTML = '';
-
-        const title = document.createElement('h4'); title.textContent = 'Explore';
-        mount.appendChild(title);
-
-        const groups = topNavGroups();
-        if (!groups.length) { mount.style.display = 'none'; return; }
+        const title = document.createElement('h4'); title.textContent = 'Explore'; mount.appendChild(title);
+        const groups = topNavGroups(); if (!groups.length) { mount.style.display = 'none'; return; }
 
         function closeOthers(exceptBtn) {
           q('.mpl-footer-toggle[aria-expanded="true"]', mount).forEach(btn => {
-            if (btn === exceptBtn) return;
-            btn.setAttribute('aria-expanded', 'false');
-            const nxt = btn.nextElementSibling; if (nxt) nxt.style.display = 'none';
+            if (btn === exceptBtn) return; btn.setAttribute('aria-expanded', 'false'); const nxt = btn.nextElementSibling; if (nxt) nxt.style.display = 'none';
           });
         }
 
         groups.forEach((g, idx) => {
           const sec = document.createElement('section');
-          const btn = document.createElement('button');
-          btn.type = 'button'; btn.className = 'mpl-footer-toggle'; btn.setAttribute('aria-expanded', 'false');
-
+          const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'mpl-footer-toggle'; btn.setAttribute('aria-expanded', 'false');
           let labelNode = g.querySelector(':scope > a, :scope > button, :scope > [role="button"], :scope > .label, :scope > .menu-label');
-          const labelText = (labelNode && (labelNode.textContent || '').trim()) || ('Menu ' + (idx + 1));
-          btn.innerHTML = labelText + ' <span aria-hidden="true">▾</span>';
-
+          const labelText = (labelNode && (labelNode.textContent || '').trim()) || ('Menu ' + (idx + 1)); btn.innerHTML = labelText + ' <span aria-hidden="true">▾</span>';
           const list = document.createElement('ul'); list.setAttribute('data-mpl-footer-list', ''); list.style.display = 'none';
           const submenu = findSubmenu(g);
           if (submenu) {
-            q('a[href], [data-href]', submenu).forEach(a => {
+            q('a[href],[data-href]', submenu).forEach(a => {
               const href = a.getAttribute('href') || a.getAttribute('data-href') || '#';
               const text = (a.textContent || '').trim() || href;
-              const li = document.createElement('li');
-              const cl = document.createElement('a'); cl.href = href; cl.textContent = text;
+              const li = document.createElement('li'); const cl = document.createElement('a'); cl.href = href; cl.textContent = text;
               li.appendChild(cl); list.appendChild(li);
             });
           }
-
-          const toggle = () => {
-            const open = btn.getAttribute('aria-expanded') === 'true';
-            closeOthers(btn);
-            btn.setAttribute('aria-expanded', String(!open));
-            list.style.display = open ? 'none' : '';
-          };
+          const toggle = () => { const open = btn.getAttribute('aria-expanded') === 'true'; closeOthers(btn); btn.setAttribute('aria-expanded', String(!open)); list.style.display = open ? 'none' : ''; };
           btn.addEventListener('click', toggle);
           btn.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } if (e.key === 'Escape') { btn.setAttribute('aria-expanded', 'false'); list.style.display = 'none'; btn.focus(); } });
-
-          sec.appendChild(btn);
-          sec.appendChild(list);
-          mount.appendChild(sec);
+          sec.appendChild(btn); sec.appendChild(list); mount.appendChild(sec);
         });
       }
-
       if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build, { once: true }); else build();
+    })();
+  </script>
+
+  <!-- Deterministic MOBILE nav wiring (prevents any other script from pre-opening it) -->
+  <script id="mpl-mobile-nav-js-v4">
+    (() => {
+      function wire() {
+        const btn = document.getElementById('navToggle');
+        const nav = document.getElementById('mainNav');
+        if (!btn || !nav) return;
+        // Start collapsed on mobile
+        if (window.matchMedia('(max-width:1024px)').matches) {
+          nav.hidden = true;
+          btn.setAttribute('aria-expanded', 'false');
+        }
+        btn.addEventListener('click', () => {
+          const open = nav.hidden;
+          nav.hidden = !open;
+          btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire, { once: true });
+      else wire();
     })();
   </script>
 
@@ -872,9 +754,11 @@
               <div class="muted">Quiet, practical tools for mental health and wellbeing.</div>
             </div>
           </div>
-          <div class="theme-controls"> <label>Background<input id="themeColor" type="color" value="#0f172a"
-                title="Input" placeholder=" "></label> <label>Brightness<input id="themeBrightness" type="range"
-                min="0.85" max="1.25" step="0.01" value="1" title="Input" placeholder=" "></label> </div>
+          <div class="theme-controls">
+            <label>Background<input id="themeColor" type="color" value="#0f172a" title="Input" placeholder=" "></label>
+            <label>Brightness<input id="themeBrightness" type="range" min="0.85" max="1.25" step="0.01" value="1"
+                title="Input" placeholder=" "></label>
+          </div>
           <div class="actions" style="margin-top:8px"><a class="btn" href="#top" id="backToTop">Back to top ↑</a></div>
         </section>
         <section class="col">
@@ -903,17 +787,13 @@
         <div class="credit">Designed by <b>Alkhadi M Koroma</b></div>
       </div>
     </div>
-    <script>document.getElementById('yearFooter') && (document.getElementById('yearFooter').textContent = (new Date).getFullYear()); document.getElementById('backToTop') && document.getElementById('backToTop').addEventListener('click', function (e) { e.preventDefault(); try { (document.getElementById('top') || document.body).scrollIntoView({ behavior: 'smooth', block: 'start' }) } catch { location.hash = '#top' } })</script>
+    <script>
+      (function () {
+        const yf = document.getElementById('yearFooter'); if (yf) yf.textContent = (new Date).getFullYear();
+        const bt = document.getElementById('backToTop'); bt?.addEventListener('click', function (e) { e.preventDefault(); try { (document.getElementById('top') || document.body).scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch { location.hash = '#top'; } });
+      })();
+    </script>
   </footer>
-    <script src="./assets/js/progress-tracker-v2.js?v=202510272041-remove-VA-progress-v2" defer></script>
-  <script src="./assets/js/tts-crossbrowser-shim.js?v=202510272102-tts-shim" defer></script>
-<!-- __mshare_asset_audio_player__ -->
-<script>
-(()=>{const A=new Audio();A.preload='auto';A.setAttribute('playsinline','');
-let unlocked=false;document.addEventListener('click',async(e)=>{const el=e.target.closest('[data-say-asset]');if(!el)return;
-try{if(!unlocked){const AC=window.AudioContext||window.webkitAudioContext;if(AC){const ac=new AC();const b=ac.createBuffer(1,1,22050);const s=ac.createBufferSource();s.buffer=b;s.connect(ac.destination);s.start(0);await ac.resume();}unlocked=true;}
-A.src=el.getAttribute('data-say-asset');await A.play();}catch(err){console.error('asset-audio play failed',err);}});})();
-</script>
 </body>
 
 </html>

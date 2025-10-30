@@ -1,171 +1,230 @@
-/* M Share TTS Helper — British English defaults (Chrome-safe) */
-(() => {
-  "use strict";
-  const KEY_URI = "mshare.tts.voiceURI";
-  const KEY_RATE = "mshare.tts.rate";
+(function () {
+    'use strict';
+    var g = (typeof window !== 'undefined') ? window : {};
+    if (g.MS_TTS) { return; }
 
-  function supported() {
-    return typeof window !== "undefined" &&
-           "speechSynthesis" in window &&
-           "SpeechSynthesisUtterance" in window;
-  }
+    var STORE_KEY = 'mshare_tts_voice_v1';
+    var hasSS = function () { return typeof g.speechSynthesis !== 'undefined'; };
+    var _voices = [];
+    var _ready = false;
+    var _primed = false;
+    var _waitingResolvers = [];
+    var _boundSelects = new Set(); // keep references to repopulate on late voice load
 
-  const TTS = {
-    _voices: [],
-    _ready: null,
-
-    getVoices() {
-      const v = window.speechSynthesis?.getVoices?.() || [];
-      if (v.length) this._voices = v;
-      return this._voices;
-    },
-
-    waitForVoices(timeout = 5000) {
-      if (!supported()) return Promise.resolve([]);
-      if (this.getVoices().length) return Promise.resolve(this._voices);
-      if (!this._ready) {
-        this._ready = new Promise((resolve) => {
-          let done = false;
-          const finish = (list) => { if (done) return; done = true; this._voices = list || []; resolve(this._voices); };
-          const timer = setTimeout(() => finish(this.getVoices()), timeout);
-
-          const handler = () => {
-            const list = this.getVoices();
-            if (list.length) { clearTimeout(timer); finish(list); window.speechSynthesis.onvoiceschanged = null; }
-          };
-          // Chrome requires touching getVoices at least once and listening for the event
-          window.speechSynthesis.onvoiceschanged = handler;
-          this.getVoices();
-        });
-      }
-      return this._ready;
-    },
-
-    _stored() { try { return localStorage.getItem(KEY_URI) || null; } catch { return null; } },
-    _store(uri) { try { localStorage.setItem(KEY_URI, uri || ""); } catch {} },
-
-    /* Preference order: Daniel → Google UK Female → Google UK Male → any en-GB → any English */
-    pickBest(list) {
-      if (!list || !list.length) return null;
-      const prefNames = ["Daniel", "Google UK English Female", "Google UK English Male", "Sonia", "Hazel", "Libby", "Susan"]
-        .map(s => s.toLowerCase());
-
-      const byNameGb = list.find(v =>
-        (v.lang || "").toLowerCase().startsWith("en-gb") &&
-        prefNames.some(p => (v.name || "").toLowerCase().includes(p)));
-      if (byNameGb) return byNameGb;
-
-      const enGb = list.find(v => (v.lang || "").toLowerCase().startsWith("en-gb"));
-      if (enGb) return enGb;
-
-      const en = list.find(v => (v.lang || "").toLowerCase().startsWith("en-"));
-      if (en) return en;
-
-      return list[0];
-    },
-
-    resolve(desired) {
-      const list = this.getVoices();
-      if (!list.length) return null;
-      if (desired) {
-        const found = list.find(v => v.voiceURI === desired || v.name === desired);
-        if (found) return found;
-      }
-      const stored = this._stored();
-      if (stored) {
-        const hit = list.find(v => v.voiceURI === stored);
-        if (hit) return hit;
-      }
-      return this.pickBest(list);
-    },
-
-    /* Ensure Chrome isn't stuck in paused state; unlock quickly after a gesture */
-    _resumeSafe() {
-      try { window.speechSynthesis.cancel(); } catch {}
-      try { window.speechSynthesis.resume(); } catch {}
-    },
-
-    speak(text, opts = {}) {
-      if (!supported() || !text) return Promise.resolve(false);
-      const rate = Math.max(0.5, Math.min(1.25, Number(opts.rate || localStorage.getItem(KEY_RATE) || 1) || 1));
-      this._resumeSafe();
-
-      const utt = new SpeechSynthesisUtterance(text);
-      const voice = this.resolve(opts.voiceURI || opts.voiceName || null);
-      if (voice) utt.voice = voice;
-      utt.lang = (utt.voice && utt.voice.lang) || "en-GB";
-      utt.rate = rate;
-      utt.pitch = typeof opts.pitch === "number" ? opts.pitch : 1.0;
-      utt.volume = typeof opts.volume === "number" ? opts.volume : 1.0;
-
-      return new Promise((resolve) => {
-        utt.onend = () => resolve(true);
-        utt.onerror = () => resolve(false);
-        try { window.speechSynthesis.speak(utt); } catch { resolve(false); }
-      });
-    },
-
-    /* Near-silent prime to satisfy some autoplay/gesture policies */
-    prime() {
-      if (!supported()) return;
-      try {
-        const u = new SpeechSynthesisUtterance(" ");
-        u.volume = 0; u.lang = "en-GB"; u.rate = 1;
-        window.speechSynthesis.speak(u);
-      } catch {}
-    },
-
-    /* Populate a <select> with voices, default to British, persist choice */
-    connectUI(selectEl, testBtn) {
-      if (!supported() || !selectEl) return;
-      const render = () => {
-        const list = this.getVoices();
-        if (!list.length) return;
-        const stored = this._stored();
-        const preferred = this.pickBest(list);
-
-        // sort en-GB first, then other en, then rest
-        const sorted = list.slice().sort((a, b) => {
-          const la = (a.lang || "").toLowerCase(), lb = (b.lang || "").toLowerCase();
-          const ra = la.startsWith("en-gb") ? 0 : la.startsWith("en-") ? 1 : 2;
-          const rb = lb.startsWith("en-gb") ? 0 : lb.startsWith("en-") ? 1 : 2;
-          if (ra !== rb) return ra - rb;
-          return (a.name || "").localeCompare(b.name || "");
-        });
-
-        selectEl.innerHTML = "";
-        sorted.forEach(v => {
-          const o = document.createElement("option");
-          o.value = v.voiceURI;
-          o.textContent = `${v.name} — ${v.lang}`;
-          const isDefault = stored ? v.voiceURI === stored
-                                   : (preferred && v.voiceURI === preferred.voiceURI);
-          if (isDefault) o.selected = true;
-          selectEl.appendChild(o);
-        });
-
-        selectEl.addEventListener("change", () => this._store(selectEl.value), { once: true });
-      };
-
-      this.waitForVoices(6000).then(render);
-
-      if (testBtn) {
-        testBtn.addEventListener("click", () => {
-          const uri = selectEl?.value;
-          if (uri) this._store(uri);
-          this.speak("This is your selected British English voice for M Share.", { voiceURI: uri });
-        });
-      }
-    },
-
-    /* Choose a British default once voices arrive */
-    waitAndDefaultToBritish() {
-      return this.waitForVoices(6000).then(() => {
-        const v = this.resolve("Daniel") || this.pickBest(this._voices);
-        if (v) this._store(v.voiceURI);
-      });
+    function _loadVoices() {
+        try {
+            _voices = hasSS() ? (g.speechSynthesis.getVoices() || []) : [];
+            if (_voices && _voices.length) {
+                _ready = true;
+                _waitingResolvers.splice(0).forEach(function (r) { try { r(_voices); } catch (_) { } });
+                // Repopulate any selects that have been bound already
+                try { _boundSelects.forEach(function (sel) { populateSelect(sel); }); } catch (_) { }
+            }
+        } catch (_) { _ready = false; }
     }
-  };
 
-  window.MS_TTS = TTS;
+    function waitForVoices(timeoutMs) {
+        return new Promise(function (resolve) {
+            if (!hasSS()) { resolve([]); return; }
+            if (_ready && _voices.length) { resolve(_voices); return; }
+            _waitingResolvers.push(resolve);
+            var start = Date.now();
+            (function tick() {
+                _loadVoices();
+                if (_ready) return; // resolver called in _loadVoices
+                if (Date.now() - start > (timeoutMs || 3000)) { resolve(_voices || []); return; }
+                setTimeout(tick, 120);
+            })();
+        });
+    }
+
+    if (hasSS()) {
+        _loadVoices();
+        g.speechSynthesis.onvoiceschanged = function () { _loadVoices(); };
+    }
+
+    function listVoices(opts) {
+        var vs = (_voices || []).slice();
+        var pref = (opts && opts.preferLangs) || ['en-GB', 'en-US'];
+        vs.sort(function (a, b) {
+            var ai = pref.findIndex(function (p) { return (a.lang || '').toLowerCase().startsWith(p.toLowerCase()); });
+            var bi = pref.findIndex(function (p) { return (b.lang || '').toLowerCase().startsWith(p.toLowerCase()); });
+            ai = ai === -1 ? 999 : ai; bi = bi === -1 ? 999 : bi;
+            if (ai !== bi) return ai - bi;
+            return (a.name || '').localeCompare(b.name || '');
+        });
+        return vs;
+    }
+
+    function getStored() {
+        try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch (_) { return {}; }
+    }
+    function setStored(v) {
+        try { localStorage.setItem(STORE_KEY, JSON.stringify(v || {})); } catch (_) { }
+    }
+
+    function pickVoiceByURI(uri) {
+        if (!uri) return null;
+        return (_voices || []).find(function (v) { return v && (v.voiceURI === uri || v.name === uri); }) || null;
+    }
+
+    function pickDefault() {
+        var vs = listVoices();
+        return vs[0] || null;
+    }
+
+    function prime() {
+        if (!hasSS() || _primed) return;
+        try {
+            var u = new SpeechSynthesisUtterance('.');
+            u.volume = 0.001; // effectively silent
+            u.rate = 2;
+            u.onend = function () { _primed = true; };
+            g.speechSynthesis.speak(u);
+        } catch (_) { }
+    }
+
+    // Proactively prime on first user gesture (helps Chrome/Tesla)
+    (function wirePrimeOnce() {
+        if (!hasSS()) return;
+        var once = function () {
+            try { if (g.speechSynthesis && g.speechSynthesis.paused) g.speechSynthesis.resume(); } catch (_) { }
+            prime();
+            ['pointerdown', 'touchstart', 'mousedown', 'keydown', 'click'].forEach(function (ev) {
+                g.document.removeEventListener(ev, once, { passive: true });
+            });
+        };
+        ['pointerdown', 'touchstart', 'mousedown', 'keydown', 'click'].forEach(function (ev) {
+            g.document.addEventListener(ev, once, { passive: true, once: true });
+        });
+        g.document.addEventListener('visibilitychange', function () { if (g.document.visibilityState === 'visible') prime(); }, { passive: true });
+    })();
+
+    function choose(uri) { setStored({ voiceURI: uri }); }
+
+    function populateSelect(selectEl) {
+        if (!selectEl) return;
+        var sel = selectEl;
+        sel.innerHTML = '';
+        // Always include a system default
+        var opt = document.createElement('option'); opt.value = ''; opt.textContent = 'System default'; sel.appendChild(opt);
+
+        // Build a clean, de-duplicated list of voices (by voiceURI/name) and format labels nicely
+        var seen = new Set();
+        listVoices().forEach(function (v) {
+            if (!v) return;
+            var key = (v.voiceURI || v.name || '') + '|' + (v.lang || '');
+            if (seen.has(key)) return; seen.add(key);
+            var o = document.createElement('option');
+            o.value = v.voiceURI || v.name || '';
+            // Label: "Name · en-GB" (no stray characters)
+            var nm = (v.name || '').trim();
+            var lg = (v.lang || '').trim();
+            o.textContent = lg ? (nm + ' · ' + lg) : nm;
+            sel.appendChild(o);
+        });
+        var st = getStored();
+        if (st.voiceURI) {
+            // If stored voice no longer exists on this browser, fall back to System default
+            var exists = Array.prototype.some.call(sel.options, function (o) { return o.value === st.voiceURI; });
+            sel.value = exists ? st.voiceURI : '';
+            if (!exists) setStored({ voiceURI: '' });
+        }
+        sel.addEventListener('change', function () { choose(sel.value); });
+    }
+
+    function connectUI(selectEl, testBtn) {
+        // Always present a usable UI, even if speechSynthesis is unsupported
+        if (!hasSS()) {
+            try {
+                if (selectEl) {
+                    selectEl.innerHTML = '';
+                    var opt = document.createElement('option');
+                    opt.value = '';
+                    opt.textContent = 'System default';
+                    selectEl.appendChild(opt);
+                    selectEl.disabled = true;
+                    selectEl.title = 'Text-to-speech not supported in this browser';
+                }
+                if (testBtn) { testBtn.disabled = true; testBtn.title = 'Text-to-speech not supported in this browser'; }
+            } catch (_) { }
+            return;
+        }
+        // Bind select for late population and immediate default option
+        if (selectEl) { _boundSelects.add(selectEl); populateSelect(selectEl); }
+        waitForVoices(3000).then(function () { if (selectEl) populateSelect(selectEl); });
+        if (testBtn) {
+            testBtn.addEventListener('click', function () {
+                prime();
+                speak('Inhale', { rate: 1.0, selectEl: selectEl });
+            });
+        }
+    }
+
+    function speak(text, opts) {
+        if (!hasSS()) return;
+        try {
+            var triedRetry = false;
+            var attempt = function () {
+                try { if (g.speechSynthesis.paused) g.speechSynthesis.resume(); } catch (_) { }
+                try { if (g.speechSynthesis.speaking) g.speechSynthesis.cancel(); } catch (_) { }
+
+                var u = new SpeechSynthesisUtterance(String(text || ''));
+                var rate = (opts && typeof opts.rate === 'number') ? opts.rate : 1.0;
+                u.rate = Math.max(0.5, Math.min(2, rate));
+                var selEl = opts && opts.selectEl;
+                var chosenURI = (selEl && selEl.value) || (getStored().voiceURI) || null;
+
+                var v = pickVoiceByURI(chosenURI) || pickDefault();
+                if (v) u.voice = v; // If no voice chosen, let browser default handle it (key for Chrome/Tesla)
+                try {
+                    var lang = (v && v.lang) || (opts && opts.lang) || (navigator.language) || 'en-US';
+                    if (lang) u.lang = lang;
+                } catch (_) { }
+
+                var startedAt = 0;
+                u.onstart = function () { startedAt = (g.performance && g.performance.now && g.performance.now()) || Date.now(); };
+                u.onerror = u.onend = function () {
+                    var dur = startedAt ? (((g.performance && g.performance.now && g.performance.now()) || Date.now()) - startedAt) : 0;
+                    // Chrome sometimes ends instantly before voices are ready; retry once after a quick voices wait
+                    if (!triedRetry && dur < 80) {
+                        triedRetry = true;
+                        waitForVoices(1000).then(function () {
+                            setTimeout(attempt, 0);
+                        });
+                        return;
+                    }
+                };
+                // Defer slightly after resume/cancel for Chrome reliability
+                setTimeout(function () { try { g.speechSynthesis.speak(u); } catch (_) { } }, 0);
+            };
+            attempt();
+        } catch (_) { }
+    }
+
+    function stop() {
+        try { if (!hasSS()) return; if (g.speechSynthesis.speaking) g.speechSynthesis.cancel(); } catch (_) { }
+    }
+
+    g.MS_TTS = {
+        waitForVoices: waitForVoices,
+        listVoices: listVoices,
+        populateSelect: populateSelect,
+        connectUI: connectUI,
+        choose: choose,
+        prime: prime,
+        speak: speak,
+        stop: stop
+    };
+
+    // Provide a unified adapter for legacy code that expects __MSHARE__.TTS
+    try {
+        g.__MSHARE__ = g.__MSHARE__ || {};
+        if (!g.__MSHARE__.TTS) {
+            g.__MSHARE__.TTS = {
+                speak: function (t, o) { return g.MS_TTS && g.MS_TTS.speak ? g.MS_TTS.speak(t, o || {}) : void 0; },
+                stop: function () { return g.MS_TTS && g.MS_TTS.stop ? g.MS_TTS.stop() : void 0; }
+            };
+        }
+    } catch (_) { }
 })();

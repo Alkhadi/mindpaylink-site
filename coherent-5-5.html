@@ -5,136 +5,21 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta charset="utf-8" />
   <title>Coherent 5-5 • M Share</title>
-  <meta name="theme-color" content="#0b2a22" />
+  <meta name="description"
+    content="Measured Breathing. Measurable Relief. Free, evidence-based techniques with sharing, QR, and PDF." />
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="assets/css/ux-fixes.css" />
+  <link rel="stylesheet" href="assets/css/footer-2025.css" />
+  <link rel="stylesheet" href="assets/css/header-2025.css" />
   <link rel="stylesheet" href="assets/css/nav-footer-uni.css" />
-  <style>
-    .wrap {
-      max-width: 980px;
-      margin: 0 auto
-    }
-
-    .ui {
-      background: rgba(255, 255, 255, .05);
-      border: 1px solid var(--b);
-      border-radius: 16px;
-      box-shadow: var(--shadow-1);
-      padding: 16px
-    }
-
-    .session {
-      display: grid;
-      place-items: center;
-      gap: 18px;
-      text-align: center
-    }
-
-    .orb-wrap {
-      position: relative;
-      width: min(84vw, 380px);
-      aspect-ratio: 1/1
-    }
-
-    .orb {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      background: radial-gradient(120px 180px at 30% 30%, rgba(255, 255, 255, .15), transparent 55%),
-        radial-gradient(100px 100px at 70% 70%, rgba(255, 255, 255, .08), transparent 70%),
-        linear-gradient(180deg, rgba(160, 255, 218, .25), rgba(90, 200, 170, .18));
-      box-shadow: inset 0 0 40px rgba(0, 0, 0, .25), 0 30px 50px rgba(0, 0, 0, .35);
-      border: 1px solid rgba(255, 255, 255, .14);
-      transform: scale(.82);
-      transition: transform 280ms cubic-bezier(.22, .8, .24, 1)
-    }
-
-    .orb.inhale {
-      transform: scale(1.08)
-    }
-
-    .orb.exhale {
-      transform: scale(.78)
-    }
-
-    .phase {
-      font-weight: 800;
-      font-size: clamp(22px, 3.2vw, 28px)
-    }
-
-    .count {
-      font-weight: 900;
-      font-size: clamp(48px, 7.5vw, 56px);
-      line-height: 1;
-      margin-top: 4px;
-      text-shadow: 0 6px 22px rgba(0, 0, 0, .35)
-    }
-
-    .mini {
-      margin-top: 6px;
-      font-size: 13px;
-      color: var(--muted)
-    }
-
-    svg.radial {
-      position: absolute;
-      inset: 0;
-      transform: rotate(-90deg)
-    }
-
-    .ring {
-      fill: none;
-      stroke-width: 8;
-      stroke-linecap: round
-    }
-
-    .ring.base {
-      stroke: rgba(255, 255, 255, .08)
-    }
-
-    .ring.progress {
-      stroke: rgba(170, 240, 209, .9)
-    }
-
-    body.focus-mode header.site-header,
-    .stage-nav,
-    .footer {
-      display: none !important
-    }
-
-    body.focus-mode main .card.setup,
-    body.focus-mode #done {
-      display: none !important
-    }
-
-    .btn-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap
-    }
-
-    .kv3 {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px
-    }
-
-    @media(max-width:760px) {
-      .kv3 {
-        grid-template-columns: 1fr
-      }
-    }
-
-    .hint {
-      font-size: .9rem;
-      color: var(--muted)
-    }
-  </style>
+  <link rel="stylesheet" href="assets/css/responsive-fixes.css" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png" />
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
   <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#0f172a" />
+  <link rel="stylesheet" href="voice-coach-fix.css">
+
   <style id="mpl-mobile-nav-style-v4">
     /* Ensure [hidden] truly hides dropdowns in any theme */
     nav .menu[hidden],
@@ -173,15 +58,15 @@
         touch-action: manipulation;
       }
 
-      /* A11y focus rings on triggers */
-      .nav-group>a:focus,
-      .nav-group>button:focus,
-      .nav-group>.menu-toggle:focus,
-      .nav-group>.chevron:focus,
-      .menu-group>a:focus,
-      .menu-group>button:focus,
-      .menu-group>.menu-toggle:focus,
-      .menu-group>.chevron:focus {
+      /* A11y focus rings on triggers (avoid hover outlines) */
+      .nav-group>a:focus-visible,
+      .nav-group>button:focus-visible,
+      .nav-group>.menu-toggle:focus-visible,
+      .nav-group>.chevron:focus-visible,
+      .menu-group>a:focus-visible,
+      .menu-group>button:focus-visible,
+      .menu-group>.menu-toggle:focus-visible,
+      .menu-group>.chevron:focus-visible {
         outline: 2px solid currentColor;
         outline-offset: 2px;
       }
@@ -557,22 +442,19 @@
       background: transparent
     }
   </style>
-  <link rel="stylesheet" href="assets/css/responsive-fixes.css" />
   <!-- mshare-seo-start -->
   <link rel="canonical" href="https://www.mindpaylink.com/coherent-5-5.html" />
-  <meta name="description"
-    content="Quiet, practical mental-health tools for UK audiences — easy breathing and wellbeing techniques (educational, not medical advice)." />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="M Share" />
   <meta property="og:title" content="Coherent 5-5 • M Share" />
   <meta property="og:description"
-    content="Quiet, practical mental-health tools for UK audiences — easy breathing and wellbeing techniques (educational, not medical advice)." />
+    content="Measured Breathing. Measurable Relief. Free, evidence-based techniques with sharing, QR, and PDF." />
   <meta property="og:url" content="https://www.mindpaylink.com/coherent-5-5.html" />
   <meta property="og:image" content="https://www.mindpaylink.com/icons/logo-wordmark-800x200.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Coherent 5-5 • M Share" />
   <meta name="twitter:description"
-    content="Quiet, practical mental-health tools for UK audiences — easy breathing and wellbeing techniques (educational, not medical advice)." />
+    content="Measured Breathing. Measurable Relief. Free, evidence-based techniques with sharing, QR, and PDF." />
   <meta name="twitter:image" content="https://www.mindpaylink.com/icons/logo-wordmark-800x200.png" />
   <script type="application/ld+json">
     {
@@ -583,11 +465,132 @@
     }
   </script>
   <!-- mshare-seo-end -->
-  <link rel="stylesheet" href="assets/css/footer-2025.css" />
-  <link rel="stylesheet" href="assets/css/header-2025.css" />
-                    <style>/* kill any stray VA */[id="mshare-voicebot"],.mshare-voicebot,.voice-assistant,.voice-coach-pro{display:none!important;}</style>
-  <link rel="stylesheet" href="assets/css/breathing-layout-fix.css" />
-  <link rel="stylesheet" href="assets/css/audio-unlock.css" />
+
+  <!-- Page-specific styles for Coherent 5-5 -->
+  <style>
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto
+    }
+
+    .ui {
+      background: rgba(255, 255, 255, .05);
+      border: 1px solid var(--b);
+      border-radius: 16px;
+      box-shadow: var(--shadow-1);
+      padding: 16px
+    }
+
+    .session {
+      display: grid;
+      place-items: center;
+      gap: 18px;
+      text-align: center
+    }
+
+    .orb-wrap {
+      position: relative;
+      width: min(84vw, 380px);
+      aspect-ratio: 1/1
+    }
+
+    .orb {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: radial-gradient(120px 180px at 30% 30%, rgba(255, 255, 255, .15), transparent 55%),
+        radial-gradient(100px 100px at 70% 70%, rgba(255, 255, 255, .08), transparent 70%),
+        linear-gradient(180deg, rgba(160, 255, 218, .25), rgba(90, 200, 170, .18));
+      box-shadow: inset 0 0 40px rgba(0, 0, 0, .25), 0 30px 50px rgba(0, 0, 0, .35);
+      border: 1px solid rgba(255, 255, 255, .14);
+      transform: scale(.82);
+      transition: transform 280ms cubic-bezier(.22, .8, .24, 1)
+    }
+
+    .orb.inhale {
+      transform: scale(1.08)
+    }
+
+    .orb.exhale {
+      transform: scale(.78)
+    }
+
+    .phase {
+      font-weight: 800;
+      font-size: clamp(22px, 3.2vw, 28px)
+    }
+
+    .count {
+      font-weight: 900;
+      font-size: clamp(48px, 7.5vw, 56px);
+      line-height: 1;
+      margin-top: 4px;
+      text-shadow: 0 6px 22px rgba(0, 0, 0, .35)
+    }
+
+    .mini {
+      margin-top: 6px;
+      font-size: 13px;
+      color: var(--muted)
+    }
+
+    svgradial.radial,
+    svg.radial {
+      position: absolute;
+      inset: 0;
+      transform: rotate(-90deg)
+    }
+
+    .ring {
+      fill: none;
+      stroke-width: 8;
+      stroke-linecap: round
+    }
+
+    .ring.base {
+      stroke: rgba(255, 255, 255, .08)
+    }
+
+    .ring.progress {
+      stroke: rgba(170, 240, 209, .9)
+    }
+
+    body.focus-mode header.site-header,
+    .stage-nav,
+    .footer {
+      display: none !important
+    }
+
+    body.focus-mode main .card.setup,
+    body.focus-mode #done {
+      display: none !important
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .kv3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px
+    }
+
+    @media(max-width:760px) {
+      .kv3 {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .hint {
+      font-size: .9rem;
+      color: var(--muted)
+    }
+  </style>
 </head>
 
 <body>
@@ -619,14 +622,14 @@
           <button class="menu-toggle" aria-expanded="false">Breathing &amp; Focus <span class="icon">▾</span></button>
           <div class="submenu">
             <div class="menu-label">Guides</div>
-            <a data-href="breath.html">Breath (how‑to)</a>
+            <a data-href="breath.html">Breath (how-to)</a>
             <a data-href="focus.html">Focus</a>
             <a data-href="mindfulness.html">Mindfulness</a>
             <div class="menu-label">Techniques</div>
-            <a data-href="sos-60.html">60‑second Reset</a>
+            <a data-href="sos-60.html">60-second Reset</a>
             <a data-href="box-breathing.html">Box Breathing</a>
-            <a data-href="4-7-8-breathing.html">4‑7‑8 Breathing</a>
-            <a data-href="coherent-5-5.html">Coherent 5‑5</a>
+            <a data-href="4-7-8-breathing.html">4-7-8 Breathing</a>
+            <a data-href="coherent-5-5.html">Coherent 5-5</a>
           </div>
         </div>
         <div class="menu-group">
@@ -636,7 +639,7 @@
             <a data-href="sleep-tools.html">Sleep Tools</a>
             <a data-href="breath-tools.html">Breath Tools</a>
             <a data-href="mood-tools.html">Mood Tools</a>
-            <div class="menu-label">Condition‑specific</div>
+            <div class="menu-label">Condition-specific</div>
             <a data-href="adhd-tools.html">ADHD Tools</a>
             <a data-href="autism-tools.html">Autism Tools</a>
             <a data-href="depression-tools.html">Depression Tools</a>
@@ -648,6 +651,7 @@
           <button class="menu-toggle" aria-expanded="false">About <span class="icon">▾</span></button>
           <div class="submenu">
             <a data-href="about.html">About</a>
+            <a data-href="aims-objectives.html">Aims & Stories</a>
             <a data-href="coffee.html">Support Us</a>
             <a data-href="contact.html">Contact</a>
           </div>
@@ -658,6 +662,8 @@
         aria-controls="mainNav">☰</button>
     </div>
   </header>
+
+  <a id="top" style="position:absolute;top:0;left:0;width:0;height:0;overflow:hidden"></a>
 
   <main class="container wrap">
     <div class="card setup">
@@ -804,6 +810,7 @@
     </div>
   </main>
 
+  <!-- Page-specific JS + helpers -->
   <script src="assets/js/core/tts-helper.js"></script>
   <script>
     (function () {
@@ -957,9 +964,21 @@
       toggleVoiceTile();
     })();
   </script>
+
+  <!-- Global site scripts (from unified header/footer) -->
+  <script src="app.js"></script>
+  <script src="coach.js"></script>
+  <script src="assets/js/ux-fixes.js"></script>
+  <script src="assets/js/paylinks.js"></script>
+  <script src="assets/js/site-core.js"></script>
+  <script src="assets/js/a11y-fix.js"></script>
+  <script src="assets/js/start-fix.js"></script>
   <script src="assets/js/core/sound-kit.js"></script>
   <script src="assets/header/header.js"></script>
   <script src="assets/footer/footer.js"></script>
+  <script defer src="voice-coach-fix.js"></script>
+  <script defer src="assets/js/contrast-fix.js"></script>
+
   <script id="mpl-theme-auto-js-v3">
     (() => {
       const KEY = 'mpl.theme.v2';
@@ -1152,8 +1171,8 @@
           <h4>Explore</h4>
           <p><a data-href="index.html" href="index.html">Wellbeing</a> • <a data-href="breath.html"
               href="breath.html">Breath</a> • <a data-href="focus.html" href="focus.html">Focus</a> • <a
-              data-href="mindfulness.html" href="mindfulness.html">Mindfulness</a> • <a data-href="about.html"
-              href="about.html">About</a></p>
+              data-href="mindfulness.html" href="mindfulness.html">Mindfulness</a> • <a data-href="aims-objectives.html"
+              href="aims-objectives.html">Aims & Stories</a> • <a data-href="about.html" href="about.html">About</a></p>
         </section>
         <section class="col">
           <h4>Toolkits</h4>
@@ -1176,18 +1195,6 @@
     </div>
     <script>document.getElementById('yearFooter') && (document.getElementById('yearFooter').textContent = (new Date).getFullYear()); document.getElementById('backToTop') && document.getElementById('backToTop').addEventListener('click', function (e) { e.preventDefault(); try { (document.getElementById('top') || document.body).scrollIntoView({ behavior: 'smooth', block: 'start' }) } catch { location.hash = '#top' } })</script>
   </footer>
-    <script src="./assets/js/progress-tracker-v2.js?v=202510272041-remove-VA-progress-v2" defer></script>
-  <script src="./assets/js/tts-crossbrowser-shim.js?v=202510272102-tts-shim" defer></script>
-<!-- __mshare_asset_audio_player__ -->
-<script>
-(()=>{const A=new Audio();A.preload='auto';A.setAttribute('playsinline','');
-let unlocked=false;document.addEventListener('click',async(e)=>{const el=e.target.closest('[data-say-asset]');if(!el)return;
-try{if(!unlocked){const AC=window.AudioContext||window.webkitAudioContext;if(AC){const ac=new AC();const b=ac.createBuffer(1,1,22050);const s=ac.createBufferSource();s.buffer=b;s.connect(ac.destination);s.start(0);await ac.resume();}unlocked=true;}
-A.src=el.getAttribute('data-say-asset');await A.play();}catch(err){console.error('asset-audio play failed',err);}});})();
-</script>
-  <script>window.MS_TTS && MS_TTS.waitAndDefaultToBritish();</script>
-  <script src="assets/js/core/breath-voice-cues.js"></script>
-  <script src="assets/js/core/audio-unlock.js"></script>
 </body>
 
 </html>
