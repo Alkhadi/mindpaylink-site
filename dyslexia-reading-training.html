@@ -515,6 +515,22 @@
 <link rel="preload" href="style.css" as="style">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is dyslexia?","acceptedAnswer":{"@type":"Answer","text":"Dyslexia is a difference in processing written language, often affecting phonology and working memory."}},{"@type":"Question","name":"What are common signs?","acceptedAnswer":{"@type":"Answer","text":"Slow/effortful reading; Spelling difficulties; Mixing similar letter sounds"}},{"@type":"Question","name":"How do I get started on this site?","acceptedAnswer":{"@type":"Answer","text":"Silent modes during reading practice · Pair 1-minute breath breaks · Use printable reading support"}},{"@type":"Question","name":"Is this medical advice?","acceptedAnswer":{"@type":"Answer","text":"No. This site provides supportive educational information only and is not medical advice."}}]}</script>
 <!-- mshare:head-seo:v1:end -->
+
+<!-- mshare:HEAD:seo:begin -->
+<link rel="preconnect" href="https://mindpaylink.com" crossorigin>
+<link rel="preload" as="style" href="style.css">
+<meta name="robots" content="max-image-preview:large">
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"WebPage",
+  "name":"Wellbeing & Breath Tools",
+  "isPartOf":{"@type":"WebSite","name":"M Share – MindPayLink","url":"https://mindpaylink.com/"},
+  "publisher":{"@type":"Organization","name":"M Share"}
+}
+</script>
+<!-- mshare:HEAD:seo:end -->
+
 </head>
 
 <body>
@@ -595,6 +611,65 @@
 
   <!-- ===== Page content ===== -->
   <main class="container" id="dlxPage">
+<!-- mshare:COND:cond-dyslexia:begin -->
+
+<section class="card" role="region" aria-labelledby="qs-dyslexia">
+  <h2 id="qs-dyslexia" class="h3">Dyslexia Quick Starter</h2>
+  <p>Dyslexia primarily affects reading and spelling. Supportive techniques can make learning more accessible.</p>
+  <div class="grid">
+    <div>
+      <h3 class="h5">Common signs (informal)</h3>
+      <ul><li>Reading fluency difficulties</li><li>Spelling inconsistencies</li><li>Slow processing of written text</li><li>Fatigue with long reading</li></ul>
+      <p class="muted small">Not medical advice. See resources below.</p>
+    </div>
+    <div>
+      <h3 class="h5">How to use this site</h3>
+      <ol><li>Use Dyslexia Reading Training page with natural TTS where supported.</li><li>Pair short reading with 60-sec breath breaks.</li><li>Enable high-contrast / low-motion if needed.</li><li>Save a routine you can repeat daily.</li></ol>
+    </div>
+    <div>
+      <h3 class="h5">Trusted resources</h3>
+      <ul><li><a href="https://www.nhs.uk/conditions/dyslexia/" target="_blank" rel="noopener">More on Dyslexia</a></li><li><a href="https://www.bdadyslexia.org.uk/advice" target="_blank" rel="noopener">More on Dyslexia</a></li></ul>
+    </div>
+  </div>
+  <div class="progress small" data-cond="dyslexia">
+    <label class="small"><input type="checkbox" data-qs="dyslexia-d1"> I completed a 60-sec session</label><br/>
+    <label class="small"><input type="checkbox" data-qs="dyslexia-d2"> I tried a 2–5 min routine</label><br/>
+    <label class="small"><input type="checkbox" data-qs="dyslexia-d3"> I saved a shortcut / QR</label><br/>
+    <button type="button" data-qs="dyslexia-save" class="btn">Save progress (local)</button>
+    <span aria-live="polite" class="small muted" data-qs="dyslexia-status"></span>
+  </div>
+  <script>
+    (function(){
+      var key = 'mshare_progress_dyslexia';
+      function load(){
+        try {
+          var s = JSON.parse(localStorage.getItem(key)||'{}');
+          ['d1','d2','d3'].forEach(k=>{
+            var cb = document.querySelector('[data-qs="dyslexia-'+k+'"]');
+            if(cb) cb.checked = !!s[k];
+          });
+        } catch{}
+      }
+      function save(){
+        try{
+          var out = {};
+          ['d1','d2','d3'].forEach(k=>{
+            var cb = document.querySelector('[data-qs="dyslexia-'+k+'"]');
+            out[k] = !!(cb && cb.checked);
+          });
+          localStorage.setItem(key, JSON.stringify(out));
+          var st = document.querySelector('[data-qs="dyslexia-status"]');
+          if(st){ st.textContent = 'Saved locally.'; setTimeout(()=>st.textContent='',2000); }
+        }catch{}
+      }
+      document.addEventListener('DOMContentLoaded', load, {once:true});
+      var btn = document.querySelector('[data-qs="dyslexia-save"]');
+      if(btn) btn.addEventListener('click', save);
+    }());
+  </script>
+</section>
+<!-- mshare:COND:cond-dyslexia:end -->
+
 
 
 <!-- mshare:value-pack:v1:start -->

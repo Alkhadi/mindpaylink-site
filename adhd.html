@@ -482,6 +482,22 @@
 <link rel="preload" href="app.js" as="script">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is adhd?","acceptedAnswer":{"@type":"Answer","text":"ADHD affects attention, impulsivity, and self-regulation. Brief breath resets can aid task switching."}},{"@type":"Question","name":"What are common signs?","acceptedAnswer":{"@type":"Answer","text":"Difficulty sustaining attention; Restlessness/impulsivity; Time management challenges"}},{"@type":"Question","name":"How do I get started on this site?","acceptedAnswer":{"@type":"Answer","text":"SOS before tasks · Coherent 5-5 for 3–5 minutes · Use Focus routines"}},{"@type":"Question","name":"Is this medical advice?","acceptedAnswer":{"@type":"Answer","text":"No. This site provides supportive educational information only and is not medical advice."}}]}</script>
 <!-- mshare:head-seo:v1:end -->
+
+<!-- mshare:HEAD:seo:begin -->
+<link rel="preconnect" href="https://mindpaylink.com" crossorigin>
+<link rel="preload" as="style" href="style.css">
+<meta name="robots" content="max-image-preview:large">
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"WebPage",
+  "name":"Wellbeing & Breath Tools",
+  "isPartOf":{"@type":"WebSite","name":"M Share – MindPayLink","url":"https://mindpaylink.com/"},
+  "publisher":{"@type":"Organization","name":"M Share"}
+}
+</script>
+<!-- mshare:HEAD:seo:end -->
+
 </head>
 
 <body>
@@ -559,6 +575,65 @@
   <a id="top" style="position:absolute;top:0;left:0;width:0;height:0;overflow:hidden"></a>
 
   <main class="container">
+<!-- mshare:COND:cond-adhd:begin -->
+
+<section class="card" role="region" aria-labelledby="qs-adhd">
+  <h2 id="qs-adhd" class="h3">ADHD Quick Starter</h2>
+  <p>ADHD can affect attention, impulse control, and activity levels. It varies by person and across settings.</p>
+  <div class="grid">
+    <div>
+      <h3 class="h5">Common signs (informal)</h3>
+      <ul><li>Often distracted or forgetful</li><li>Finds it hard to wait/queue</li><li>Restless or “on the go”</li><li>Starts tasks but struggles to finish</li></ul>
+      <p class="muted small">Not medical advice. See resources below.</p>
+    </div>
+    <div>
+      <h3 class="h5">How to use this site</h3>
+      <ol><li>Open Breath (Box or Coherent 5–5) for 60–180 seconds to settle.</li><li>Use Focus page: pick 2, 5, or 10 min routine with a visible countdown.</li><li>Pair tasks with short breath breaks (25/5 Pomodoro).</li><li>Track a small daily streak on this page (local only).</li></ol>
+    </div>
+    <div>
+      <h3 class="h5">Trusted resources</h3>
+      <ul><li><a href="https://www.nhs.uk/conditions/attention-deficit-hyperactivity-disorder-adhd/" target="_blank" rel="noopener">More on Adhd</a></li><li><a href="https://www.mind.org.uk/information-support/types-of-mental-health-problems/adhd/" target="_blank" rel="noopener">More on Adhd</a></li></ul>
+    </div>
+  </div>
+  <div class="progress small" data-cond="adhd">
+    <label class="small"><input type="checkbox" data-qs="adhd-d1"> I completed a 60-sec session</label><br/>
+    <label class="small"><input type="checkbox" data-qs="adhd-d2"> I tried a 2–5 min routine</label><br/>
+    <label class="small"><input type="checkbox" data-qs="adhd-d3"> I saved a shortcut / QR</label><br/>
+    <button type="button" data-qs="adhd-save" class="btn">Save progress (local)</button>
+    <span aria-live="polite" class="small muted" data-qs="adhd-status"></span>
+  </div>
+  <script>
+    (function(){
+      var key = 'mshare_progress_adhd';
+      function load(){
+        try {
+          var s = JSON.parse(localStorage.getItem(key)||'{}');
+          ['d1','d2','d3'].forEach(k=>{
+            var cb = document.querySelector('[data-qs="adhd-'+k+'"]');
+            if(cb) cb.checked = !!s[k];
+          });
+        } catch{}
+      }
+      function save(){
+        try{
+          var out = {};
+          ['d1','d2','d3'].forEach(k=>{
+            var cb = document.querySelector('[data-qs="adhd-'+k+'"]');
+            out[k] = !!(cb && cb.checked);
+          });
+          localStorage.setItem(key, JSON.stringify(out));
+          var st = document.querySelector('[data-qs="adhd-status"]');
+          if(st){ st.textContent = 'Saved locally.'; setTimeout(()=>st.textContent='',2000); }
+        }catch{}
+      }
+      document.addEventListener('DOMContentLoaded', load, {once:true});
+      var btn = document.querySelector('[data-qs="adhd-save"]');
+      if(btn) btn.addEventListener('click', save);
+    }());
+  </script>
+</section>
+<!-- mshare:COND:cond-adhd:end -->
+
 
 
 <!-- mshare:value-pack:v1:start -->

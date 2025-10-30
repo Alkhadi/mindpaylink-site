@@ -468,6 +468,22 @@
 <link rel="preload" href="app.js" as="script">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is depression?","acceptedAnswer":{"@type":"Answer","text":"Depression involves low mood or loss of interest for weeks+, often with sleep or appetite changes."}},{"@type":"Question","name":"What are common signs?","acceptedAnswer":{"@type":"Answer","text":"Low energy/reduced interest; Sleep/appetite change; Difficulty concentrating"}},{"@type":"Question","name":"How do I get started on this site?","acceptedAnswer":{"@type":"Answer","text":"1–3 min breath to start day · Track small wins weekly · Share one-page PDF with supporters"}},{"@type":"Question","name":"Is this medical advice?","acceptedAnswer":{"@type":"Answer","text":"No. This site provides supportive educational information only and is not medical advice."}}]}</script>
 <!-- mshare:head-seo:v1:end -->
+
+<!-- mshare:HEAD:seo:begin -->
+<link rel="preconnect" href="https://mindpaylink.com" crossorigin>
+<link rel="preload" as="style" href="style.css">
+<meta name="robots" content="max-image-preview:large">
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"WebPage",
+  "name":"Wellbeing & Breath Tools",
+  "isPartOf":{"@type":"WebSite","name":"M Share – MindPayLink","url":"https://mindpaylink.com/"},
+  "publisher":{"@type":"Organization","name":"M Share"}
+}
+</script>
+<!-- mshare:HEAD:seo:end -->
+
 </head>
 
 <body>
@@ -544,6 +560,65 @@
   
 
   <main class="container">
+<!-- mshare:COND:cond-depression:begin -->
+
+<section class="card" role="region" aria-labelledby="qs-depression">
+  <h2 id="qs-depression" class="h3">Depression Quick Starter</h2>
+  <p>Depression is more than low mood. It can affect sleep, energy, motivation, thoughts and daily functioning.</p>
+  <div class="grid">
+    <div>
+      <h3 class="h5">Common signs (informal)</h3>
+      <ul><li>Loss of interest or pleasure</li><li>Tiredness, poor sleep</li><li>Low self-worth</li><li>Changes in appetite</li></ul>
+      <p class="muted small">Not medical advice. See resources below.</p>
+    </div>
+    <div>
+      <h3 class="h5">How to use this site</h3>
+      <ol><li>Begin with gentle Coherent 5–5 for 2 minutes.</li><li>Try Mindfulness (1-min grounding) to start the day.</li><li>Use Toolkits to keep actions small and realistic.</li><li>Log one “small win” per day (local only).</li></ol>
+    </div>
+    <div>
+      <h3 class="h5">Trusted resources</h3>
+      <ul><li><a href="https://www.nhs.uk/mental-health/conditions/clinical-depression/" target="_blank" rel="noopener">More on Depression</a></li><li><a href="https://www.mind.org.uk/information-support/types-of-mental-health-problems/depression/" target="_blank" rel="noopener">More on Depression</a></li></ul>
+    </div>
+  </div>
+  <div class="progress small" data-cond="depression">
+    <label class="small"><input type="checkbox" data-qs="depression-d1"> I completed a 60-sec session</label><br/>
+    <label class="small"><input type="checkbox" data-qs="depression-d2"> I tried a 2–5 min routine</label><br/>
+    <label class="small"><input type="checkbox" data-qs="depression-d3"> I saved a shortcut / QR</label><br/>
+    <button type="button" data-qs="depression-save" class="btn">Save progress (local)</button>
+    <span aria-live="polite" class="small muted" data-qs="depression-status"></span>
+  </div>
+  <script>
+    (function(){
+      var key = 'mshare_progress_depression';
+      function load(){
+        try {
+          var s = JSON.parse(localStorage.getItem(key)||'{}');
+          ['d1','d2','d3'].forEach(k=>{
+            var cb = document.querySelector('[data-qs="depression-'+k+'"]');
+            if(cb) cb.checked = !!s[k];
+          });
+        } catch{}
+      }
+      function save(){
+        try{
+          var out = {};
+          ['d1','d2','d3'].forEach(k=>{
+            var cb = document.querySelector('[data-qs="depression-'+k+'"]');
+            out[k] = !!(cb && cb.checked);
+          });
+          localStorage.setItem(key, JSON.stringify(out));
+          var st = document.querySelector('[data-qs="depression-status"]');
+          if(st){ st.textContent = 'Saved locally.'; setTimeout(()=>st.textContent='',2000); }
+        }catch{}
+      }
+      document.addEventListener('DOMContentLoaded', load, {once:true});
+      var btn = document.querySelector('[data-qs="depression-save"]');
+      if(btn) btn.addEventListener('click', save);
+    }());
+  </script>
+</section>
+<!-- mshare:COND:cond-depression:end -->
+
 
 
 <!-- mshare:value-pack:v1:start -->

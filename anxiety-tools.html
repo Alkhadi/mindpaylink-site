@@ -468,6 +468,22 @@
 <link rel="preload" href="app.js" as="script">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"ANXIETY TOOLS","about":"Curated breathing and wellbeing tools grouped for quick starts, classrooms, and bedtime."}</script>
 <!-- mshare:head-seo:v1:end -->
+
+<!-- mshare:HEAD:seo:begin -->
+<link rel="preconnect" href="https://mindpaylink.com" crossorigin>
+<link rel="preload" as="style" href="style.css">
+<meta name="robots" content="max-image-preview:large">
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"WebPage",
+  "name":"Wellbeing & Breath Tools",
+  "isPartOf":{"@type":"WebSite","name":"M Share – MindPayLink","url":"https://mindpaylink.com/"},
+  "publisher":{"@type":"Organization","name":"M Share"}
+}
+</script>
+<!-- mshare:HEAD:seo:end -->
+
 </head>
 
 <body>
@@ -544,6 +560,72 @@
   
 
   <main class="container">
+<!-- mshare:VP:toolkits:begin -->
+<section class="card" role="region" aria-labelledby="vp-toolkits-—-use-&-save">
+  <h2 id="vp-toolkits-—-use-&-save" class="h3">Toolkits — Use & Save</h2>
+  <ul class="spaced"><li>Curated bundles for Beginner / Quick / Classroom / Bedtime.</li><li>Checklist mode with local progress ticks.</li><li>Pin your 3 favourites to Home.</li></ul>
+</section>
+<!-- mshare:VP:toolkits:end -->
+
+<!-- mshare:COND:cond-anxiety:begin -->
+
+<section class="card" role="region" aria-labelledby="qs-anxiety">
+  <h2 id="qs-anxiety" class="h3">Anxiety Quick Starter</h2>
+  <p>Anxiety involves persistent worry, tension, or physical signs (racing heart) that affect day-to-day life.</p>
+  <div class="grid">
+    <div>
+      <h3 class="h5">Common signs (informal)</h3>
+      <ul><li>Restlessness or “on edge”</li><li>Racing thoughts</li><li>Sleep difficulty</li><li>Avoidance of triggers</li></ul>
+      <p class="muted small">Not medical advice. See resources below.</p>
+    </div>
+    <div>
+      <h3 class="h5">How to use this site</h3>
+      <ol><li>Start SOS-60 (silent tones optional) to de-escalate fast.</li><li>Use 4-7-8 for sleep onset or high arousal.</li><li>Add Mindfulness (2-min body scan) after breathing.</li><li>Track “helped/not helped” to learn what works.</li></ol>
+    </div>
+    <div>
+      <h3 class="h5">Trusted resources</h3>
+      <ul><li><a href="https://www.nhs.uk/mental-health/conditions/anxiety/" target="_blank" rel="noopener">More on Anxiety</a></li><li><a href="https://www.mind.org.uk/information-support/types-of-mental-health-problems/anxiety-and-panic-attacks/" target="_blank" rel="noopener">More on Anxiety</a></li></ul>
+    </div>
+  </div>
+  <div class="progress small" data-cond="anxiety">
+    <label class="small"><input type="checkbox" data-qs="anxiety-d1"> I completed a 60-sec session</label><br/>
+    <label class="small"><input type="checkbox" data-qs="anxiety-d2"> I tried a 2–5 min routine</label><br/>
+    <label class="small"><input type="checkbox" data-qs="anxiety-d3"> I saved a shortcut / QR</label><br/>
+    <button type="button" data-qs="anxiety-save" class="btn">Save progress (local)</button>
+    <span aria-live="polite" class="small muted" data-qs="anxiety-status"></span>
+  </div>
+  <script>
+    (function(){
+      var key = 'mshare_progress_anxiety';
+      function load(){
+        try {
+          var s = JSON.parse(localStorage.getItem(key)||'{}');
+          ['d1','d2','d3'].forEach(k=>{
+            var cb = document.querySelector('[data-qs="anxiety-'+k+'"]');
+            if(cb) cb.checked = !!s[k];
+          });
+        } catch{}
+      }
+      function save(){
+        try{
+          var out = {};
+          ['d1','d2','d3'].forEach(k=>{
+            var cb = document.querySelector('[data-qs="anxiety-'+k+'"]');
+            out[k] = !!(cb && cb.checked);
+          });
+          localStorage.setItem(key, JSON.stringify(out));
+          var st = document.querySelector('[data-qs="anxiety-status"]');
+          if(st){ st.textContent = 'Saved locally.'; setTimeout(()=>st.textContent='',2000); }
+        }catch{}
+      }
+      document.addEventListener('DOMContentLoaded', load, {once:true});
+      var btn = document.querySelector('[data-qs="anxiety-save"]');
+      if(btn) btn.addEventListener('click', save);
+    }());
+  </script>
+</section>
+<!-- mshare:COND:cond-anxiety:end -->
+
 
 
 <!-- mshare:value-pack:v1:start -->

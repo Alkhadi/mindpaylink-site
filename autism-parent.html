@@ -532,6 +532,22 @@
 <link rel="preload" href="app.js" as="script">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is autism parent?","acceptedAnswer":{"@type":"Answer","text":"Parents often support sensory regulation and predictable routines alongside communication strategies."}},{"@type":"Question","name":"What are common signs?","acceptedAnswer":{"@type":"Answer","text":"Seeks sameness/routine; Sensory overwhelm; Communication differences"}},{"@type":"Question","name":"How do I get started on this site?","acceptedAnswer":{"@type":"Answer","text":"Co-regulate with a 60-second SOS · Use silent Box in public spaces · Print the quick pack for school meetings"}},{"@type":"Question","name":"Is this medical advice?","acceptedAnswer":{"@type":"Answer","text":"No. This site provides supportive educational information only and is not medical advice."}}]}</script>
 <!-- mshare:head-seo:v1:end -->
+
+<!-- mshare:HEAD:seo:begin -->
+<link rel="preconnect" href="https://mindpaylink.com" crossorigin>
+<link rel="preload" as="style" href="style.css">
+<meta name="robots" content="max-image-preview:large">
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"WebPage",
+  "name":"Wellbeing & Breath Tools",
+  "isPartOf":{"@type":"WebSite","name":"M Share – MindPayLink","url":"https://mindpaylink.com/"},
+  "publisher":{"@type":"Organization","name":"M Share"}
+}
+</script>
+<!-- mshare:HEAD:seo:end -->
+
 </head>
 
 <body>
@@ -609,6 +625,65 @@
   <a id="top" style="position:absolute;top:0;left:0;width:0;height:0;overflow:hidden"> </a>
 
   <main class="container" id="howto">
+<!-- mshare:COND:cond-autism:begin -->
+
+<section class="card" role="region" aria-labelledby="qs-autism">
+  <h2 id="qs-autism" class="h3">Autism Quick Starter</h2>
+  <p>Autism affects how people communicate and experience the world. Support needs and strengths differ widely.</p>
+  <div class="grid">
+    <div>
+      <h3 class="h5">Common signs (informal)</h3>
+      <ul><li>Prefers routine or predictability</li><li>Strong interests or deep focus areas</li><li>Differences in social communication</li><li>Sensitivity to sound/light/touch</li></ul>
+      <p class="muted small">Not medical advice. See resources below.</p>
+    </div>
+    <div>
+      <h3 class="h5">How to use this site</h3>
+      <ol><li>Choose a predictable breath pattern (Coherent 5–5) for 1–3 minutes.</li><li>Use Mindfulness (1-min grounding) before transitions.</li><li>Create a visual routine using Toolkits.</li><li>Save a QR shortcut for school/home use.</li></ol>
+    </div>
+    <div>
+      <h3 class="h5">Trusted resources</h3>
+      <ul><li><a href="https://www.nhs.uk/conditions/autism/" target="_blank" rel="noopener">More on Autism</a></li><li><a href="https://www.autism.org.uk/advice-and-guidance" target="_blank" rel="noopener">More on Autism</a></li></ul>
+    </div>
+  </div>
+  <div class="progress small" data-cond="autism">
+    <label class="small"><input type="checkbox" data-qs="autism-d1"> I completed a 60-sec session</label><br/>
+    <label class="small"><input type="checkbox" data-qs="autism-d2"> I tried a 2–5 min routine</label><br/>
+    <label class="small"><input type="checkbox" data-qs="autism-d3"> I saved a shortcut / QR</label><br/>
+    <button type="button" data-qs="autism-save" class="btn">Save progress (local)</button>
+    <span aria-live="polite" class="small muted" data-qs="autism-status"></span>
+  </div>
+  <script>
+    (function(){
+      var key = 'mshare_progress_autism';
+      function load(){
+        try {
+          var s = JSON.parse(localStorage.getItem(key)||'{}');
+          ['d1','d2','d3'].forEach(k=>{
+            var cb = document.querySelector('[data-qs="autism-'+k+'"]');
+            if(cb) cb.checked = !!s[k];
+          });
+        } catch{}
+      }
+      function save(){
+        try{
+          var out = {};
+          ['d1','d2','d3'].forEach(k=>{
+            var cb = document.querySelector('[data-qs="autism-'+k+'"]');
+            out[k] = !!(cb && cb.checked);
+          });
+          localStorage.setItem(key, JSON.stringify(out));
+          var st = document.querySelector('[data-qs="autism-status"]');
+          if(st){ st.textContent = 'Saved locally.'; setTimeout(()=>st.textContent='',2000); }
+        }catch{}
+      }
+      document.addEventListener('DOMContentLoaded', load, {once:true});
+      var btn = document.querySelector('[data-qs="autism-save"]');
+      if(btn) btn.addEventListener('click', save);
+    }());
+  </script>
+</section>
+<!-- mshare:COND:cond-autism:end -->
+
 
 
 <!-- mshare:value-pack:v1:start -->

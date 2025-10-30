@@ -468,6 +468,22 @@
 <link rel="preload" href="app.js" as="script">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"SLEEP TOOLS","about":"Curated breathing and wellbeing tools grouped for quick starts, classrooms, and bedtime."}</script>
 <!-- mshare:head-seo:v1:end -->
+
+<!-- mshare:HEAD:seo:begin -->
+<link rel="preconnect" href="https://mindpaylink.com" crossorigin>
+<link rel="preload" as="style" href="style.css">
+<meta name="robots" content="max-image-preview:large">
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"WebPage",
+  "name":"Wellbeing & Breath Tools",
+  "isPartOf":{"@type":"WebSite","name":"M Share – MindPayLink","url":"https://mindpaylink.com/"},
+  "publisher":{"@type":"Organization","name":"M Share"}
+}
+</script>
+<!-- mshare:HEAD:seo:end -->
+
 </head>
 
 <body>
@@ -544,6 +560,72 @@
   
 
   <main class="container">
+<!-- mshare:VP:toolkits:begin -->
+<section class="card" role="region" aria-labelledby="vp-toolkits-—-use-&-save">
+  <h2 id="vp-toolkits-—-use-&-save" class="h3">Toolkits — Use & Save</h2>
+  <ul class="spaced"><li>Curated bundles for Beginner / Quick / Classroom / Bedtime.</li><li>Checklist mode with local progress ticks.</li><li>Pin your 3 favourites to Home.</li></ul>
+</section>
+<!-- mshare:VP:toolkits:end -->
+
+<!-- mshare:COND:cond-sleep:begin -->
+
+<section class="card" role="region" aria-labelledby="qs-sleep">
+  <h2 id="qs-sleep" class="h3">Sleep Quick Starter</h2>
+  <p>Sleep issues include difficulty falling or staying asleep. Calm breathing can support wind-down.</p>
+  <div class="grid">
+    <div>
+      <h3 class="h5">Common signs (informal)</h3>
+      <ul><li>Long sleep onset</li><li>Frequent waking</li><li>Unrefreshing sleep</li><li>Daytime sleepiness</li></ul>
+      <p class="muted small">Not medical advice. See resources below.</p>
+    </div>
+    <div>
+      <h3 class="h5">How to use this site</h3>
+      <ol><li>Use 4-7-8 for 1–3 cycles at bedtime.</li><li>Reduce UI: use silent mode and low motion.</li><li>Pair with Mindfulness 2-min body scan.</li><li>Note what helps and re-use nightly.</li></ol>
+    </div>
+    <div>
+      <h3 class="h5">Trusted resources</h3>
+      <ul><li><a href="https://www.nhs.uk/every-mind-matters/mental-health-issues/sleep/" target="_blank" rel="noopener">More on Sleep</a></li><li><a href="https://sleepcouncil.org.uk/" target="_blank" rel="noopener">More on Sleep</a></li></ul>
+    </div>
+  </div>
+  <div class="progress small" data-cond="sleep">
+    <label class="small"><input type="checkbox" data-qs="sleep-d1"> I completed a 60-sec session</label><br/>
+    <label class="small"><input type="checkbox" data-qs="sleep-d2"> I tried a 2–5 min routine</label><br/>
+    <label class="small"><input type="checkbox" data-qs="sleep-d3"> I saved a shortcut / QR</label><br/>
+    <button type="button" data-qs="sleep-save" class="btn">Save progress (local)</button>
+    <span aria-live="polite" class="small muted" data-qs="sleep-status"></span>
+  </div>
+  <script>
+    (function(){
+      var key = 'mshare_progress_sleep';
+      function load(){
+        try {
+          var s = JSON.parse(localStorage.getItem(key)||'{}');
+          ['d1','d2','d3'].forEach(k=>{
+            var cb = document.querySelector('[data-qs="sleep-'+k+'"]');
+            if(cb) cb.checked = !!s[k];
+          });
+        } catch{}
+      }
+      function save(){
+        try{
+          var out = {};
+          ['d1','d2','d3'].forEach(k=>{
+            var cb = document.querySelector('[data-qs="sleep-'+k+'"]');
+            out[k] = !!(cb && cb.checked);
+          });
+          localStorage.setItem(key, JSON.stringify(out));
+          var st = document.querySelector('[data-qs="sleep-status"]');
+          if(st){ st.textContent = 'Saved locally.'; setTimeout(()=>st.textContent='',2000); }
+        }catch{}
+      }
+      document.addEventListener('DOMContentLoaded', load, {once:true});
+      var btn = document.querySelector('[data-qs="sleep-save"]');
+      if(btn) btn.addEventListener('click', save);
+    }());
+  </script>
+</section>
+<!-- mshare:COND:cond-sleep:end -->
+
 
 
 <!-- mshare:value-pack:v1:start -->
