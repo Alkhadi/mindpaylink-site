@@ -6,3 +6,5 @@
 .backup/
 .DS_Store
 .backup/
+Thumbs.db
+*.zip
