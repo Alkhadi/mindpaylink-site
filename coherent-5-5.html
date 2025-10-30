@@ -666,6 +666,51 @@
   <a id="top" style="position:absolute;top:0;left:0;width:0;height:0;overflow:hidden"></a>
 
   <main class="container wrap">
+
+
+<!-- mshare:value-pack:v1:start -->
+
+<section class="card mshare-value-pack" id="vp-tech-quick">
+  <h2>Quick options</h2>
+  
+  <div class="actions">
+    <a class="btn" href="coherent-5-5.html?minutes=1" >1 minute</a>
+    <a class="btn" href="coherent-5-5.html?minutes=3" >3 minutes</a>
+    <a class="btn" href="coherent-5-5.html?minutes=5" >5 minutes</a>
+  </div>
+
+</section>
+
+<section class="card mshare-value-pack" id="vp-tech-progress">
+  <h2>Progress</h2>
+  
+  <p>Tap after finishing a round.</p>
+  
+<div class="actions" style="margin-top:8px">
+  <button type="button" class="btn" data-mpl-prog="coherent-5-5">Mark 1 min practised</button>
+  <span class="badge" id="mpl-prog-coherent-5-5">Completed: 0</span>
+</div>
+<script>
+(()=>{ try {
+  const key='mpl.progress.coherent-5-5.count';
+  const el=document.getElementById('mpl-prog-coherent-5-5');
+  const btn=document.querySelector('[data-mpl-prog="coherent-5-5"]');
+  const get=()=>Number(localStorage.getItem(key)||0);
+  const set=v=>localStorage.setItem(key,String(v));
+  const paint=()=>{ if(el) el.textContent='Completed: '+get(); };
+  paint();
+  btn&&btn.addEventListener('click',()=>{ set(get()+1); paint(); });
+} catch(e){} })();
+</script>
+  <div class="actions" style="margin-top:8px">
+    <a class="btn" href="index.html" >Return to Home</a>
+    <a class="btn" href="box-breathing.html" >Try Next</a>
+  </div>
+
+</section>
+<!-- mshare:value-pack:v1:end -->
+
+
     <div class="card setup">
       <h1>Coherent 5-5 — Setup</h1>
       <p class="muted">Smooth rhythm: <b>inhale 5</b> → <b>exhale 5</b>. (No holds.)</p>

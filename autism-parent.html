@@ -603,6 +603,47 @@
   <a id="top" style="position:absolute;top:0;left:0;width:0;height:0;overflow:hidden"> </a>
 
   <main class="container" id="howto">
+
+
+<!-- mshare:value-pack:v1:start -->
+
+<section class="card mshare-value-pack" id="vp-cond-overview">
+  <h2>Autism (Parent) — quick overview</h2>
+  
+  <p>Parents often support sensory regulation and predictable routines alongside communication strategies.</p>
+  <h3>Common signs</h3>
+  <ul><li>Seeks sameness/routine</li><li>Sensory overwhelm</li><li>Communication differences</li></ul>
+  <h3>How to use this site</h3>
+  <ol><li>Start SOS-60 together (co-regulation)</li><li>Use silent Box in public spaces</li><li>Print the quick pack for school meetings</li></ol>
+  <div class="actions">
+    <a class="btn" href="sos-60.html?minutes=1" >Try SOS-60</a>
+    <a class="btn" href="breath.html" >Breath basics</a>
+  </div>
+  <h3>Credible recommendations (UK)</h3>
+  <ul><li><a href="https://www.nhs.uk/conditions/autism/" rel="noopener">NHS: Autism support</a></li><li><a href="https://www.autism.org.uk/advice-and-guidance" rel="noopener">National Autistic Society — Parents</a></li></ul>
+  <p class="muted">Supportive information only; not medical advice.</p>
+  
+<div class="actions" style="margin-top:8px">
+  <button type="button" class="btn" data-mpl-prog="autism-parent">Mark 1 min practised</button>
+  <span class="badge" id="mpl-prog-autism-parent">Completed: 0</span>
+</div>
+<script>
+(()=>{ try {
+  const key='mpl.progress.autism-parent.count';
+  const el=document.getElementById('mpl-prog-autism-parent');
+  const btn=document.querySelector('[data-mpl-prog="autism-parent"]');
+  const get=()=>Number(localStorage.getItem(key)||0);
+  const set=v=>localStorage.setItem(key,String(v));
+  const paint=()=>{ if(el) el.textContent='Completed: '+get(); };
+  paint();
+  btn&&btn.addEventListener('click',()=>{ set(get()+1); paint(); });
+} catch(e){} })();
+</script>
+
+</section>
+<!-- mshare:value-pack:v1:end -->
+
+
 <!-- mpl-condition-card-start:autism -->
 <section id="mpl-autism-quick-card" class="card" style="margin-bottom:1.25rem">
   <h2>Quick Starter: Autism</h2>

@@ -541,6 +541,47 @@
 
 
   <main class="container">
+
+
+<!-- mshare:value-pack:v1:start -->
+
+<section class="card mshare-value-pack" id="vp-cond-overview">
+  <h2>Anxiety — quick overview</h2>
+  
+  <p>Anxiety is persistent worry/tension that can affect sleep, focus, and daily life.</p>
+  <h3>Common signs</h3>
+  <ul><li>Racing thoughts or restlessness</li><li>Muscle tension</li><li>Sleep difficulty</li></ul>
+  <h3>How to use this site</h3>
+  <ol><li>Start with SOS-60 when spiking</li><li>Use 4-7-8 before bed</li><li>Try grounding on Mindfulness page</li></ol>
+  <div class="actions">
+    <a class="btn" href="sos-60.html?minutes=1" >Try SOS-60</a>
+    <a class="btn" href="breath.html" >Breath basics</a>
+  </div>
+  <h3>Credible recommendations (UK)</h3>
+  <ul><li><a href="https://www.nhs.uk/mental-health/conditions/generalised-anxiety-disorder/overview/" rel="noopener">NHS: Anxiety</a></li><li><a href="https://www.mind.org.uk/information-support/types-of-mental-health-problems/anxiety-and-panic-attacks/" rel="noopener">Mind (Anxiety)</a></li></ul>
+  <p class="muted">Supportive information only; not medical advice.</p>
+  
+<div class="actions" style="margin-top:8px">
+  <button type="button" class="btn" data-mpl-prog="anxiety">Mark 1 min practised</button>
+  <span class="badge" id="mpl-prog-anxiety">Completed: 0</span>
+</div>
+<script>
+(()=>{ try {
+  const key='mpl.progress.anxiety.count';
+  const el=document.getElementById('mpl-prog-anxiety');
+  const btn=document.querySelector('[data-mpl-prog="anxiety"]');
+  const get=()=>Number(localStorage.getItem(key)||0);
+  const set=v=>localStorage.setItem(key,String(v));
+  const paint=()=>{ if(el) el.textContent='Completed: '+get(); };
+  paint();
+  btn&&btn.addEventListener('click',()=>{ set(get()+1); paint(); });
+} catch(e){} })();
+</script>
+
+</section>
+<!-- mshare:value-pack:v1:end -->
+
+
 <!-- mpl-condition-card-start:anxiety -->
 <section id="mpl-anxiety-quick-card" class="card" style="margin-bottom:1.25rem">
   <h2>Quick Starter: Generalised Anxiety</h2>

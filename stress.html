@@ -541,6 +541,47 @@
 
 
   <main class="container">
+
+
+<!-- mshare:value-pack:v1:start -->
+
+<section class="card mshare-value-pack" id="vp-cond-overview">
+  <h2>Stress — quick overview</h2>
+  
+  <p>Stress is a response to demands that feel hard to cope with; short breath resets help down-shift arousal.</p>
+  <h3>Common signs</h3>
+  <ul><li>Irritability</li><li>Muscle tension/headaches</li><li>Racing thoughts</li></ul>
+  <h3>How to use this site</h3>
+  <ol><li>SOS-60 in the moment</li><li>Coherent 5-5 for 5 min after work</li><li>Pin “Share pack” for colleagues</li></ol>
+  <div class="actions">
+    <a class="btn" href="sos-60.html?minutes=1" >Try SOS-60</a>
+    <a class="btn" href="breath.html" >Breath basics</a>
+  </div>
+  <h3>Credible recommendations (UK)</h3>
+  <ul><li><a href="https://www.nhs.uk/mental-health/self-help/tips-and-support/stress/" rel="noopener">NHS: Stress</a></li><li><a href="https://www.mind.org.uk/information-support/tips-for-everyday-living/stress/" rel="noopener">Mind (Stress)</a></li></ul>
+  <p class="muted">Supportive information only; not medical advice.</p>
+  
+<div class="actions" style="margin-top:8px">
+  <button type="button" class="btn" data-mpl-prog="stress">Mark 1 min practised</button>
+  <span class="badge" id="mpl-prog-stress">Completed: 0</span>
+</div>
+<script>
+(()=>{ try {
+  const key='mpl.progress.stress.count';
+  const el=document.getElementById('mpl-prog-stress');
+  const btn=document.querySelector('[data-mpl-prog="stress"]');
+  const get=()=>Number(localStorage.getItem(key)||0);
+  const set=v=>localStorage.setItem(key,String(v));
+  const paint=()=>{ if(el) el.textContent='Completed: '+get(); };
+  paint();
+  btn&&btn.addEventListener('click',()=>{ set(get()+1); paint(); });
+} catch(e){} })();
+</script>
+
+</section>
+<!-- mshare:value-pack:v1:end -->
+
+
 <!-- mpl-condition-card-start:stress -->
 <section id="mpl-stress-quick-card" class="card" style="margin-bottom:1.25rem">
   <h2>Quick Starter: Stress</h2>

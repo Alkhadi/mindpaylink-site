@@ -538,6 +538,47 @@
   
 
   <main class="container">
+
+
+<!-- mshare:value-pack:v1:start -->
+
+<section class="card mshare-value-pack" id="vp-cond-overview">
+  <h2>Depression — quick overview</h2>
+  
+  <p>Depression involves low mood or loss of interest for weeks+, often with sleep or appetite changes.</p>
+  <h3>Common signs</h3>
+  <ul><li>Low energy, reduced interest</li><li>Sleep/appetite change</li><li>Difficulty concentrating</li></ul>
+  <h3>How to use this site</h3>
+  <ol><li>Use 1–3 min breath sets to start the day</li><li>Track small wins weekly</li><li>Share the one-page PDF with supporters</li></ol>
+  <div class="actions">
+    <a class="btn" href="sos-60.html?minutes=1" >Try SOS-60</a>
+    <a class="btn" href="breath.html" >Breath basics</a>
+  </div>
+  <h3>Credible recommendations (UK)</h3>
+  <ul><li><a href="https://www.nhs.uk/mental-health/conditions/clinical-depression/overview/" rel="noopener">NHS: Depression</a></li><li><a href="https://www.mind.org.uk/information-support/types-of-mental-health-problems/depression/" rel="noopener">Mind (Depression)</a></li></ul>
+  <p class="muted">Supportive information only; not medical advice.</p>
+  
+<div class="actions" style="margin-top:8px">
+  <button type="button" class="btn" data-mpl-prog="depression">Mark 1 min practised</button>
+  <span class="badge" id="mpl-prog-depression">Completed: 0</span>
+</div>
+<script>
+(()=>{ try {
+  const key='mpl.progress.depression.count';
+  const el=document.getElementById('mpl-prog-depression');
+  const btn=document.querySelector('[data-mpl-prog="depression"]');
+  const get=()=>Number(localStorage.getItem(key)||0);
+  const set=v=>localStorage.setItem(key,String(v));
+  const paint=()=>{ if(el) el.textContent='Completed: '+get(); };
+  paint();
+  btn&&btn.addEventListener('click',()=>{ set(get()+1); paint(); });
+} catch(e){} })();
+</script>
+
+</section>
+<!-- mshare:value-pack:v1:end -->
+
+
 <!-- mpl-condition-card-start:depression -->
 <section id="mpl-depression-quick-card" class="card" style="margin-bottom:1.25rem">
   <h2>Quick Starter: Depression</h2>

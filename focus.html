@@ -538,6 +538,50 @@
 
   <main class="container">
 
+
+<!-- mshare:value-pack:v1:start -->
+
+<section class="card mshare-value-pack" id="vp-focus-protocols">
+  <h2>Focus protocols</h2>
+  
+  <ul>
+    <li>2-minute reset: 4 Box cycles + eyes on a single point.</li><li>5-minute: Coherent 5-5 + brief stretch.</li><li>10-minute: 2× Coherent 5-5 + 1-minute quiet.</li>
+  </ul>
+  <div class="actions">
+    <a class="btn" href="coherent-5-5.html?minutes=5" >Start 5-minute</a>
+    <a class="btn" href="adhd-tools.html" >ADHD Tools</a>
+    <a class="btn" href="anxiety-tools.html" >Anxiety Tools</a>
+  </div>
+
+</section>
+
+<section class="card mshare-value-pack" id="vp-focus-progress">
+  <h2>Track your best focus run</h2>
+  
+  <p>Tap after a focus block to record progress.</p>
+  
+<div class="actions" style="margin-top:8px">
+  <button type="button" class="btn" data-mpl-prog="focus">Mark 1 min practised</button>
+  <span class="badge" id="mpl-prog-focus">Completed: 0</span>
+</div>
+<script>
+(()=>{ try {
+  const key='mpl.progress.focus.count';
+  const el=document.getElementById('mpl-prog-focus');
+  const btn=document.querySelector('[data-mpl-prog="focus"]');
+  const get=()=>Number(localStorage.getItem(key)||0);
+  const set=v=>localStorage.setItem(key,String(v));
+  const paint=()=>{ if(el) el.textContent='Completed: '+get(); };
+  paint();
+  btn&&btn.addEventListener('click',()=>{ set(get()+1); paint(); });
+} catch(e){} })();
+</script>
+
+</section>
+<!-- mshare:value-pack:v1:end -->
+
+
+
     <h1>Focus — Sprints with Recovery</h1>
     <div class="card">
       <p>Make focus kinder: short sprints, clear goals, and recovery breaks. Works well alongside ADHD routines and

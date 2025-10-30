@@ -590,6 +590,47 @@
 
   <!-- ===== Page content ===== -->
   <main class="container" id="dlxPage">
+
+
+<!-- mshare:value-pack:v1:start -->
+
+<section class="card mshare-value-pack" id="vp-cond-overview">
+  <h2>Dyslexia — quick overview</h2>
+  
+  <p>Dyslexia is a difference in processing written language, often affecting phonology, decoding, and working memory.</p>
+  <h3>Common signs</h3>
+  <ul><li>Slow/effortful reading</li><li>Spelling difficulties</li><li>Mixing up similar letter sounds</li></ul>
+  <h3>How to use this site</h3>
+  <ol><li>Use silent modes in reading practice</li><li>Pair 1-min breath breaks with reading</li><li>Share printable reading support sheets</li></ol>
+  <div class="actions">
+    <a class="btn" href="sos-60.html?minutes=1" >Try SOS-60</a>
+    <a class="btn" href="breath.html" >Breath basics</a>
+  </div>
+  <h3>Credible recommendations (UK)</h3>
+  <ul><li><a href="https://www.nhs.uk/conditions/dyslexia/" rel="noopener">NHS: Dyslexia</a></li><li><a href="https://www.bdadyslexia.org.uk/" rel="noopener">British Dyslexia Association</a></li></ul>
+  <p class="muted">Supportive information only; not medical advice.</p>
+  
+<div class="actions" style="margin-top:8px">
+  <button type="button" class="btn" data-mpl-prog="dyslexia-reading-training">Mark 1 min practised</button>
+  <span class="badge" id="mpl-prog-dyslexia-reading-training">Completed: 0</span>
+</div>
+<script>
+(()=>{ try {
+  const key='mpl.progress.dyslexia-reading-training.count';
+  const el=document.getElementById('mpl-prog-dyslexia-reading-training');
+  const btn=document.querySelector('[data-mpl-prog="dyslexia-reading-training"]');
+  const get=()=>Number(localStorage.getItem(key)||0);
+  const set=v=>localStorage.setItem(key,String(v));
+  const paint=()=>{ if(el) el.textContent='Completed: '+get(); };
+  paint();
+  btn&&btn.addEventListener('click',()=>{ set(get()+1); paint(); });
+} catch(e){} })();
+</script>
+
+</section>
+<!-- mshare:value-pack:v1:end -->
+
+
 <!-- mpl-condition-card-start:dyslexia -->
 <section id="mpl-dyslexia-quick-card" class="card" style="margin-bottom:1.25rem">
   <h2>Quick Starter: Dyslexia</h2>

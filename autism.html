@@ -542,6 +542,47 @@
   <a id="top" style="position:absolute;top:0;left:0;width:0;height:0;overflow:hidden"> </a>
 
   <main class="container" id="howto" role="main">
+
+
+<!-- mshare:value-pack:v1:start -->
+
+<section class="card mshare-value-pack" id="vp-cond-overview">
+  <h2>Autism — quick overview</h2>
+  
+  <p>Autism is a lifelong neurodevelopmental difference in communication, social interaction, and sensory processing.</p>
+  <h3>Common signs</h3>
+  <ul><li>Differences in social communication</li><li>Strong interests or routines</li><li>Sensory sensitivities (noise, light, touch)</li></ul>
+  <h3>How to use this site</h3>
+  <ol><li>Try Box breathing for 1 minute to settle arousal</li><li>Use silent mode in classrooms</li><li>Share the one-page PDF with carers/teachers</li></ol>
+  <div class="actions">
+    <a class="btn" href="sos-60.html?minutes=1" >Try SOS-60</a>
+    <a class="btn" href="breath.html" >Breath basics</a>
+  </div>
+  <h3>Credible recommendations (UK)</h3>
+  <ul><li><a href="https://www.nhs.uk/conditions/autism/" rel="noopener">NHS: Autism</a></li><li><a href="https://www.autism.org.uk/" rel="noopener">National Autistic Society</a></li><li><a href="https://www.nice.org.uk/guidance/conditions-and-diseases/autistic-spectrum-disorders" rel="noopener">NICE Guidance (overview)</a></li></ul>
+  <p class="muted">Supportive information only; not medical advice.</p>
+  
+<div class="actions" style="margin-top:8px">
+  <button type="button" class="btn" data-mpl-prog="autism">Mark 1 min practised</button>
+  <span class="badge" id="mpl-prog-autism">Completed: 0</span>
+</div>
+<script>
+(()=>{ try {
+  const key='mpl.progress.autism.count';
+  const el=document.getElementById('mpl-prog-autism');
+  const btn=document.querySelector('[data-mpl-prog="autism"]');
+  const get=()=>Number(localStorage.getItem(key)||0);
+  const set=v=>localStorage.setItem(key,String(v));
+  const paint=()=>{ if(el) el.textContent='Completed: '+get(); };
+  paint();
+  btn&&btn.addEventListener('click',()=>{ set(get()+1); paint(); });
+} catch(e){} })();
+</script>
+
+</section>
+<!-- mshare:value-pack:v1:end -->
+
+
 <!-- mpl-condition-card-start:autism -->
 <section id="mpl-autism-quick-card" class="card" style="margin-bottom:1.25rem">
   <h2>Quick Starter: Autism</h2>

@@ -538,6 +538,34 @@
 
   <main class="container">
 
+
+<!-- mshare:value-pack:v1:start -->
+
+<section class="card mshare-value-pack" id="vp-mindfulness-quick">
+  <h2>1-minute grounding</h2>
+  
+  <p>Try 5-4-3-2-1: notice five things you see, four you feel, three you hear, two you smell, one you taste.</p>
+  <div class="actions"><a class="btn" href="anxiety.html" >When thoughts race</a></div>
+
+</section>
+
+<section class="card mshare-value-pack" id="vp-mindfulness-reflect">
+  <h2>Reflect & log (private)</h2>
+  
+  <p class="muted">Write a few words about how you feel. Saved only on your device.</p>
+  <textarea id="vp-mind-notes" rows="4" style="width:100%"></textarea>
+  <div class="actions"><button class="btn" id="vp-mind-save" type="button">Save</button></div>
+  <script>(()=>{try{
+    const k='mpl.notes.mindfulness'; const t=document.getElementById('vp-mind-notes');
+    const b=document.getElementById('vp-mind-save'); t.value=localStorage.getItem(k)||'';
+    b&&b.addEventListener('click',()=>{ localStorage.setItem(k,t.value||''); });
+  }catch{}})();</script>
+
+</section>
+<!-- mshare:value-pack:v1:end -->
+
+
+
     <h1>Mindfulness — Small, Repeated Moments</h1>
     <div class="card">
       <p>Mindfulness helps us notice and unhook from loops of worry and low mood. NICE recognises mindfulness and MBCT

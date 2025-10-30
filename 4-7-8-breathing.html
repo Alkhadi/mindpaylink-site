@@ -542,6 +542,51 @@
 
   <!-- Main -->
   <main class="container wrap">
+
+
+<!-- mshare:value-pack:v1:start -->
+
+<section class="card mshare-value-pack" id="vp-tech-quick">
+  <h2>Quick options</h2>
+  
+  <div class="actions">
+    <a class="btn" href="4-7-8-breathing.html?minutes=1" >1 minute</a>
+    <a class="btn" href="4-7-8-breathing.html?minutes=3" >3 minutes</a>
+    <a class="btn" href="4-7-8-breathing.html?minutes=5" >5 minutes</a>
+  </div>
+
+</section>
+
+<section class="card mshare-value-pack" id="vp-tech-progress">
+  <h2>Progress</h2>
+  
+  <p>Tap after finishing a round.</p>
+  
+<div class="actions" style="margin-top:8px">
+  <button type="button" class="btn" data-mpl-prog="4-7-8-breathing">Mark 1 min practised</button>
+  <span class="badge" id="mpl-prog-4-7-8-breathing">Completed: 0</span>
+</div>
+<script>
+(()=>{ try {
+  const key='mpl.progress.4-7-8-breathing.count';
+  const el=document.getElementById('mpl-prog-4-7-8-breathing');
+  const btn=document.querySelector('[data-mpl-prog="4-7-8-breathing"]');
+  const get=()=>Number(localStorage.getItem(key)||0);
+  const set=v=>localStorage.setItem(key,String(v));
+  const paint=()=>{ if(el) el.textContent='Completed: '+get(); };
+  paint();
+  btn&&btn.addEventListener('click',()=>{ set(get()+1); paint(); });
+} catch(e){} })();
+</script>
+  <div class="actions" style="margin-top:8px">
+    <a class="btn" href="index.html" >Return to Home</a>
+    <a class="btn" href="coherent-5-5.html" >Try Next</a>
+  </div>
+
+</section>
+<!-- mshare:value-pack:v1:end -->
+
+
     <div class="card setup">
       <h1>4-7-8 Breathing — Setup</h1>
       <p class="muted">Pattern: <b>inhale 4</b> → <b>hold 7</b> → <b>exhale 8</b>. (No final hold.)</p>

@@ -541,6 +541,47 @@
 
 
   <main class="container">
+
+
+<!-- mshare:value-pack:v1:start -->
+
+<section class="card mshare-value-pack" id="vp-cond-overview">
+  <h2>Sleep — quick overview</h2>
+  
+  <p>Sleep difficulties can improve with calming breath and consistent pre-bed routines.</p>
+  <h3>Common signs</h3>
+  <ul><li>Trouble falling asleep</li><li>Waking often</li><li>Racing mind at night</li></ul>
+  <h3>How to use this site</h3>
+  <ol><li>Use 4-7-8 for 3–5 min in bed</li><li>Reduce screen motion/sound at night</li><li>Print a 1-page bedtime routine</li></ol>
+  <div class="actions">
+    <a class="btn" href="sos-60.html?minutes=1" >Try SOS-60</a>
+    <a class="btn" href="breath.html" >Breath basics</a>
+  </div>
+  <h3>Credible recommendations (UK)</h3>
+  <ul><li><a href="https://www.nhs.uk/every-mind-matters/mental-health-issues/sleep/" rel="noopener">NHS: Sleep tips</a></li></ul>
+  <p class="muted">Supportive information only; not medical advice.</p>
+  
+<div class="actions" style="margin-top:8px">
+  <button type="button" class="btn" data-mpl-prog="sleep">Mark 1 min practised</button>
+  <span class="badge" id="mpl-prog-sleep">Completed: 0</span>
+</div>
+<script>
+(()=>{ try {
+  const key='mpl.progress.sleep.count';
+  const el=document.getElementById('mpl-prog-sleep');
+  const btn=document.querySelector('[data-mpl-prog="sleep"]');
+  const get=()=>Number(localStorage.getItem(key)||0);
+  const set=v=>localStorage.setItem(key,String(v));
+  const paint=()=>{ if(el) el.textContent='Completed: '+get(); };
+  paint();
+  btn&&btn.addEventListener('click',()=>{ set(get()+1); paint(); });
+} catch(e){} })();
+</script>
+
+</section>
+<!-- mshare:value-pack:v1:end -->
+
+
 <!-- mpl-condition-card-start:sleep -->
 <section id="mpl-sleep-quick-card" class="card" style="margin-bottom:1.25rem">
   <h2>Quick Starter: Sleep / Insomnia</h2>

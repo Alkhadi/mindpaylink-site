@@ -539,6 +539,34 @@
 
   <main class="container">
 
+
+<!-- mshare:value-pack:v1:start -->
+
+<section class="card mshare-value-pack" id="vp-toolkit-bundles">
+  <h2>Curated bundles</h2>
+  
+  <ul><li>Beginner: 2× Box (1 min) + share PDF.</li><li>Quick: SOS-60 + Coherent 5-5 (2 min).</li><li>Classroom: Silent Box (2 min) — no audio.</li><li>Bedtime: 4-7-8 (3–5 min), phone face-down.</li></ul>
+  <p class="muted">Use the checkboxes below to tick what you’ve tried (saved on your device):</p>
+  <div>
+    <label><input type="checkbox" data-tk="mood-tools-b1"> Beginner</label>
+    <label><input type="checkbox" data-tk="mood-tools-b2"> Quick</label>
+    <label><input type="checkbox" data-tk="mood-tools-b3"> Classroom</label>
+    <label><input type="checkbox" data-tk="mood-tools-b4"> Bedtime</label>
+  </div>
+  <script>(()=>{try{
+    const qs=s=>Array.from(document.querySelectorAll(s));
+    qs('[data-tk]').forEach(ch=>{
+      const k='mpl.tk.'+ch.getAttribute('data-tk');
+      ch.checked=localStorage.getItem(k)==='1';
+      ch.addEventListener('change',()=>localStorage.setItem(k, ch.checked?'1':'0'));
+    });
+  }catch{}})();</script>
+
+</section>
+<!-- mshare:value-pack:v1:end -->
+
+
+
     <h1>Mood Tools</h1>
     <div class="grid cols-3">
       <div class="card">
