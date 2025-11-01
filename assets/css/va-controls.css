@@ -1,66 +1,33 @@
-/* Voice Assistant (keep your existing class names) */
 #mshare-voicebot.mshare-voicebot{
-  position: fixed;
-  top: 16px; left: 16px;            /* default spawn */
-  z-index: 9999;
-  max-width: min(420px, 96vw);
-  touch-action: none;               /* smooth pointer drag */
+  position:fixed; left:16px; top:16px; max-width:min(92vw,460px);
+  background:#0f172a; color:#e2e8f0; border:1px solid #1f2937; border-radius:12px;
+  box-shadow:0 10px 30px rgba(0,0,0,.35); z-index:10000; user-select:none;
 }
-
-/* Header row: title + buttons stay visible on mobile */
+.mshare-voicebot__body{ padding:10px; }
 .mshare-voicebot__handle{
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;                  /* let buttons wrap instead of overflowing */
-  padding: 8px;
+  display:flex; align-items:center; gap:8px; cursor:grab; padding:8px 10px; border-bottom:1px solid #1f2937; background:#111827;
+  touch-action:none; /* important for mobile drag */
 }
-.mshare-voicebot__title{ margin: 0; font-size: 14px; line-height: 1.2; }
-.mshare-voicebot__btn{
-  font: inherit;
-  padding: 6px 10px;
-  border-radius: 8px;
-  border: 1px solid #475569;
-  background: #0f172a;
-  color: #fff;
-  cursor: pointer;
-}
-.mshare-voicebot__btn:focus-visible{ outline: 2px solid #38bdf8; outline-offset: 2px; }
-
-/* Content area */
-.mshare-voicebot__body{ background: rgba(2,6,23,.98); border: 1px solid #334155; border-radius: 12px; }
-.mshare-voicebot__content{ padding: 8px; }
-.mshare-voicebot__row{ display:flex; gap:8px; flex-wrap: wrap; }
-.mshare-voicebot__field{ min-width:0; flex:1 1 0; }
+.mshare-voicebot__handle:active{ cursor:grabbing; }
+.mshare-voicebot__title{ margin:0; font-size:14px; font-weight:600; flex:1; }
+.mshare-voicebot__btn{ font:inherit; padding:6px 10px; border-radius:8px; border:1px solid #334155; background:#1f2937; color:#e5e7eb; }
+.mshare-voicebot__row{ display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+.mshare-voicebot__field{ min-width:0; flex:1 1 auto; }
 .mshare-voicebot__cmd,.mshare-voicebot__select,.mshare-voicebot__range{ width:100%; }
-.mshare-voicebot__meta{ font-size:12px; opacity:.9; }
+.mshare-voicebot__meta{ font-size:12px; opacity:.9; margin-top:6px; }
 
-/* Hide -> collapse body, keep header visible so user can Show again */
 #mshare-voicebot[data-hidden="true"] .mshare-voicebot__body{ display:none; }
 
-/* Dots in the handle */
-.mshare-voicebot__handle .dot{
-  width:4px; height:4px; border-radius:50%; background:#94a3b8; display:inline-block; margin-right:2px;
-}
-
-/* Floating action button (appears when VA is hidden) */
 .mshare-voicebot__fab{
-  position: fixed;
-  right: 16px; bottom: 16px;
-  display: none;
-  padding: 10px 12px;
-  border-radius: 999px;
-  border: 0;
-  background: #334155;
-  color: #fff;
-  box-shadow: 0 6px 16px rgba(0,0,0,.25);
-  cursor: pointer;
-  z-index: 10000;
+  position:fixed; right:16px; bottom:16px; display:none; padding:10px 12px;
+  border-radius:999px; border:0; background:#334155; color:#fff; box-shadow:0 6px 16px rgba(0,0,0,.25); cursor:pointer; z-index:10000;
 }
-.mshare-voicebot__fab:focus-visible{ outline: 2px solid #38bdf8; outline-offset: 2px; }
+.mshare-voicebot__fab:focus-visible{ outline:2px solid #38bdf8; outline-offset:2px; }
 
-/* Small screens: tighter typography */
+.mshare-voicebot__handle .dot{ width:4px; height:4px; border-radius:50%; background:#94a3b8; display:inline-block; margin-right:2px; }
+
 @media (max-width:600px){
+  #mshare-voicebot.mshare-voicebot{ max-width:min(96vw,420px); left:8px; }
   .mshare-voicebot__title{ font-size:13px; }
   .mshare-voicebot__btn{ font-size:12px; padding:6px 8px; }
 }
