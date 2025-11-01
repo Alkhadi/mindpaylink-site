@@ -471,7 +471,7 @@
 <link rel="preload" href="app.js" as="script">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is anxiety?","acceptedAnswer":{"@type":"Answer","text":"Anxiety is persistent worry/tension that can affect sleep, focus, and daily life."}},{"@type":"Question","name":"What are common signs?","acceptedAnswer":{"@type":"Answer","text":"Racing thoughts; Muscle tension; Sleep difficulty"}},{"@type":"Question","name":"How do I get started on this site?","acceptedAnswer":{"@type":"Answer","text":"SOS-60 during spikes · 4-7-8 before bed · Use grounding on Mindfulness"}},{"@type":"Question","name":"Is this medical advice?","acceptedAnswer":{"@type":"Answer","text":"No. This site provides supportive educational information only and is not medical advice."}}]}</script>
 <!-- mshare:head-seo:v1:end -->
-  <link rel="stylesheet" href="assets/css/voice-assistant-hotfix.css" />
+    <link rel="stylesheet" href="assets/css/va-controls.css" />
   <link rel="stylesheet" href="assets/css/home-goal-tiles.css" />
 </head>
 
@@ -547,9 +547,7 @@
 
   <a id="top" style="position:absolute;top:0;left:0;width:0;height:0;overflow:hidden"> </a>
 
-
   <main class="container">
-
 
 <!-- mshare:value-pack:v1:start -->
 
@@ -588,7 +586,6 @@
 
 </section>
 <!-- mshare:value-pack:v1:end -->
-
 
 <!-- mpl-condition-card-start:anxiety -->
 <section id="mpl-anxiety-quick-card" class="card" style="margin-bottom:1.25rem">
@@ -676,7 +673,6 @@
   </script>
 </section>
 <!-- mpl-condition-card-end -->
-
 
     <h1>Anxiety — Calm the Body, Train the Mind</h1>
     <div class="card">
@@ -775,7 +771,6 @@
   <script src="assets/footer/footer.js"></script>
   <script defer src="voice-coach-fix.js"></script>
   <script defer src="assets/js/contrast-fix.js"></script>
-
 
   <script id="mpl-theme-auto-js-v3">
     (() => {
@@ -951,7 +946,6 @@
     })();
   </script>
 
-
   <footer class="footer-2025" id="footer2025">
     <div class="wrap">
       <div class="grid">
@@ -994,7 +988,8 @@
     </div>
     <script>document.getElementById('yearFooter') && (document.getElementById('yearFooter').textContent = (new Date).getFullYear()); document.getElementById('backToTop') && document.getElementById('backToTop').addEventListener('click', function (e) { e.preventDefault(); try { (document.getElementById('top') || document.body).scrollIntoView({ behavior: 'smooth', block: 'start' }) } catch { location.hash = '#top' } })</script>
   </footer>
-  <script src="assets/js/voice-assistant-hotfix.js" defer></script>
+  <div id="mshare-voice-toggle" aria-live="polite" aria-label="Show Voice Assistant"><button type="button" title="Show Voice">Voice</button></div>
+  <script src="assets/js/va-controls.js" defer></script>
   <script src="assets/js/home-goal-tiles.js" defer></script>
 </body>
 

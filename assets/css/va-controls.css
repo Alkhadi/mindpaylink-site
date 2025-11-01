@@ -1,0 +1,6 @@
+/* VA controls (NO new panel) */
+#mshare-voicebot{position:fixed;top:16px;right:16px;max-width:min(92vw,420px);z-index:9999}
+#mshare-voicebot .mshare-voicebot__handle{cursor:move}
+#mshare-voicebot.is-hidden{transform:translateY(calc(100% + 24px));opacity:0;pointer-events:none;transition:transform .25s ease,opacity .25s ease}
+#va-show-toggle{position:fixed;right:12px;bottom:12px;z-index:9998;padding:.6rem .8rem;border-radius:999px;border:0;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+@media (prefers-reduced-motion:reduce){#mshare-voicebot,#mshare-voicebot.is-hidden{transition:none}}
