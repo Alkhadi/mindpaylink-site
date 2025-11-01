@@ -1,206 +1,188 @@
-(() => {
-  const SEL = '#mshare-voicebot';
-  const el = document.querySelector(SEL);
-  if (!el) return;
+(function(){
+  const LS_POS = 'mshare_va_xy';
+  const LS_HID = 'mshare_va_hidden';
 
-  // Remove any old inline "inset: ..." which causes jump-to-top on layout/scroll
-  (function stripInset() {
-    const s = el.getAttribute('style') || '';
-    if (/inset\s*:/i.test(s)) {
-      const clean = s.replace(/inset\s*:[^;]+;?/ig, '')
-                     .replace(/\s{2,}/g,' ').trim();
-      if (clean) el.setAttribute('style', clean); else el.removeAttribute('style');
-    }
-  })();
+  const va = document.getElementById('mshare-voicebot');
+  if (!va) return;
 
-  // Ensure structural hooks
-  let body = el.querySelector('.mshare-voicebot__body');
-  if (!body) {
-    body = document.createElement('div');
-    body.className = 'mshare-voicebot__body';
-    body.innerHTML = el.innerHTML;
-    el.innerHTML = '';
-    el.appendChild(body);
-  }
-
-  let handle = el.querySelector('.mshare-voicebot__handle');
+  // 1) Ensure structure & controls exist
+  let handle = va.querySelector('.mshare-voicebot__handle');
+  let body   = va.querySelector('.mshare-voicebot__body') || va.querySelector('.mshare-voicebot__content') || va;
   if (!handle) {
-    handle = document.createElement('div');
-    handle.className = 'mshare-voicebot__handle';
-    handle.innerHTML = `
-      <span class="dot" aria-hidden="true"></span><span class="dot" aria-hidden="true"></span><span class="dot" aria-hidden="true"></span>
-      <h3 class="mshare-voicebot__title">Voice Assistant</h3>
-      <button type="button" class="mshare-voicebot__btn" data-voice-action="toggle" aria-expanded="true" aria-controls="mshare-voicebot-panel" title="Hide Voice Assistant">Hide</button>
-      <button type="button" class="mshare-voicebot__btn" data-voice-action="reset-pos" title="Reset position">Reset</button>
-    `;
-    body.prepend(handle);
-  } else {
-    // Add missing Hide button if not present
-    if (!handle.querySelector('[data-voice-action="toggle"]')) {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'mshare-voicebot__btn';
-      b.setAttribute('data-voice-action','toggle');
-      b.setAttribute('aria-expanded','true');
-      b.setAttribute('aria-controls','mshare-voicebot-panel');
-      b.title = 'Hide Voice Assistant';
-      b.textContent = 'Hide';
-      handle.appendChild(b);
-    }
-    // Ensure Reset exists
-    if (!handle.querySelector('[data-voice-action="reset-pos"]')) {
-      const r = document.createElement('button');
-      r.type = 'button';
-      r.className = 'mshare-voicebot__btn';
-      r.setAttribute('data-voice-action','reset-pos');
-      r.title = 'Reset position';
-      r.textContent = 'Reset';
-      handle.appendChild(r);
-    }
+    // If a custom HTML variant exists, don’t create a new panel — just bail.
+    return;
   }
 
-  // Add Show FAB (appears only when hidden)
-  if (!el.querySelector('.mshare-voicebot__fab')) {
-    const fab = document.createElement('button');
+  // Add Hide/Show + keep Reset
+  if (!handle.querySelector('[data-voice-action="toggle"]')) {
+    const toggleBtn = document.createElement('button');
+    toggleBtn.type = 'button';
+    toggleBtn.className = 'mshare-voicebot__btn';
+    toggleBtn.dataset.voiceAction = 'toggle';
+    toggleBtn.setAttribute('aria-controls', 'mshare-voicebot-panel');
+    toggleBtn.textContent = 'Hide';
+    handle.appendChild(toggleBtn);
+  }
+
+  // If body wrapper missing id, set it for a11y
+  if (!body.id) body.id = 'mshare-voicebot-panel';
+
+  // Floating Show button (only visible when hidden)
+  let fab = document.querySelector('.mshare-voicebot__fab');
+  if (!fab){
+    fab = document.createElement('button');
     fab.type = 'button';
     fab.className = 'mshare-voicebot__fab';
-    fab.textContent = 'Voice Assistant';
-    fab.addEventListener('click', () => setHidden(false));
-    el.appendChild(fab);
+    fab.textContent = 'Show Voice Assistant';
+    document.body.appendChild(fab);
   }
 
-  // Positioning helpers
-  const margin = 8; // keep a bit of space from edges
-
-  function getPos() {
-    const cs = window.getComputedStyle(el);
-    const top  = parseFloat(cs.top)  || 72;
-    const left = parseFloat(cs.left) || 16;
-    return { top, left };
-  }
-  function clamp(x, min, max){ return Math.max(min, Math.min(x, max)); }
-  function applyPos(left, top, save=true){
-    const rect = el.getBoundingClientRect();
-    const vw = window.innerWidth, vh = window.innerHeight;
-    const maxLeft = Math.max(margin, vw - rect.width  - margin);
-    const maxTop  = Math.max(margin, vh - rect.height - margin);
-    left = clamp(left, margin, maxLeft);
-    top  = clamp(top,  margin, maxTop);
-    el.style.position = 'fixed';
-    el.style.left = left + 'px';
-    el.style.top =  top  + 'px';
-    el.style.right = 'auto'; el.style.bottom = 'auto';
-    if (save) localStorage.setItem('mshare_va_pos', JSON.stringify({left, top}));
-  }
-  function restorePos(){
-    try{
-      const raw = localStorage.getItem('mshare_va_pos');
-      if (!raw) return applyPos(16, 72, false);
-      const {left, top} = JSON.parse(raw);
-      applyPos(left, top, false);
-    } catch { applyPos(16, 72, false); }
-  }
-
-  // Hide/show
+  // 2) Show/Hide state + persistence
   function setHidden(h){
-    el.dataset.hidden = h ? 'true' : 'false';
-    const tgl = el.querySelector('[data-voice-action="toggle"]');
-    if (tgl){
-      tgl.setAttribute('aria-expanded', h ? 'false' : 'true');
-      tgl.textContent = h ? 'Show' : 'Hide';
-      tgl.title = h ? 'Show Voice Assistant' : 'Hide Voice Assistant';
-    }
+    va.setAttribute('data-hidden', String(!!h));
+    localStorage.setItem(LS_HID, String(!!h));
+    fab.style.display = h ? 'inline-flex' : 'none';
+    // Update toggle label
+    const t = handle.querySelector('[data-voice-action="toggle"]');
+    if (t){ t.textContent = h ? 'Show' : 'Hide'; t.setAttribute('aria-expanded', String(!h)); }
   }
 
-  // Dragging logic (pointer events, works on touch + mouse)
-  let dragging = false, startX = 0, startY = 0, origLeft = 0, origTop = 0;
-  handle.addEventListener('pointerdown', (ev) => {
+  // Restore hidden state
+  setHidden(localStorage.getItem(LS_HID) === 'true');
+
+  // 3) Drag anywhere (no snap), clamp to viewport, persist position
+  let dragging = false, startX=0, startY=0, baseL=0, baseT=0;
+
+  function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+  function restoreXY(){
+    try{
+      const saved = JSON.parse(localStorage.getItem(LS_POS) || 'null');
+      if (saved && typeof saved.left === 'number' && typeof saved.top === 'number'){
+        va.style.left = saved.left + 'px';
+        va.style.top  = saved.top  + 'px';
+      }
+    }catch{}
+  }
+  restoreXY();
+
+  function saveXY(){
+    const left = parseFloat(va.style.left || '16') || 16;
+    const top  = parseFloat(va.style.top  || '16') || 16;
+    localStorage.setItem(LS_POS, JSON.stringify({left, top}));
+  }
+
+  function bounds(){
+    const r = va.getBoundingClientRect();
+    const vw = window.innerWidth, vh = window.innerHeight;
+    return {
+      minL: 8,
+      maxL: vw - r.width - 8,
+      minT: 8,
+      maxT: vh - r.height - 8
+    };
+  }
+
+  function onPointerDown(e){
+    const tgt = e.target.closest('.mshare-voicebot__handle');
+    if (!tgt) return;
     dragging = true;
-    handle.setPointerCapture(ev.pointerId);
-    const pos = getPos();
-    origLeft = pos.left; origTop = pos.top;
-    startX = ev.clientX; startY = ev.clientY;
-    handle.style.cursor = 'grabbing';
-    ev.preventDefault();
-  });
-  handle.addEventListener('pointermove', (ev) => {
+    const r = va.getBoundingClientRect();
+    startX = e.clientX; startY = e.clientY;
+    baseL = r.left; baseT = r.top;
+    va.setPointerCapture?.(e.pointerId);
+    e.preventDefault();
+  }
+  function onPointerMove(e){
     if (!dragging) return;
-    const dx = ev.clientX - startX;
-    const dy = ev.clientY - startY;
-    applyPos(origLeft + dx, origTop + dy, false);
-  });
-  const endDrag = (ev) => {
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    const b = bounds();
+    const newL = clamp(baseL + dx, b.minL, b.maxL);
+    const newT = clamp(baseT + dy, b.minT, b.maxT);
+    va.style.left = newL + 'px';
+    va.style.top  = newT + 'px';
+  }
+  function onPointerUp(e){
     if (!dragging) return;
     dragging = false;
-    handle.style.cursor = 'grab';
-    const pos = getPos();
-    applyPos(pos.left, pos.top, true); // re-clamp + save
-  };
-  handle.addEventListener('pointerup', endDrag);
-  handle.addEventListener('pointercancel', endDrag);
-  window.addEventListener('resize', () => {
-    // keep current pos within new viewport; don't snap to top
-    const pos = getPos();
-    applyPos(pos.left, pos.top, true);
-  });
-
-  // Wire header buttons
-  el.addEventListener('click', (e) => {
-    const b = e.target.closest('[data-voice-action]');
-    if (!b) return;
-    const act = b.getAttribute('data-voice-action');
-    if (act === 'toggle') return setHidden(el.dataset.hidden !== 'true');
-    if (act === 'reset-pos') return applyPos(16, 72, true);
-  });
-
-  // Ensure default visible & restored position
-  if (!el.hasAttribute('data-hidden')) el.dataset.hidden = 'false';
-  restorePos();
-
-  // Basic smart speech hooks (keep your existing reading flow; this just avoids symbols)
-  const ss = window.speechSynthesis;
-  let utter = null;
-  function cleanText(t){
-    // Remove non-speech junk while keeping punctuation that helps prosody
-    return String(t).replace(/[^\p{L}\p{N}\p{Z}\.\,\;\:\!\?\'\"\-\(\)]/gu, ' ')
-                    .replace(/\s{2,}/g,' ')
-                    .trim();
+    saveXY();
   }
-  function pickVoice(prefer){
-    const voices = ss.getVoices();
-    if (prefer){
-      const v = voices.find(v => v.name === prefer);
-      if (v) return v;
+
+  va.addEventListener('pointerdown', onPointerDown);
+  window.addEventListener('pointermove', onPointerMove, {passive:false});
+  window.addEventListener('pointerup', onPointerUp, {passive:true});
+  window.addEventListener('resize', () => { // keep inside viewport after rotate/resize
+    const b = bounds();
+    const L = clamp(parseFloat(va.style.left||'16')||16, b.minL, b.maxL);
+    const T = clamp(parseFloat(va.style.top ||'16')||16, b.minT, b.maxT);
+    va.style.left = L+'px'; va.style.top = T+'px'; saveXY();
+  });
+
+  // 4) Wire buttons (Start/Pause/Resume/Stop/Repeat + Toggle + Reset)
+  const btnArea = va; // whole section (delegation)
+  const voiceSel = document.getElementById('mshare-voice-voice');
+  const rateInp  = document.getElementById('mshare-voice-rate');
+  const pitchInp = document.getElementById('mshare-voice-pitch');
+  const meta     = document.getElementById('mshare-voice-meta');
+
+  function cleanText(s){
+    // reduce non-letter noise, keep basic punctuation; collapse whitespace
+    return (s||'')
+      .replace(/[^\p{L}\p{N}\p{Pc}\p{Pd}\p{Ps}\p{Pe}\p{Pi}\p{Pf}\p{Po}\s]/gu,' ')
+      .replace(/\s{2,}/g,' ')
+      .trim();
+  }
+  function chosenVoice(){
+    const wanted = (voiceSel && voiceSel.value) || '';
+    const voices = (typeof speechSynthesis !== 'undefined') ? speechSynthesis.getVoices() : [];
+    if (wanted){
+      const m = voices.find(v => v.name === wanted) || voices.find(v => v.lang && wanted.toLowerCase().includes(v.lang.toLowerCase()));
+      if (m) return m;
     }
-    // Prefer UK female if available, else any en-*
-    return voices.find(v => /en-GB/i.test(v.lang) && /female/i.test(v.name))
-        || voices.find(v => /en-GB/i.test(v.lang))
-        || voices.find(v => /en/i.test(v.lang))
-        || voices[0] || null;
+    // Prefer en-GB > en-US > any English > first
+    return voices.find(v => /en-GB/i.test(v.lang)) ||
+           voices.find(v => /en-US/i.test(v.lang)) ||
+           voices.find(v => /^en/i.test(v.lang))   ||
+           voices[0] || null;
   }
-  function speak(text, opts = {}){
-    stop();
-    const t = cleanText(text || document.querySelector('main')?.innerText || document.body.innerText || '');
-    if (!t) return;
-    utter = new SpeechSynthesisUtterance(t);
-    const prefer = (document.getElementById('mshare-voice-voice')?.value || '').trim();
-    utter.voice = pickVoice(prefer);
-    utter.rate  = parseFloat(document.getElementById('mshare-voice-rate')?.value || '1.0');
-    utter.pitch = parseFloat(document.getElementById('mshare-voice-pitch')?.value || '1.0');
-    ss.cancel(); ss.speak(utter);
-    setHidden(false);
-    el.querySelector('.mshare-voicebot__meta')?.replaceChildren(document.createTextNode('Reading…'));
-    utter.onend = () => el.querySelector('.mshare-voicebot__meta')?.replaceChildren(document.createTextNode('Ready'));
-  }
-  function pause(){ if (ss.speaking && !ss.paused) ss.pause(); }
-  function resume(){ if (ss.paused) ss.resume(); }
-  function stop(){ ss.cancel(); utter = null; }
 
-  // Bind existing VA buttons in the panel
-  el.addEventListener('click', (e) => {
-    const b = e.target.closest('.mshare-voicebot__btn');
-    if (!b) return;
-    const act = b.getAttribute('data-voice-action');
+  function selectionOrMain(){
+    const sel = String(window.getSelection?.().toString() || '');
+    if (sel.trim()) return sel;
+    const main = document.querySelector('main, .content, .page, [role="main"]');
+    if (main && main.innerText) return main.innerText;
+    return document.body.innerText || document.title || 'Voice Assistant is ready.';
+  }
+
+  let currentUtter = null;
+  function speak(){
+    const txt = cleanText(selectionOrMain()).slice(0, 8000); // keep it safe
+    if (!txt) return;
+    stop();
+    if (typeof speechSynthesis === 'undefined'){
+      meta && (meta.textContent = 'Speech not supported on this browser.');
+      return;
+    }
+    const u = new SpeechSynthesisUtterance(txt);
+    const v = chosenVoice();
+    if (v) u.voice = v;
+    if (rateInp)  u.rate  = Math.min(1.3, Math.max(0.85, parseFloat(rateInp.value || '1')));
+    if (pitchInp) u.pitch = Math.min(1.3, Math.max(0.85, parseFloat(pitchInp.value || '1')));
+    u.onstart = () => { currentUtter = u; meta && (meta.textContent = `Reading… ${u.voice?.name||''}`.trim()); };
+    u.onend   = () => { currentUtter = null; meta && (meta.textContent = 'Ready'); };
+    u.onerror = () => { currentUtter = null; meta && (meta.textContent = 'TTS error'); };
+    speechSynthesis.speak(u);
+  }
+  function pause(){ try{ speechSynthesis.pause(); }catch{} }
+  function resume(){ try{ speechSynthesis.resume(); }catch{} }
+  function stop(){ try{ speechSynthesis.cancel(); currentUtter=null; }catch{} }
+
+  btnArea.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-voice-action]');
+    if (!btn) return;
+    const act = btn.dataset.voiceAction;
+    if (act === 'toggle') setHidden(va.getAttribute('data-hidden') !== 'true' ? true : false);
+    if (act === 'reset-pos'){ va.style.left='16px'; va.style.top='16px'; saveXY(); }
     if (act === 'start')  speak();
     if (act === 'pause')  pause();
     if (act === 'resume') resume();
@@ -208,14 +190,17 @@
     if (act === 'repeat') speak();
   });
 
-  // If your page has SOS buttons, auto-show VA on start
+  // Show from FAB
+  fab.addEventListener('click', () => setHidden(false));
+
+  // If SOS-60 buttons exist, ensure VA shows and starts reading
   document.addEventListener('click', (e) => {
     const sos = e.target.closest('[data-sos-start],[data-action="sos-start"],#sos-start,#btn-sos-start');
     if (sos) { setHidden(false); speak(); }
   });
 
-  // In case voices load asynchronously on some browsers
-  if (typeof speechSynthesis !== 'undefined') {
+  // voices sometimes load async (Chrome)
+  if (typeof speechSynthesis !== 'undefined'){
     speechSynthesis.onvoiceschanged = () => {};
   }
 })();
