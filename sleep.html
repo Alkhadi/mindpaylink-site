@@ -471,7 +471,8 @@
 <link rel="preload" href="app.js" as="script">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is sleep?","acceptedAnswer":{"@type":"Answer","text":"Sleep difficulties can improve with calming breath and a consistent pre-bed routine."}},{"@type":"Question","name":"What are common signs?","acceptedAnswer":{"@type":"Answer","text":"Trouble falling asleep; Waking often; Racing mind at night"}},{"@type":"Question","name":"How do I get started on this site?","acceptedAnswer":{"@type":"Answer","text":"4-7-8 for 3–5 minutes in bed · Reduce motion/sound at night · Print bedtime routine"}},{"@type":"Question","name":"Is this medical advice?","acceptedAnswer":{"@type":"Answer","text":"No. This site provides supportive educational information only and is not medical advice."}}]}</script>
 <!-- mshare:head-seo:v1:end -->
-  <link rel="stylesheet" href="assets/css/voice-assistant-hotfix.css" />
+    <link rel="stylesheet" href="assets/css/va-controls.css" />
+  <link rel="stylesheet" href="assets/css/home-goal-tiles.css" />
 </head>
 
 <body>
@@ -546,9 +547,7 @@
 
   <a id="top" style="position:absolute;top:0;left:0;width:0;height:0;overflow:hidden"> </a>
 
-
   <main class="container">
-
 
 <!-- mshare:value-pack:v1:start -->
 
@@ -587,7 +586,6 @@
 
 </section>
 <!-- mshare:value-pack:v1:end -->
-
 
 <!-- mpl-condition-card-start:sleep -->
 <section id="mpl-sleep-quick-card" class="card" style="margin-bottom:1.25rem">
@@ -676,7 +674,6 @@
 </section>
 <!-- mpl-condition-card-end -->
 
-
     <h1>Sleep — CBT‑i Basics</h1>
     <div class="card">
       <p><strong>CBT‑i principles</strong> in small steps: regular wake, stimulus control and a realistic sleep window.
@@ -759,7 +756,6 @@
   <script src="assets/footer/footer.js"></script>
   <script defer src="voice-coach-fix.js"></script>
   <script defer src="assets/js/contrast-fix.js"></script>
-
 
   <script id="mpl-theme-auto-js-v3">
     (() => {
@@ -935,7 +931,6 @@
     })();
   </script>
 
-
   <footer class="footer-2025" id="footer2025">
     <div class="wrap">
       <div class="grid">
@@ -978,9 +973,9 @@
     </div>
     <script>document.getElementById('yearFooter') && (document.getElementById('yearFooter').textContent = (new Date).getFullYear()); document.getElementById('backToTop') && document.getElementById('backToTop').addEventListener('click', function (e) { e.preventDefault(); try { (document.getElementById('top') || document.body).scrollIntoView({ behavior: 'smooth', block: 'start' }) } catch { location.hash = '#top' } })</script>
   </footer>
-  <script src="assets/js/voice-assistant-hotfix.js" defer></script>
-
   <div id="mshare-voice-toggle" aria-live="polite" aria-label="Show Voice Assistant"><button type="button" title="Show Voice">Voice</button></div>
+  <script src="assets/js/va-controls.js" defer></script>
+  <script src="assets/js/home-goal-tiles.js" defer></script>
 </body>
 
 </html>
