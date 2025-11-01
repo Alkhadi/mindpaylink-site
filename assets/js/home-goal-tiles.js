@@ -1,0 +1,1 @@
+/* assets/js/home-goal-tiles.js (noop placeholder for future) */
