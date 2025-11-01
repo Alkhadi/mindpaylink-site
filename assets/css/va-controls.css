@@ -1,31 +1,40 @@
 #mshare-voicebot.mshare-voicebot{
-  position:fixed; left:16px; top:16px; max-width:min(92vw,460px);
-  background:#0f172a; color:#e2e8f0; border:1px solid #1f2937; border-radius:12px;
-  box-shadow:0 10px 30px rgba(0,0,0,.35); z-index:10000; user-select:none;
+  position:fixed; top:16px; left:16px; max-width:420px; z-index:9999;
+  background:#0f172a; color:#e5e7eb; border-radius:12px; box-shadow:0 16px 36px rgba(0,0,0,.35);
+  border:1px solid rgba(148,163,184,.25);
 }
 .mshare-voicebot__body{ padding:10px; }
 .mshare-voicebot__handle{
-  display:flex; align-items:center; gap:8px; cursor:grab; padding:8px 10px; border-bottom:1px solid #1f2937; background:#111827;
-  touch-action:none; /* important for mobile drag */
+  display:flex; align-items:center; justify-content:space-between; gap:8px; padding:10px;
+  cursor:grab; user-select:none; border-bottom:1px solid rgba(148,163,184,.20);
 }
-.mshare-voicebot__handle:active{ cursor:grabbing; }
-.mshare-voicebot__title{ margin:0; font-size:14px; font-weight:600; flex:1; }
-.mshare-voicebot__btn{ font:inherit; padding:6px 10px; border-radius:8px; border:1px solid #334155; background:#1f2937; color:#e5e7eb; }
-.mshare-voicebot__row{ display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+.mshare-voicebot__title{ margin:0; font-size:14px; font-weight:600; letter-spacing:.2px; }
+.mshare-voicebot__btn{
+  font:inherit; color:#0f172a; background:#e2e8f0; border:0; border-radius:8px; padding:6px 10px; cursor:pointer;
+}
+.mshare-voicebot__btn:focus-visible{ outline:2px solid #38bdf8; outline-offset:2px; }
+.mshare-voicebot__row{ display:flex; gap:8px; flex-wrap:wrap; margin:8px 0; }
 .mshare-voicebot__field{ min-width:0; flex:1 1 auto; }
 .mshare-voicebot__cmd,.mshare-voicebot__select,.mshare-voicebot__range{ width:100%; }
-.mshare-voicebot__meta{ font-size:12px; opacity:.9; margin-top:6px; }
+.mshare-voicebot__meta{ font-size:12px; opacity:.9; }
 
+/* Hide body when data-hidden=true */
 #mshare-voicebot[data-hidden="true"] .mshare-voicebot__body{ display:none; }
 
+/* Reopen FAB (shows only when hidden) */
 .mshare-voicebot__fab{
   position:fixed; right:16px; bottom:16px; display:none; padding:10px 12px;
-  border-radius:999px; border:0; background:#334155; color:#fff; box-shadow:0 6px 16px rgba(0,0,0,.25); cursor:pointer; z-index:10000;
+  border-radius:999px; border:0; background:#334155; color:#fff; box-shadow:0 6px 16px rgba(0,0,0,.25);
+  cursor:pointer; z-index:10000;
 }
+#mshare-voicebot[data-hidden="true"] ~ .mshare-voicebot__fab{ display:inline-flex; }
+#mshare-voicebot[data-hidden="true"] .mshare-voicebot__fab{ display:inline-flex; } /* fallback if nested */
 .mshare-voicebot__fab:focus-visible{ outline:2px solid #38bdf8; outline-offset:2px; }
 
+/* Dots in handle */
 .mshare-voicebot__handle .dot{ width:4px; height:4px; border-radius:50%; background:#94a3b8; display:inline-block; margin-right:2px; }
 
+/* Mobile tweaks */
 @media (max-width:600px){
   #mshare-voicebot.mshare-voicebot{ max-width:min(96vw,420px); left:8px; }
   .mshare-voicebot__title{ font-size:13px; }
