@@ -1,55 +1,267 @@
-(()=>{const P=document.querySelector('#mshare-voicebot');if(!P)return;
-  // --- show/hide ---
-  function show(){P.classList.remove('is-hidden');localStorage.setItem('va_hidden','0');const t=document.getElementById('va-show-toggle');if(t)t.hidden=true;}
-  function hide(){P.classList.add('is-hidden');localStorage.setItem('va_hidden','1');let t=document.getElementById('va-show-toggle');if(!t){t=document.createElement('button');t.id='va-show-toggle';t.type='button';t.title='Show Voice Assistant';t.textContent='Voice Assistant';document.body.appendChild(t);} t.hidden=false; t.onclick=show;}
-  // add Hide button in handle (no new panel)
-  const handle=P.querySelector('.mshare-voicebot__handle')||P.firstElementChild||P;
-  let hideBtn=P.querySelector('[data-voice-action="hide"]');
-  if(!hideBtn){ hideBtn=document.createElement('button'); hideBtn.type='button'; hideBtn.className='mshare-voicebot__btn mshare-voicebot__btn--ghost'; hideBtn.setAttribute('data-voice-action','hide'); hideBtn.textContent='Hide'; handle.appendChild(hideBtn); }
-  hideBtn.onclick=hide;
-  if(localStorage.getItem('va_hidden')==='1') hide(); else show();
+(() => {
+  const $ = (s, c = document) => c.querySelector(s);
+  const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
+  const root = $('#mshare-voicebot');
+  if (!root) return;
 
-  // --- full-range dragging (bounded to viewport) ---
-  let drag=false,sx=0,sy=0,L=0,T=0;
-  function clamp(v,min,max){return Math.min(Math.max(v,min),max);}
-  function setPos(l,t){P.style.left=l+'px';P.style.top=t+'px';P.style.right='auto';P.style.bottom='auto';localStorage.setItem('va_pos',JSON.stringify({l,t}));}
-  function down(e){const ev=e.touches?e.touches[0]:e; const r=P.getBoundingClientRect(); L=r.left+window.scrollX; T=r.top+window.scrollY; sx=ev.clientX; sy=ev.clientY; drag=true; e.preventDefault();}
-  function move(e){ if(!drag)return; const ev=e.touches?e.touches[0]:e; const dx=ev.clientX-sx, dy=ev.clientY-sy; const w=window.innerWidth, h=window.innerHeight; const pr=P.getBoundingClientRect(); const l=clamp(L+dx,0,w-pr.width); const t=clamp(T+dy,0,h-pr.height); setPos(l,t); }
-  function up(){drag=false;}
-  handle.addEventListener('mousedown',down); window.addEventListener('mousemove',move); window.addEventListener('mouseup',up);
-  handle.addEventListener('touchstart',down,{passive:false}); window.addEventListener('touchmove',move,{passive:false}); window.addEventListener('touchend',up);
+  // Ensure a container for panel body exists
+  let body = $('.mshare-voicebot__body', root);
+  if (!body) {
+    body = document.createElement('div');
+    body.className = 'mshare-voicebot__body';
+    body.id = 'mshare-voicebot-panel';
+    while (root.firstChild) body.appendChild(root.firstChild);
+    root.appendChild(body);
+  }
+  // Ensure handle exists
+  let handle = $('.mshare-voicebot__handle', body);
+  if (!handle) {
+    handle = document.createElement('div');
+    handle.className = 'mshare-voicebot__handle';
+    handle.tabIndex = 0;
+    handle.setAttribute('aria-label','Move');
+    handle.innerHTML = '<span class="dot" aria-hidden="true"></span><span class="dot" aria-hidden="true"></span><span class="dot" aria-hidden="true"></span><h3 class="mshare-voicebot__title">Voice Assistant</h3>';
+    body.prepend(handle);
+  }
 
-  try{const p=JSON.parse(localStorage.getItem('va_pos')||''); if(p&&typeof p.l==='number') setPos(p.l,p.t);}catch{}
+  // Ensure meta + content exists
+  let content = $('.mshare-voicebot__content', body);
+  if (!content) { content = Object.assign(document.createElement('div'), {className:'mshare-voicebot__content'}); body.appendChild(content); }
+  let meta = $('#mshare-voice-meta', body);
+  if (!meta) { meta = Object.assign(document.createElement('div'), {id:'mshare-voice-meta', className:'mshare-voicebot__meta'}); meta.textContent='Ready'; content.appendChild(meta); }
 
-  // --- smart, natural TTS (Web Speech), ignore noise ---
-  function clean(t){ if(!t)return''; t=t.replace(/https?:\/\/\S+/gi,' '); t=t.replace(/[\u200B-\u200D\uFEFF]/g,''); t=t.replace(/[^\w\s.,;:!?£€$%()'’\-]/g,' '); t=t.replace(/\s{2,}/g,' ').trim(); return t; }
-  function pickVoice(){const wants=['Daniel','Moira','en-GB','English (United Kingdom)']; const vs=speechSynthesis.getVoices(); for(const v of vs){ if(wants.some(w=>v.name.includes(w)||v.lang.includes('en-GB'))) return v; } return vs[0]||null; }
-  let speaking=false, current=null;
-  function speak(text){const t=clean(text); if(!t)return; const u=new SpeechSynthesisUtterance(t); u.rate=parseFloat(localStorage.getItem('va_rate')||'1'); u.pitch=parseFloat(localStorage.getItem('va_pitch')||'1'); const v=pickVoice(); if(v)u.voice=v; speaking=true; current=u; u.onend=()=>{speaking=false;current=null}; u.onerror=()=>{speaking=false;current=null}; speechSynthesis.cancel(); speechSynthesis.speak(u);}
-  function stop(){speechSynthesis.cancel();speaking=false;current=null;}
-  function pause(){speechSynthesis.pause();}
-  function resume(){speechSynthesis.resume();}
+  // Ensure control buttons row exists (Start/Pause/Resume/Stop/Repeat)
+  let row1 = $$('.mshare-voicebot__row', content).find(r => r.querySelector('[data-voice-action="start"]'));
+  if (!row1) {
+    row1 = Object.assign(document.createElement('div'), {className:'mshare-voicebot__row'});
+    row1.innerHTML = `
+      <button type="button" class="mshare-voicebot__btn" data-voice-action="start">Start</button>
+      <button type="button" class="mshare-voicebot__btn" data-voice-action="pause">Pause</button>
+      <button type="button" class="mshare-voicebot__btn" data-voice-action="resume">Resume</button>
+      <button type="button" class="mshare-voicebot__btn" data-voice-action="stop">Stop</button>
+      <button type="button" class="mshare-voicebot__btn" data-voice-action="repeat">Repeat</button>`;
+    content.prepend(row1);
+  }
 
-  // Panel control wiring (uses existing data-voice-action buttons)
-  P.addEventListener('click',e=>{
-    const a=e.target.closest('[data-voice-action]'); if(!a)return;
-    const act=a.getAttribute('data-voice-action');
-    if(act==='start'){ const scope=document.querySelector('[data-voice-scope]')||document.querySelector('main')||document.body; show(); speak(scope.innerText||scope.textContent||''); }
-    if(act==='pause') pause();
-    if(act==='resume') resume();
-    if(act==='stop') stop();
-    if(act==='repeat' && current){ const t=current.text; stop(); setTimeout(()=>speak(t),80); }
-    if(act==='hide') hide();
-    if(act==='reset-pos'){ localStorage.removeItem('va_pos'); setPos(window.innerWidth-(P.offsetWidth||320)-16, 16); }
-  });
+  // Ensure select + sliders row exists
+  let rowSel = $$('.mshare-voicebot__row', content).find(r => r.querySelector('#mshare-voice-voice'));
+  if (!rowSel) {
+    rowSel = Object.assign(document.createElement('div'), {className:'mshare-voicebot__row'});
+    rowSel.innerHTML = `
+      <div class="mshare-voicebot__field" style="flex:1 1 55%">
+        <label class="mshare-sr-only" for="mshare-voice-voice">Voice</label>
+        <select id="mshare-voice-voice" class="mshare-voicebot__select">
+          <option value="">Auto (best available)</option>
+          <option value="Google UK English Female">Google UK English Female (en-GB)</option>
+          <option value="Daniel">Daniel (en-GB)</option>
+          <option value="Google US English">Google US English (en-US)</option>
+        </select>
+      </div>
+      <div class="mshare-voicebot__field" style="flex:1 1 20%">
+        <label class="mshare-sr-only" for="mshare-voice-rate">Rate</label>
+        <input id="mshare-voice-rate" type="range" min="0.85" max="1.3" step="0.05" value="1" class="mshare-voicebot__range">
+      </div>
+      <div class="mshare-voicebot__field" style="flex:1 1 20%">
+        <label class="mshare-sr-only" for="mshare-voice-pitch">Pitch</label>
+        <input id="mshare-voice-pitch" type="range" min="0.85" max="1.2" step="0.05" value="1" class="mshare-voicebot__range">
+      </div>`;
+    content.appendChild(rowSel);
+  }
 
-  // SOS-60 Start button should trigger VA
-  document.querySelectorAll('a,button,[role="button"]').forEach(el=>{
-    if(/Start\s*SOS-?60\s*Now/i.test(el.textContent||'')){
-      el.addEventListener('click',()=>{ const scope=document.getElementById('sos-60')||document.querySelector('main')||document.body; show(); speak(scope.innerText||'Starting SOS sixty breathing'); },{passive:true});
+  // Ensure Reset + Hide/Show in handle
+  let btnToggle = $('[data-voice-action="toggle"]', handle);
+  if (!btnToggle) {
+    btnToggle = Object.assign(document.createElement('button'), {type:'button', className:'mshare-voicebot__btn'});
+    btnToggle.dataset.voiceAction = 'toggle';
+    btnToggle.setAttribute('aria-controls','mshare-voicebot-panel');
+    handle.appendChild(btnToggle);
+  }
+  let btnReset = $('[data-voice-action="reset-pos"]', handle);
+  if (!btnReset) {
+    btnReset = Object.assign(document.createElement('button'), {type:'button', className:'mshare-voicebot__btn', title:'Reset position'});
+    btnReset.dataset.voiceAction = 'reset-pos';
+    btnReset.textContent = 'Reset';
+    handle.appendChild(btnReset);
+  }
+
+  // Ensure FAB (show button when hidden)
+  let fab = $('.mshare-voicebot__fab', root);
+  if (!fab) {
+    fab = Object.assign(document.createElement('button'), {type:'button', className:'mshare-voicebot__fab', title:'Show Voice Assistant'});
+    fab.dataset.voiceAction = 'show';
+    fab.textContent = 'Voice Assistant';
+    root.appendChild(fab);
+  }
+
+  // ===== State + persistence =====
+  const store = {
+    posKey: 'mshare_va_pos_v1',
+    hidKey: 'mshare_va_hidden_v1',
+    savePos(x,y){ try{ localStorage.setItem(this.posKey, JSON.stringify({x,y})); }catch{} },
+    loadPos(){ try{ return JSON.parse(localStorage.getItem(this.posKey)||''); }catch{ return null; } },
+    saveHidden(h){ try{ localStorage.setItem(this.hidKey, h?'1':'0'); }catch{} },
+    loadHidden(){ try{ return localStorage.getItem(this.hidKey)==='1'; }catch{ return false; } }
+  };
+
+  function setHidden(h){
+    root.dataset.hidden = h ? 'true' : 'false';
+    btnToggle.textContent = h ? 'Show' : 'Hide';
+    btnToggle.title = h ? 'Show Voice Assistant' : 'Hide Voice Assistant';
+    btnToggle.setAttribute('aria-expanded', h ? 'false' : 'true');
+    store.saveHidden(h);
+  }
+  btnToggle.addEventListener('click', () => setHidden(root.dataset.hidden !== 'true'));
+  fab.addEventListener('click', () => setHidden(false));
+  btnReset.addEventListener('click', resetPos);
+
+  // ===== Drag with bounds =====
+  // If panel initially uses inline "inset: …", convert to top/left
+  (function normalizeInline(){
+    const s = getComputedStyle(root);
+    if (s.inset && s.inset !== 'auto') {
+      root.style.right = 'auto'; root.style.bottom = 'auto';
+      root.style.top = (root.offsetTop||16) + 'px';
+      root.style.left = (root.offsetLeft||16) + 'px';
     }
-  });
+  })();
 
-  // expose minimal API
-  window.mshareVoice={speak,stop,pause,resume,show,hide};
+  function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
+  function applyPos(x,y){
+    root.style.top = y + 'px';
+    root.style.left = x + 'px';
+    root.style.right = 'auto';
+    root.style.bottom = 'auto';
+    store.savePos(x,y);
+  }
+  function resetPos(){
+    const m = 12;
+    const x = window.innerWidth - (root.offsetWidth||320) - m;
+    const y = m;
+    applyPos(x,y);
+  }
+  function restorePos(){
+    const m = 12, W = window.innerWidth, H = window.innerHeight;
+    const w = root.offsetWidth||320, h = root.offsetHeight||220;
+    let x = W - w - m, y = m;
+    const p = store.loadPos();
+    if (p && Number.isFinite(p.x) && Number.isFinite(p.y)){
+      x = clamp(p.x, m, Math.max(m, W - w - m));
+      y = clamp(p.y, m, Math.max(m, H - h - m));
+    }
+    applyPos(x,y);
+  }
+  let drag = {on:false, dx:0, dy:0};
+  function down(e){
+    if (e.button !== 0 && e.pointerType !== 'touch') return;
+    drag.on = true; handle.classList.add('is-dragging');
+    const r = root.getBoundingClientRect(); drag.dx = e.clientX - r.left; drag.dy = e.clientY - r.top;
+    root.setPointerCapture?.(e.pointerId);
+  }
+  function move(e){
+    if (!drag.on) return;
+    const m = 8, w = root.offsetWidth||320, h = root.offsetHeight||220;
+    const x = clamp(e.clientX - drag.dx, m, window.innerWidth - w - m);
+    const y = clamp(e.clientY - drag.dy, m, window.innerHeight - h - m);
+    applyPos(x,y);
+  }
+  function up(e){ drag.on = false; handle.classList.remove('is-dragging'); root.releasePointerCapture?.(e.pointerId); }
+  handle.addEventListener('pointerdown', down);
+  window.addEventListener('pointermove', move);
+  window.addEventListener('pointerup', up);
+  window.addEventListener('resize', restorePos);
+
+  // ===== Smart TTS =====
+  const selVoice = $('#mshare-voice-voice', root);
+  const rate = $('#mshare-voice-rate', root);
+  const pitch = $('#mshare-voice-pitch', root);
+  const bStart = $('[data-voice-action="start"]', root);
+  const bStop = $('[data-voice-action="stop"]', root);
+  const bPause = $('[data-voice-action="pause"]', root);
+  const bResume = $('[data-voice-action="resume"]', root);
+  const bRepeat = $('[data-voice-action="repeat"]', root);
+
+  let voices = [];
+  function loadVoices(){
+    voices = speechSynthesis.getVoices() || [];
+    if (!voices.length) setTimeout(loadVoices, 200);
+  }
+  if ('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+  function pickVoice(){
+    const pref = (selVoice?.value||'').trim();
+    const want = pref ? [pref] : ['Google UK English Female','Daniel','Google US English'];
+    for (const n of want){ const v = voices.find(v => v.name===n); if (v) return v; }
+    return voices.find(v => /en-|English|UK|US/i.test(v.name+v.lang)) || voices[0];
+  }
+  function isReadable(el){
+    if (!el || el.nodeType!==1) return false;
+    const t = el.tagName.toLowerCase();
+    if (['script','style','noscript','svg','canvas','img','video','audio','source','track','iframe'].includes(t)) return false;
+    if (el.hasAttribute('hidden') || el.getAttribute('aria-hidden')==='true') return false;
+    if (el.classList.contains('mshare-sr-only')) return false;
+    if (['nav','header','footer','aside'].includes(t)) return false;
+    return true;
+  }
+  function extractText(rootEl){
+    const sel = window.getSelection?.(); const picked = sel && sel.rangeCount ? sel.toString().trim() : '';
+    if (picked && picked.length>12) return picked;
+    const w = document.createTreeWalker(rootEl||document.body, NodeFilter.SHOW_TEXT, {
+      acceptNode(n){ const p = n.parentElement; if(!p||!isReadable(p)) return NodeFilter.FILTER_REJECT; const t=(n.textContent||'').trim(); return t?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT; }
+    });
+    const chunks = []; while (w.nextNode()) chunks.push(w.currentNode.textContent);
+    let text = chunks.join(' ');
+    text = text
+      .replace(/\S+@\S+\.\S+/g,' ')
+      .replace(/\bhttps?:\/\/\S+|\bwww\.\S+/gi,' ')
+      .replace(/\[[^\]]{1,40}\]/g,' ')
+      .replace(/[^\p{L}\p{N}\s.,;:!?'"—-]/gu,' ')
+      .replace(/[.,;:!?'"—-]{3,}/g,'. ')
+      .replace(/\s{2,}/g,' ')
+      .trim();
+    return text;
+  }
+  function chunk(t, max=220){
+    const parts=[]; while(t.length){ if(t.length<=max){parts.push(t);break;}
+      let i=t.lastIndexOf('. ',max); if(i<max*0.6) i=t.lastIndexOf(', ',max); if(i<max*0.4) i=t.lastIndexOf(' ',max); if(i<=0) i=max;
+      parts.push(t.slice(0,i+1).trim()); t=t.slice(i+1).trim();
+    } return parts;
+  }
+  function setMeta(s){ if (meta) meta.textContent=s; }
+
+  let lastText='';
+  function start(targetSel){
+    if (!('speechSynthesis' in window)) { setMeta('Speech not supported on this browser'); return; }
+    const rootEl = (targetSel && document.querySelector(targetSel)) || document.querySelector('[data-read-target]') || document.querySelector('main') || document.body;
+    const text = extractText(rootEl);
+    if (!text){ setMeta('Nothing readable on the page'); return; }
+    lastText=text; speechSynthesis.cancel();
+    const v=pickVoice(); const r=Math.max(0.85, Math.min(1.3, parseFloat(rate?.value||'1'))); const p=Math.max(0.85, Math.min(1.2, parseFloat(pitch?.value||'1')));
+    const parts=chunk(text);
+    parts.forEach((T,i)=>{ const u=new SpeechSynthesisUtterance(T); if(v) u.voice=v; u.lang=(v&&v.lang)||'en-GB'; u.rate=r; u.pitch=p; if(i===0) u.onstart=()=>setMeta(`Speaking… (${parts.length} parts)`); if(i===parts.length-1) u.onend=()=>setMeta('Done'); speechSynthesis.speak(u); });
+    setHidden(false);
+  }
+  function stop(){ speechSynthesis.cancel(); setMeta('Stopped'); }
+  function pause(){ if (speechSynthesis.speaking) speechSynthesis.pause(); setMeta('Paused'); }
+  function resume(){ if (speechSynthesis.paused) speechSynthesis.resume(); setMeta('Speaking…'); }
+  function repeat(){ if (lastText){ speechSynthesis.cancel(); start(); } }
+
+  bStart?.addEventListener('click', () => start());
+  bStop?.addEventListener('click', stop);
+  bPause?.addEventListener('click', pause);
+  bResume?.addEventListener('click', resume);
+  bRepeat?.addEventListener('click', repeat);
+
+  // SOS-60: auto-show + read
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest('button, a, [data-sos-start]');
+    if (!t) return;
+    const txt=(t.textContent||'').toLowerCase();
+    if (t.hasAttribute('data-sos-start') || /start\s*sos-?60\s*now/.test(txt)){
+      setHidden(false);
+      start('#sos-content');
+    }
+  }, true);
+
+  // init
+  setHidden(store.loadHidden());
+  restorePos();
 })();
