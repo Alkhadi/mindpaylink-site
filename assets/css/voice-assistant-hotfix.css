@@ -1,0 +1,15 @@
+#mshare-voicebot.mshare-voicebot{position:fixed;z-index:9999;max-width:min(380px,92vw);min-width:260px;inset:auto auto 16px 16px;background:#0f172a;color:#e5e7eb;border:1px solid #1f2937;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.35);overflow:hidden;touch-action:none}
+.mshare-voicebot__handle{display:flex;align-items:center;gap:.5rem;padding:.6rem .75rem;cursor:grab;background:#111827;border-bottom:1px solid #1f2937}
+.mshare-voicebot__handle:active{cursor:grabbing}
+.mshare-voicebot__title{margin:0;font:600 14px/1.1 system-ui}
+.mshare-voicebot__btn{background:#111827;border:1px solid #374151;color:#e5e7eb;border-radius:8px;padding:.5rem .7rem;font:600 13px/1 system-ui}
+.mshare-voicebot__btn:hover{background:#0b1220}
+.mshare-voicebot__content{padding:.75rem}
+.mshare-voicebot__row{display:flex;flex-wrap:wrap;gap:.5rem;margin:.5rem 0}
+.mshare-voicebot__field{display:flex;align-items:center;gap:.4rem}
+.mshare-voicebot__cmd{width:100%;background:#0b1220;border:1px solid #374151;color:#e5e7eb;border-radius:8px;padding:.55rem .7rem}
+.mshare-voicebot__select,.mshare-voicebot__range{width:100%}
+.mshare-voicebot__meta{font-size:12px;opacity:.85;margin-top:.25rem}
+.mshare-voicebot__toggle{position:fixed;right:14px;bottom:14px;z-index:10000;display:inline-flex;align-items:center;gap:.5rem;background:#0f172a;color:#e5e7eb;border:1px solid #1f2937;padding:.55rem .7rem;border-radius:999px;font:600 13px/1 system-ui;box-shadow:0 6px 18px rgba(0,0,0,.28)}
+.mshare-voicebot--hidden{opacity:0;pointer-events:none;transform:translateY(6px);transition:opacity .15s ease,transform .15s ease}
+@media (max-width:640px){#mshare-voicebot.mshare-voicebot{max-width:94vw}}
