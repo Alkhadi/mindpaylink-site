@@ -38,6 +38,26 @@
     }
   </style>
 
+  <!-- MOBILE 3×2 GRID FIX for "Pick your goal" -->
+  <style id="vp-home-goals-grid-fix">
+    /* Keep grid visuals consistent everywhere */
+    #vp-home-goals .grid { display: grid; gap: .6rem; }
+    #vp-home-goals .grid > div a.btn { width: 100%; text-align: center; }
+
+    /* Phones: force a compact 3×2 grid. Add 1 empty cell to make it exactly 6 slots. */
+    @media (max-width: 560px) {
+      #vp-home-goals .grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+      #vp-home-goals .grid::after { content: ""; }
+      #vp-home-goals .grid > div, #vp-home-goals .grid::after { min-height: 0; }
+      #vp-home-goals .btn { padding: .55rem .4rem; font-size: .95rem; }
+    }
+
+    /* Small tablets: keep 3 cols, let height breathe */
+    @media (min-width: 561px) and (max-width: 900px) {
+      #vp-home-goals .grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    }
+  </style>
+
   <!-- PROGRESS CALENDAR styles -->
   <style id="progress-calendar-css">
     #progressCard .prog-head{display:grid;gap:.5rem;margin-bottom:.5rem}
