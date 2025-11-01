@@ -38,6 +38,29 @@
     }
   </style>
 
+  <!-- PROGRESS CALENDAR styles -->
+  <style id="progress-calendar-css">
+    #progressCard .prog-head{display:grid;gap:.5rem;margin-bottom:.5rem}
+    #progressCard .badges{display:flex;flex-wrap:wrap;gap:.5rem}
+    #progressCard .nowline{font-size:.95rem;opacity:.8}
+    #progressCard .lastline{font-size:.95rem;opacity:.9}
+    #progressCard .calendar{margin-top:.5rem}
+    #progressCard .cal-head{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin:.25rem 0 .5rem}
+    #progressCard .cal-title{margin:0;font-size:1.1rem}
+    #progressCard .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+    #progressCard .cal-dow{font-weight:600;text-align:center;opacity:.75;font-size:.9rem}
+    #progressCard .cal-cell{border:1px solid var(--b,rgba(0,0,0,.12));border-radius:.5rem;min-height:68px;padding:6px;position:relative;background:rgba(255,255,255,.02)}
+    #progressCard .cal-cell .date{font-size:.85rem;opacity:.8}
+    #progressCard .cal-cell .mins{position:absolute;left:6px;bottom:6px;font-size:.8rem;opacity:.9}
+    #progressCard .cal-cell .marks{position:absolute;right:6px;bottom:6px;display:flex;gap:4px;flex-wrap:wrap}
+    #progressCard .dot{width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.6}
+    #progressCard .cal-cell.today{outline:2px solid currentColor;outline-offset:1px}
+    #progressCard .cal-cell.out{opacity:.45}
+    #progressCard .day-detail{margin-top:8px;border:1px solid var(--b,rgba(0,0,0,.12));border-radius:.5rem;padding:.6rem}
+    #progressCard .btn-ghost{background:transparent;border:1px solid var(--b,rgba(0,0,0,.12));padding:.25rem .6rem;border-radius:.4rem}
+    @media (max-width:560px){#progressCard .cal-cell{min-height:56px}#progressCard .cal-grid{gap:4px}}
+  </style>
+
   <!-- Mobile nav CSS helpers -->
   <style id="mpl-mobile-nav-style-v4">
     nav .menu[hidden], nav .submenu[hidden] { display: none !important; }
@@ -411,13 +434,41 @@
     </div>
   </div>
 
-  <div class="card">
+  <!-- PROGRESS CALENDAR CARD -->
+  <div class="card" id="progressCard">
     <h2>Progress</h2>
-    <div class="badge">Total Minutes: <span id="mTotal">0</span></div>
-    <div class="badge">Streak: <span id="mStreak">0</span> days</div>
-    <div class="badge">Sessions: <span id="mSessions">0</span></div>
-    <div class="badge">Breaths: <span id="mBreaths">0</span></div>
-    <div class="canvas-wrap"><canvas id="weeklyChart"></canvas></div>
+
+    <div class="prog-head">
+      <div class="badges">
+        <div class="badge">Total Minutes: <span id="mTotal">0</span></div>
+        <div class="badge">Streak: <span id="mStreak">0</span> days</div>
+        <div class="badge">Sessions: <span id="mSessions">0</span></div>
+        <div class="badge">Breaths: <span id="mBreaths">0</span></div>
+      </div>
+      <div id="todayNow" class="nowline" aria-live="polite"></div>
+      <div id="lastSessionLine" class="lastline"></div>
+    </div>
+
+    <div class="calendar" aria-label="Progress calendar">
+      <div class="cal-head">
+        <button id="calPrev" class="btn-ghost" type="button" aria-label="Previous month">‹</button>
+        <h3 id="calTitle" class="cal-title" aria-live="polite">Month</h3>
+        <button id="calNext" class="btn-ghost" type="button" aria-label="Next month">›</button>
+      </div>
+      <div class="cal-grid" id="calGrid" role="grid" aria-readonly="true" aria-labelledby="calTitle">
+        <div class="cal-dow" role="columnheader">Mon</div>
+        <div class="cal-dow" role="columnheader">Tue</div>
+        <div class="cal-dow" role="columnheader">Wed</div>
+        <div class="cal-dow" role="columnheader">Thu</div>
+        <div class="cal-dow" role="columnheader">Fri</div>
+        <div class="cal-dow" role="columnheader">Sat</div>
+        <div class="cal-dow" role="columnheader">Sun</div>
+        <!-- cells injected -->
+      </div>
+      <div id="calDayDetail" class="day-detail" hidden></div>
+    </div>
+
+    <div class="canvas-wrap" style="margin-top:.75rem"><canvas id="weeklyChart"></canvas></div>
     <div id="todayLine" class="today"></div>
     <div id="achWrap"></div>
   </div>
@@ -478,18 +529,198 @@
     location.href = 'sos-60.html?' + q.toString();
   });
 
-  // Dashboard metrics
+  // --- PROGRESS / CALENDAR ---------------------------------------------------
+
+  const TZ = 'Europe/London';
+  const fmtParts = (d) => new Intl.DateTimeFormat('en-GB', {
+    timeZone: TZ, weekday:'long', day:'2-digit', month:'long', year:'numeric',
+    hour:'2-digit', minute:'2-digit', hour12:false
+  }).formatToParts(d).reduce((o,p)=> (o[p.type]=p.value, o), {});
+  const todayLineEl = document.getElementById('todayNow');
+  const lastLineEl  = document.getElementById('lastSessionLine');
+
+  function updateNow(){
+    const p = fmtParts(new Date());
+    // e.g., Saturday 01 November 2025 at 15:29
+    todayLineEl.textContent = `Today: ${p.weekday} ${p.day} ${p.month} ${p.year} at ${p.hour}:${p.minute}`;
+  }
+  updateNow();
+  try{ setInterval(updateNow, 60*1000); }catch{}
+
+  // Safe getters for stats/events
+  function getEvents(){
+    // Prefer MS.Stats if available
+    let ev = [];
+    try{
+      if (Stats?.events && Array.isArray(Stats.events)) ev = Stats.events;
+      else if (typeof Stats?.history === 'function') ev = Stats.history() || [];
+      else if (typeof Stats?.getLog === 'function') ev = Stats.getLog() || [];
+    }catch{}
+    if (ev.length) return ev;
+
+    // Try common localStorage keys used by older builds
+    const KEYS = [
+      'mshare_sessions','mshare_stats_events','mshare_log','mshare_coach_log_v1'
+    ];
+    for (const k of KEYS){
+      try{
+        const raw = localStorage.getItem(k);
+        if (raw){
+          const arr = JSON.parse(raw);
+          if (Array.isArray(arr)) return arr;
+          if (arr && Array.isArray(arr.events)) return arr.events;
+        }
+      }catch{}
+    }
+    return [];
+  }
+
+  function normalise(ev){
+    // Map events to {date: Date, minutes: number, breaths: number, name: string}
+    const out = [];
+    (ev||[]).forEach(e => {
+      try{
+        const ts = e.ts || e.time || e.date || e.startedAt || e.start || e.end || Date.now();
+        const d  = new Date(ts);
+        const minutes = Number(e.minutes ?? e.mins ?? e.durationMin ?? e.duration ?? 0) || 0;
+        const breaths = Number(e.breaths ?? e.count ?? 0) || 0;
+        const name = (e.name || e.title || e.technique || e.page || e.type || 'Session').toString();
+        out.push({date:d, minutes, breaths, name, raw:e});
+      }catch{}
+    });
+    return out.sort((a,b)=> (a.date?.valueOf?.()||0) - (b.date?.valueOf?.()||0));
+  }
+
+  function isoKey(d){
+    // YYYY-MM-DD in Europe/London
+    const parts = new Intl.DateTimeFormat('en-GB',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d);
+    const map = parts.reduce((o,p)=> (o[p.type]=p.value,o),{});
+    return `${map.year}-${map.month}-${map.day}`;
+  }
+
+  function monthStart(d){ return new Date(d.getFullYear(), d.getMonth(), 1); }
+  function daysInMonth(y,m){ return new Date(y, m+1, 0).getDate(); }
+  const calGrid = document.getElementById('calGrid');
+  const calTitle= document.getElementById('calTitle');
+  const calPrev = document.getElementById('calPrev');
+  const calNext = document.getElementById('calNext');
+  const dayDetail = document.getElementById('calDayDetail');
+
+  const all = normalise(getEvents());
+  const byDay = {};
+  all.forEach(item => {
+    const k = isoKey(item.date);
+    if (!byDay[k]) byDay[k] = {minutes:0, sessions:0, breaths:0, items:[]};
+    byDay[k].minutes += item.minutes;
+    byDay[k].breaths += item.breaths;
+    byDay[k].sessions += 1;
+    byDay[k].items.push(item);
+  });
+
+  // Totals via Stats (if available) remain as-is (below). Here we only set "last session" line.
+  if (all.length){
+    const last = all[all.length - 1];
+    const p = fmtParts(last.date);
+    lastLineEl.textContent =
+      `Last session: ${last.name} — ${last.minutes} min on ${p.weekday} ${p.day} ${p.month} ${p.year} at ${p.hour}:${p.minute}`;
+  } else {
+    lastLineEl.textContent = 'Last session: —';
+  }
+
+  let view = new Date(); // current month
+  function renderCalendar(){
+    const y = view.getFullYear(), m = view.getMonth();
+    calTitle.textContent = new Intl.DateTimeFormat('en-GB',{timeZone:TZ,month:'long',year:'numeric'}).format(view);
+
+    // clear old cells
+    Array.from(calGrid.querySelectorAll('.cal-cell')).forEach(n => n.remove());
+
+    const first = new Date(y, m, 1);
+    let startIndex = (first.getDay()+6)%7; // Monday=0
+    const totalDays = daysInMonth(y,m);
+
+    // Calculate dates to render (previous padding + current + next padding) to fill 6 rows (42 cells)
+    const prevMonthDays = startIndex;
+    const cellsNeeded = 42;
+    const nextPad = cellsNeeded - (prevMonthDays + totalDays);
+    const todayKey = isoKey(new Date());
+
+    // Build cells
+    for (let i=0;i<cellsNeeded;i++){
+      const cell = document.createElement('div');
+      cell.className = 'cal-cell';
+      let dayNum, d, outClass = '';
+      if (i < prevMonthDays){
+        // previous month
+        d = new Date(y, m, -(prevMonthDays - 1 - i));
+        outClass = ' out';
+      } else if (i >= prevMonthDays + totalDays){
+        // next month
+        d = new Date(y, m, (i - (prevMonthDays + totalDays) + 1));
+        outClass = ' out';
+      } else {
+        // this month
+        dayNum = i - prevMonthDays + 1;
+        d = new Date(y, m, dayNum);
+      }
+      if (isoKey(d) === todayKey) outClass += ' today';
+      cell.className += outClass;
+
+      const dateEl = document.createElement('div');
+      dateEl.className = 'date';
+      dateEl.textContent = new Intl.DateTimeFormat('en-GB',{timeZone:TZ,day:'2-digit'}).format(d);
+      cell.appendChild(dateEl);
+
+      const k = isoKey(d);
+      const agg = byDay[k];
+      if (agg){
+        const mins = document.createElement('div');
+        mins.className = 'mins';
+        mins.textContent = `${agg.minutes}m`;
+        cell.appendChild(mins);
+
+        const marks = document.createElement('div');
+        marks.className = 'marks';
+        // one dot per session (cap at 5 for readability)
+        const count = Math.min(agg.sessions, 5);
+        for (let j=0;j<count;j++){ const dot = document.createElement('span'); dot.className='dot'; marks.appendChild(dot); }
+        cell.appendChild(marks);
+
+        cell.setAttribute('aria-label', ` ${agg.sessions} sessions, ${agg.minutes} minutes`);
+        cell.style.cursor='pointer';
+        cell.addEventListener('click', () => {
+          const when = new Intl.DateTimeFormat('en-GB',{timeZone:TZ,weekday:'long',day:'2-digit',month:'long',year:'numeric'}).format(d);
+          const lines = agg.items.slice(-5).map(s => {
+            const p = fmtParts(s.date);
+            return `• ${s.name} — ${s.minutes} min at ${p.hour}:${p.minute}`;
+          });
+          dayDetail.hidden = false;
+          dayDetail.innerHTML = `<b>${when}</b><div>${agg.sessions} session(s), ${agg.minutes} min, ${agg.breaths||0} breaths</div><div>${lines.join('<br>')}</div>`;
+        });
+      }
+
+      calGrid.appendChild(cell);
+    }
+  }
+
+  document.getElementById('calPrev')?.addEventListener('click', () => { view = new Date(view.getFullYear(), view.getMonth()-1, 1); renderCalendar(); });
+  document.getElementById('calNext')?.addEventListener('click', () => { view = new Date(view.getFullYear(), view.getMonth()+1, 1); renderCalendar(); });
+  renderCalendar();
+
+  // Dashboard totals + chart (use existing Stats)
   if (Stats){
-    const s = Stats.summary();
-    const set = (id, key) => { const el = document.getElementById(id); if (el) el.textContent = s[key]; };
-    set('mTotal','minutes'); set('mStreak','streak'); set('mSessions','sessions'); set('mBreaths','breaths');
-    const ach = s.ach || {}; const wrap = document.getElementById('achWrap'); const chips = [];
-    if (ach.m10) chips.push('<span class="badge ok">10+ min</span>');
-    if (ach.m50) chips.push('<span class="badge ok">50+ min</span>');
-    if (ach.s5) chips.push('<span class="badge ok">5+ sessions</span>');
-    if (ach.b200) chips.push('<span class="badge ok">200+ breaths</span>');
-    if (wrap && chips.length) wrap.innerHTML = '<div>Achievements: ' + chips.join(' ') + '</div>';
-    if (typeof drawWeeklyChart === 'function') drawWeeklyChart('weeklyChart','todayLine');
+    try{
+      const s = Stats.summary();
+      const set = (id, key) => { const el = document.getElementById(id); if (el) el.textContent = s[key]; };
+      set('mTotal','minutes'); set('mStreak','streak'); set('mSessions','sessions'); set('mBreaths','breaths');
+      const ach = s.ach || {}; const wrap = document.getElementById('achWrap'); const chips = [];
+      if (ach.m10) chips.push('<span class="badge ok">10+ min</span>');
+      if (ach.m50) chips.push('<span class="badge ok">50+ min</span>');
+      if (ach.s5) chips.push('<span class="badge ok">5+ sessions</span>');
+      if (ach.b200) chips.push('<span class="badge ok">200+ breaths</span>');
+      if (wrap && chips.length) wrap.innerHTML = '<div>Achievements: ' + chips.join(' ') + '</div>';
+      if (typeof drawWeeklyChart === 'function') drawWeeklyChart('weeklyChart','todayLine');
+    }catch{}
   }
 
   /* Hide any legacy VA panel that does NOT have a Hide button */
